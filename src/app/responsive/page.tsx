@@ -1,6 +1,6 @@
 "use client";
 import { composeTransforms, getInverseTransform, getMatrixFromTransform, getTransformFromMatrix, ResponsiveContainer, useResponsiveContainer } from "@/components/ui/responsive-container";
-import { closestCorners, DndContext, DragEndEvent, MeasuringStrategy, Modifier, useDraggable, useDroppable } from '@dnd-kit/core';
+import { closestCorners, DndContext, DragEndEvent, KeyboardSensor, MeasuringStrategy, Modifier, MouseSensor, TouchSensor, useDraggable, useDroppable, useSensor, useSensors } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Mat4Like } from "gl-matrix";
 import React, { useState } from 'react';
@@ -93,6 +93,19 @@ interface DraggableItem {
 }
 
 function DragExample() {
+
+    const mouseSensor = useSensor(MouseSensor);
+    const touchSensor = useSensor(TouchSensor);
+    const keyboardSensor = useSensor(KeyboardSensor);
+
+    const sensors = useSensors(
+        mouseSensor,
+        touchSensor,
+        keyboardSensor,
+    );
+
+
+
     const [items, setItems] = useState<{ [key: string]: DraggableItem[] }>({
         'container1': [
             { id: 'item-1', content: 'Item 1' },
@@ -150,8 +163,9 @@ function DragExample() {
     };
 
     return (
-        <div className="w-full h-full bg-gray-900 p-8">
+        <div className="w-full h-full bg-gray-900 p-8 overflow-hidden">
             <DndContext
+                sensors={sensors}
                 onDragEnd={handleDragEnd}
                 modifiers={[accountForResponsive(responsiveMat4)]}
                 measuring={{

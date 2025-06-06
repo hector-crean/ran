@@ -20,7 +20,7 @@ interface DroppableProps {
     children: React.ReactNode;
 }
 
-export function Droppable({ id, children }: DroppableProps) {
+function Droppable({ id, children }: DroppableProps) {
     const { isOver, setNodeRef } = useDroppable({
         id,
     });

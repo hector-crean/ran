@@ -1,19 +1,25 @@
 "use client";
-import { composeTransforms, getInverseTransform, getMatrixFromTransform, getTransformFromMatrix, ResponsiveContainer, useResponsiveContainer } from "@/components/ui/responsive-container";
-import { closestCorners, DndContext, DragEndEvent, KeyboardSensor, MeasuringStrategy, Modifier, MouseSensor, TouchSensor, useDraggable, useDroppable, useSensor, useSensors } from '@dnd-kit/core';
+
+import { DndContext, DragEndEvent, MouseSensor, TouchSensor, useDraggable, useDroppable, useSensor, useSensors } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { Mat4Like } from "gl-matrix";
 import React, { useState } from 'react';
 
-export default function ResponsivePage() {
+// The container that uses container queries
+const ResponsiveContainer = ({ children }: { children: React.ReactNode }) => {
     return (
-        <ResponsiveContainer width={1920} height={1080} fit="contain" scale={true} containerClassname='w-full h-full'>
-            <DragExample />
-        </ResponsiveContainer>
+        <div
+            className="w-full h-full"
+            style={{
+                containerType: 'size',
+                containerName: 'responsive'
+            }}
+        >
+            <div className="w-full h-full">
+                {children}
+            </div>
+        </div>
     );
-}
-
-
+};
 
 interface DroppableProps {
     id: string;
@@ -48,7 +54,7 @@ function Draggable({ id, children }: DraggableProps) {
         id,
     });
     const style = {
-        transform: transform ? CSS.Translate.toString(transform) : undefined,
+        transform: transform ? CSS.Transform.toString(transform) : undefined,
         opacity: isDragging ? 0.5 : 1,
         cursor: 'grab',
     };
@@ -60,51 +66,15 @@ function Draggable({ id, children }: DraggableProps) {
     );
 }
 
-
-
-
-
-const accountForResponsive = (containerTransform: Mat4Like): Modifier => {
-    return ({ transform, draggingNodeRect }) => {
-        if (!draggingNodeRect) return transform;
-
-        // Get the inverse of the container transform (P^T)
-        const containerInverse = getInverseTransform(containerTransform);
-
-        // Convert drag transform to matrix (A)
-        const dragMatrix = getMatrixFromTransform(transform);
-
-        // Apply similarity transformation: P^T * A * P
-        const inLocalSpace = composeTransforms(containerInverse, dragMatrix);
-        const backToScreenSpace = composeTransforms(inLocalSpace, containerTransform);
-
-        // Get the final transform that accounts for both drag and container space
-        const adjustedTransform = getTransformFromMatrix(backToScreenSpace);
-
-        // Ensure we're returning a transform that DnD-kit can work with
-        return adjustedTransform;
-        // return transform
-    };
-};
-
 interface DraggableItem {
     id: string;
     content: string;
 }
 
-function DragExample() {
-
+export default function ContainerQueryExample() {
     const mouseSensor = useSensor(MouseSensor);
     const touchSensor = useSensor(TouchSensor);
-    const keyboardSensor = useSensor(KeyboardSensor);
-
-    const sensors = useSensors(
-        mouseSensor,
-        touchSensor,
-        keyboardSensor,
-    );
-
-
+    const sensors = useSensors(mouseSensor, touchSensor);
 
     const [items, setItems] = useState<{ [key: string]: DraggableItem[] }>({
         'container1': [
@@ -118,21 +88,11 @@ function DragExample() {
         'container3': [
             { id: 'item-5', content: 'Item 5' },
             { id: 'item-6', content: 'Item 6' },
-        ],
-        'container4': [
-            { id: 'item-7', content: 'Item 7' },
-            { id: 'item-8', content: 'Item 8' },
-        ],
-        'container5': [
-            { id: 'item-9', content: 'Item 9' },
         ]
     });
 
-    const responsiveMat4 = useResponsiveContainer();
-
     const handleDragEnd = (event: DragEndEvent) => {
         const { active, over } = event;
-
         if (!over) return;
 
         const sourceContainer = Object.keys(items).find(key =>
@@ -163,40 +123,48 @@ function DragExample() {
     };
 
     return (
-        <div className="w-full h-full bg-gray-900 p-8 overflow-hidden">
-            <DndContext
-                sensors={sensors}
-                onDragEnd={handleDragEnd}
-                modifiers={[accountForResponsive(responsiveMat4)]}
-                measuring={{
-                    droppable: {
-                        strategy: MeasuringStrategy.Always
-                    }
-                }}
-                collisionDetection={closestCorners}
-            >
-                <div className="grid grid-cols-3 gap-8 w-full h-full">
-                    {Object.entries(items).map(([containerId, containerItems]) => (
-                        <Droppable key={containerId} id={containerId}>
-                            <div className="bg-gray-800 rounded-lg p-4 min-h-[300px] flex flex-col gap-3">
-                                <h3 className="text-lg font-semibold mb-2 text-white">Container {containerId.slice(-1)}</h3>
-                                {containerItems.map((item) => (
-                                    <Draggable key={item.id} id={item.id}>
-                                        <div className="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-lg shadow-lg transition-colors">
-                                            {item.content}
+        <ResponsiveContainer>
+            <div className="w-full h-full bg-gray-900 p-8">
+                <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 w-full h-full @container">
+                        {/* Items scale based on container size */}
+                        <style jsx>{`
+              @container (min-width: 800px) {
+                .card {
+                  font-size: 1.2rem;
+                  padding: 2rem;
+                }
+              }
+              @container (max-width: 799px) {
+                .card {
+                  font-size: 1rem;
+                  padding: 1rem;
+                }
+              }
+            `}</style>
+
+                        {Object.entries(items).map(([containerId, containerItems]) => (
+                            <Droppable key={containerId} id={containerId}>
+                                <div className="bg-gray-800 rounded-lg p-4 min-h-[200px] flex flex-col gap-3">
+                                    <h3 className="text-lg font-semibold mb-2 text-white">Container {containerId.slice(-1)}</h3>
+                                    {containerItems.map((item) => (
+                                        <Draggable key={item.id} id={item.id}>
+                                            <div className="card bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-lg transition-all">
+                                                {item.content}
+                                            </div>
+                                        </Draggable>
+                                    ))}
+                                    {containerItems.length === 0 && (
+                                        <div className="text-gray-400 text-center py-12">
+                                            Drop items here
                                         </div>
-                                    </Draggable>
-                                ))}
-                                {containerItems.length === 0 && (
-                                    <div className="text-gray-400 text-center py-12">
-                                        Drop items here
-                                    </div>
-                                )}
-                            </div>
-                        </Droppable>
-                    ))}
-                </div>
-            </DndContext>
-        </div>
+                                    )}
+                                </div>
+                            </Droppable>
+                        ))}
+                    </div>
+                </DndContext>
+            </div>
+        </ResponsiveContainer>
     );
-}
+} 

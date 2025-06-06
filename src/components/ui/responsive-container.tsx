@@ -84,7 +84,7 @@ const calculateTransform = (
 
 const ResponsiveContainerContext = createContext<Mat4Like | undefined>(undefined);
 
-interface ResponsiveContainerProps {
+export interface ResponsiveContainerProps {
   width?: number;
   height?: number;
   maxWidth?: number;
@@ -209,3 +209,87 @@ export const getMatrixFromTransform = (transform: Transform): Mat4Like => {
   mat4.scale(matrix, matrix, vec3.fromValues(transform.scaleX, transform.scaleY, 1));
   return matrix;
 };
+
+/*
+ * Coordinate Spaces and Transformations Documentation
+ * =================================================
+ * 
+ * Overview
+ * --------
+ * The ResponsiveContainer manages three key coordinate spaces:
+ * 1. Parent Space (Container coordinates)
+ * 2. Content Space (Virtual coordinates)
+ * 3. Screen Space (Final rendered coordinates)
+ * 
+ * Matrix Structure
+ * ---------------
+ * Uses 4x4 homogeneous transformation matrices (via gl-matrix):
+ * [scaleX  0      0  0]
+ * [0       scaleY 0  0]
+ * [0       0      1  0]
+ * [tx      ty     0  1]
+ * 
+ * where:
+ * - scaleX, scaleY are scaling factors (matrix[0] and matrix[5])
+ * - tx, ty are translations (matrix[12] and matrix[13])
+ * 
+ * Transformation Pipeline
+ * ----------------------
+ * 1. Initial Content Space:
+ *    - Defined by props: width (default: 1920) and height (default: 1080)
+ *    - Virtual coordinate space where content is authored
+ *    - Child components positioned relative to this space
+ * 
+ * 2. Container Space:
+ *    - Determined by actual DOM dimensions of container element
+ *    - Tracked via ResizeObserver: target.offsetWidth and target.offsetHeight
+ * 
+ * 3. Transform Calculation:
+ *    - Aspect ratio handling:
+ *      childRatio = childWidth / childHeight
+ *      parentRatio = parentWidth / parentHeight
+ * 
+ *    - Fit Modes:
+ *      "contain": Scales content to fit entirely within container
+ *      "cover": Scales content to cover container entirely
+ *      "none": No scaling, uses original dimensions
+ * 
+ *    - Size Constraints:
+ *      Respects maxWidth and maxHeight while maintaining aspect ratio
+ * 
+ *    - Final Transform Components:
+ *      x = (parentWidth - width) / 2      // Centering translation X
+ *      y = (parentHeight - height) / 2     // Centering translation Y
+ *      scaleX = width / childWidth         // Scale factor X
+ *      scaleY = height / childHeight       // Scale factor Y
+ * 
+ * Matrix Operations
+ * ----------------
+ * 1. Transform Application:
+ *    - Creates matrix that scales content to calculated dimensions
+ *    - Translates it to center in container
+ * 
+ * 2. CSS Application:
+ *    - Matrix applied via CSS transform when scale=true
+ *    - Otherwise identity matrix is used
+ * 
+ * Utility Functions
+ * ----------------
+ * 1. getInverseTransform:
+ *    - Converts container coordinates back to content space
+ * 
+ * 2. transformPoint:
+ *    - Maps a point through the transformation matrix
+ *    - Useful for event handling
+ * 
+ * 3. composeTransforms:
+ *    - Combines two transforms using matrix multiplication
+ *    - b is applied after a
+ * 
+ * Context Usage
+ * ------------
+ * Transform matrix stored in React context allows child components to:
+ * 1. Access current transform matrix
+ * 2. Convert between coordinate spaces
+ * 3. Apply additional transformations relative to container's transform
+ */

@@ -65,7 +65,7 @@ function Draggable({ id, children }: DraggableProps) {
 
 
 const accountForResponsive = (containerTransform: Mat4Like): Modifier => {
-    return ({ transform, draggingNodeRect, containerNodeRect }) => {
+    return ({ transform, draggingNodeRect }) => {
         if (!draggingNodeRect) return transform;
 
         // Get the inverse of the container transform (P^T)

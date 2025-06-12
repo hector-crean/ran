@@ -1,4 +1,4 @@
-import { ResponsiveContainerProps } from "./ui/responsive-container";
+import { ResponsiveContainerProps } from "./responsive-container";
 
 export const ResponsiveContainer = ({
     width = 1920,

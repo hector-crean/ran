@@ -1,4 +1,4 @@
-import { ResponsiveContainer } from "@/components/svg-responsive-container";
+import { ResponsiveContainer } from "@/components/ui/svg-responsive-container";
 import { DragExample } from "./drag-example";
 
 

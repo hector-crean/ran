@@ -18,7 +18,8 @@ import React from "react";
 
 const Page = () => {
   return (
-    <ResponsiveContainer
+   <div className="w-full h-full bg-gray-900 p-12">
+     <ResponsiveContainer
       width={1920}
       height={1080}
       scale={true}
@@ -27,6 +28,7 @@ const Page = () => {
     >
       <DragExample outline={outline} />
     </ResponsiveContainer>
+   </div>
   );
 };
 

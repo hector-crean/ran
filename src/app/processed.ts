@@ -3841,9 +3841,6 @@ const outline: OutlineResponse = {
           "type": "Feature"
         }
       ],
-      "image_height": 300,
-      "image_width": 300,
-      "shape_count": 3,
       "type": "FeatureCollection"
     }
   }

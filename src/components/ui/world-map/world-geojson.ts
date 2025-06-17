@@ -1,6 +1,6 @@
 import { GeoJSON, Geometry } from "geojson";
 
-type WorldMapProperties = {
+export type WorldMapProperties = {
   centroid: [number, number];
   name: string;
 };

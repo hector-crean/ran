@@ -68,7 +68,8 @@ const createProjection = (config: ProjectionConfig, width: number, height: numbe
     // Configure the projection
     projection
         .translate(config.translate || [width / 2, height / 2])
-        .scale(config.scale || Math.min(width, height) / 6);
+        .scale(config.scale || Math.min(width, height) / 6)
+        .precision(0.1); // Improve precision for better antimeridian handling
 
     if (config.center) {
         projection.center(config.center);
@@ -81,20 +82,66 @@ const createProjection = (config: ProjectionConfig, width: number, height: numbe
     return projection;
 };
 
-// Helper function to convert coordinates to path string using d3 projection
-const coordinatesToPath = (
-    coordinates: number[][],
+// Convert GeoJSON to React SVG elements with d3 projection
+export const renderGeojson = (
+    geojson: GeoJSON,
     projection: d3.GeoProjection,
-    close: boolean = false
-): string => {
-    const pathParts = coordinates
-        .map((coord) => {
-            const projected = projection([coord[0], coord[1]]);
-            return projected ? projected : [0, 0]; // Handle null projections
-        })
-        .map((coord, i) => `${i === 0 ? "M" : "L"} ${coord[0]} ${coord[1]}`);
+    props: Omit<React.SVGProps<SVGElement>, "ref"> = {}
+): React.ReactNode => {
+    // Create a path generator with the projection
+    const pathGenerator = d3.geoPath().projection(projection);
+    
+    const baseProps = {
+        fill: "none",
+        stroke: "currentColor",
+        strokeWidth: 1,
+        ...props,
+    };
 
-    return pathParts.join(" ") + (close ? " Z" : "");
+    switch (geojson.type) {
+        case "FeatureCollection":
+            return geojson.features.map((feature, index) => {
+                const pathData = pathGenerator(feature);
+                if (!pathData) return null;
+                
+                return (
+                    <path
+                        key={`feature-${index}`}
+                        id={feature.id?.toString()}
+                        d={pathData}
+                        {...baseProps}
+                    />
+                );
+            });
+        case "Feature":
+            const pathData = pathGenerator(geojson);
+            if (!pathData) return null;
+            
+            return (
+                <path
+                    id={geojson.id?.toString()}
+                    d={pathData}
+                    {...baseProps}
+                />
+            );
+        case "Polygon":
+        case "MultiPolygon":
+        case "LineString":
+        case "MultiLineString":
+        case "Point":
+        case "MultiPoint":
+            const geometryPathData = pathGenerator(geojson as any);
+            if (!geometryPathData) return null;
+            
+            return (
+                <path
+                    d={geometryPathData}
+                    {...baseProps}
+                />
+            );
+        default:
+            return null;
+    }
 };
 
 // Convert GeoJSON geometry to React SVG path elements with d3 projection
@@ -103,120 +150,25 @@ export const renderGeometry = (
     projection: d3.GeoProjection,
     props: Omit<React.SVGProps<SVGElement>, "ref"> = {}
 ): React.ReactNode => {
-
+    // Create a path generator with the projection
+    const pathGenerator = d3.geoPath().projection(projection);
+    
+    const pathData = pathGenerator(geometry as any);
+    if (!pathData) return null;
+    
     const baseProps = {
         fill: "none",
         stroke: "currentColor",
         strokeWidth: 1,
         ...props,
     };
-
-    switch (geometry.type) {
-        case "Polygon":
-            return geometry.coordinates.map((ring, index) => (
-                <path
-                    key={`polygon-${index}`}
-                    d={coordinatesToPath(ring, projection, true)}
-                    {...baseProps}
-                />
-            ));
-
-        case "MultiPolygon":
-            return geometry.coordinates
-                .map((polygonCoords, polygonIndex) =>
-                    polygonCoords.map((ring, ringIndex) => (
-                        <path
-                            key={`multipolygon-${polygonIndex}-${ringIndex}`}
-                            d={coordinatesToPath(ring, projection, true)}
-                            {...baseProps}
-                        />
-                    ))
-                )
-                .flat();
-
-        case "LineString":
-            return (
-                <path
-                    key="linestring"
-                    d={coordinatesToPath(geometry.coordinates, projection)}
-                    {...baseProps}
-                />
-            );
-
-        case "MultiLineString":
-            return geometry.coordinates.map((lineCoords, index) => (
-                <path
-                    key={`multilinestring-${index}`}
-                    d={coordinatesToPath(lineCoords, projection)}
-                    {...baseProps}
-                />
-            ));
-
-        case "Point":
-            const projected = projection([geometry.coordinates[0], geometry.coordinates[1]]);
-            if (!projected) return null;
-
-            const [x, y] = projected;
-            const circleProps = {
-                ...baseProps,
-                fill: "currentColor",
-                stroke: "none",
-            };
-            return (
-                <circle
-                    key="point"
-                    cx={x}
-                    cy={y}
-                    r={props.strokeWidth || 2}
-                    {...circleProps}
-                />
-            );
-
-        case "MultiPoint":
-            const multiCircleProps = {
-                ...baseProps,
-                fill: "currentColor",
-                stroke: "none",
-            };
-            return geometry.coordinates.map((coordinate, index) => {
-                const projected = projection([coordinate[0], coordinate[1]]);
-                if (!projected) return null;
-
-                const [x, y] = projected;
-                return (
-                    <circle
-                        key={`multipoint-${index}`}
-                        cx={x}
-                        cy={y}
-                        r={props.strokeWidth || 2}
-                        {...multiCircleProps}
-                    />
-                );
-            }).filter(Boolean);
-
-        default:
-            return null;
-    }
-};
-
-// Convert GeoJSON to React SVG elements with d3 projection
-export const renderGeojson = (
-    geojson: GeoJSON,
-    projection: d3.GeoProjection,
-    props: Omit<React.SVGProps<SVGElement>, "ref"> = {}
-): React.ReactNode => {
-    switch (geojson.type) {
-        case "FeatureCollection":
-            return geojson.features.map((feature, index) => (
-                <g key={`feature-${index}`} id={feature.id?.toString()}>
-                    {renderGeometry(feature.geometry, projection, props)}
-                </g>
-            ));
-        case "Feature":
-            return <g id={geojson.id?.toString()}>{renderGeometry(geojson.geometry, projection, props)}</g>;
-        default:
-            return null;
-    }
+    
+    return (
+        <path
+            d={pathData}
+            {...baseProps}
+        />
+    );
 };
 
 // Props for WorldMap component

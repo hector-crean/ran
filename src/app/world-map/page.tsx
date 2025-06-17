@@ -5,7 +5,7 @@ const Page = () => {
 
     return (<WorldMap
         projection={{
-            type: 'geoMercator',
+            type: 'geoEqualEarth',
             center: [0, 20] // Center on equator, slight north
         }}
     />)

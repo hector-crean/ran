@@ -1,9 +1,7 @@
 "use client";
 import { OutlineResponse } from "@/types/OutlineResponse";
-import { MaskGeoJson } from "@/types/MaskGeojson";
 import { motion } from "motion/react";
-import { geojsonToPathString, traverseGeojson } from "./geometry/render";
-import { createClipPathEffects } from "./clip-path/greyscale-mask";
+import { geojsonToPathString } from "./geometry/render";
 
 
 
@@ -75,7 +73,7 @@ const OutlineOverlay = ({
   const { width, height } = outline.image_dimensions;
   const maskId = `outline-mask-${Math.random().toString(36).substr(2, 9)}`;
 
- 
+
 
   const bounds = { cx: width / 2, cy: height / 2 };
 
@@ -99,7 +97,7 @@ const OutlineOverlay = ({
           {/* <clipPath id={`clip-${maskId}`}>
             <path d={pathData} />
           </clipPath> */}
-          {createClipPathEffects.createRevealEffect(`${maskId}`, pathData)}
+          {/* {createClipPathEffects.createRevealEffect(`${maskId}`, pathData)} */}
 
           {/* Effect definitions (gradients, filters, etc.) */}
           {/* {nodes.map((node) => node.defs)} */}

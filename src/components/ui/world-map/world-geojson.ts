@@ -1,4 +1,11 @@
-{
+import { GeoJSON, Geometry } from "geojson";
+
+type WorldMapProperties = {
+  centroid: [number, number];
+  name: string;
+};
+
+export const worldGeojson: GeoJSON<Geometry, WorldMapProperties> = {
     "type": "FeatureCollection",
     "features": [
       {

@@ -3,7 +3,7 @@ import { OutlineResponse } from "@/types/OutlineResponse";
 import { MaskGeoJson } from "@/types/MaskGeojson";
 import { motion } from "motion/react";
 import { geojsonToPathString, traverseGeojson } from "./geometry/render";
-import { createClipPathEffects } from "./clip-path";
+import { createClipPathEffects } from "./clip-path/greyscale-mask";
 
 
 

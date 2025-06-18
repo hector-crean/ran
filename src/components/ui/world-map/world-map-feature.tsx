@@ -42,23 +42,16 @@ const WorldMapFeature = <G extends Geometry, P extends WorldMapProperties>({
             style={{ cursor: onFeatureClick ? 'pointer' : 'default', pointerEvents: 'auto' }}
 
             initial={{
-                fill: '#1e40af', // blue-800
-                stroke: '#2563eb', // blue-600
+                fill: 'pink', // blue-800
                 strokeWidth: 1,
                 opacity: 1
             }}
             whileHover={{
-                fill: '#2563eb', // blue-600
-                stroke: '#1e40af', // blue-800
+                fill: 'red', // blue-600
                 strokeWidth: 1,
 
             }}
-            whileTap={{
-                fill: '#1e40af', // blue-800
-                stroke: '#2563eb', // blue-600
-                strokeWidth: 1,
-
-            }}
+           
             transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         />
     );

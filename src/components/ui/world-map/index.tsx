@@ -13,6 +13,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import GlowFilter from '../svg/filter/glow-filter';
 import type { WorldMapProperties } from './world-geojson';
 import { WorldMapFeature } from './world-map-feature';
+import worldMapBg from './interactive-layer.png'
 
 // Map projection types supported by d3-geo
 export type ProjectionType =
@@ -93,13 +94,13 @@ const WorldMap = React.memo(<G extends Geometry, P extends WorldMapProperties>({
         () => `morphingClipper-${Math.random().toString(36).substr(2, 9)}`
     );
 
+    const transitionProgress = useMotionValue(1);
+
+
     const initialPath = useMemo(() => `M0,0 L${width},0 L${width},${height} L0,${height} Z`, [width, height]);
     const [prevPath, setPrevPath] = useState<string>(initialPath);
     const [currentPath, setCurrentPath] = useState<string>(initialPath);
 
-
-
-    const transitionProgress = useMotionValue(1);
 
     useEffect(() => {
         if (prevPath !== currentPath) {
@@ -185,7 +186,7 @@ const WorldMap = React.memo(<G extends Geometry, P extends WorldMapProperties>({
 
     // Memoize the features to prevent unnecessary re-renders
     const memoizedFeatures = useMemo(() => {
-        return collection.features.map((feature, index) => (
+        return collection.features.filter((feature) => feature.properties.name == 'India').map((feature, index) => (
             <WorldMapFeature
                 key={feature.id || index}
                 feature={feature}
@@ -266,7 +267,7 @@ const WorldMap = React.memo(<G extends Geometry, P extends WorldMapProperties>({
                     />
                     {/* Maked Layer */}
                     <motion.g id='masked-layer' mask={`url(#${clipPathId})`} className='pointer-events-none'>
-
+                        <image href={worldMapBg.src} width={width} height={height} />
                     </motion.g>
                     {/* Interactive layer */}
                     <motion.g id='interactive-layer'>

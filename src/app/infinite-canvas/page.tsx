@@ -1,10 +1,31 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
+import Head from 'next/head';
 import InfiniteCanvas, { CanvasItem, InfiniteCanvasAPI } from '../../components/ui/infinite-canvas';
 
 const InfiniteCanvasPage = () => {
   const api = useRef<InfiniteCanvasAPI>(null);
+
+  // Apply root-level CSS for optimal touch handling
+  React.useEffect(() => {
+    const style = document.createElement('style');
+    style.textContent = `
+      :root {
+        touch-action: pan-x pan-y;
+        height: 100%;
+      }
+      html, body {
+        height: 100%;
+        overflow: hidden;
+      }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
+  }, []);
   const [items, setItems] = useState<CanvasItem[]>([
     {
       id: '1',
@@ -145,7 +166,15 @@ const InfiniteCanvasPage = () => {
   };
 
   return (
-    <div className="h-screen w-full bg-gray-50">
+    <>
+      <Head>
+        <meta 
+          name="viewport" 
+          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" 
+        />
+        <title>Infinite Canvas Demo</title>
+      </Head>
+      <div className="h-screen w-full bg-gray-50">
       <div className="absolute top-4 left-4 z-10 bg-white rounded-lg shadow-lg p-4 max-w-md">
         <h1 className="text-2xl font-bold text-gray-800 mb-2">Infinite Canvas Demo</h1>
         <p className="text-gray-600 text-sm">
@@ -237,6 +266,7 @@ const InfiniteCanvasPage = () => {
         </text>
       </InfiniteCanvas>
     </div>
+    </>
   );
 };
 

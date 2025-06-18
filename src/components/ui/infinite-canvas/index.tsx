@@ -69,16 +69,16 @@ const canvasToScreen = (canvasPoint: Point, viewport: ViewportState): Point => {
 };
 
 // Get point from mouse or touch event
-const getEventPoint = (event: React.MouseEvent | React.TouchEvent): Point => {
+const getEventPoint = (event: MouseEvent | TouchEvent): Point => {
   if ('touches' in event && event.touches.length > 0) {
     const touch = event.touches[0];
     return new Point({ x: touch.clientX, y: touch.clientY });
   }
-  return new Point({ x: (event as React.MouseEvent).clientX, y: (event as React.MouseEvent).clientY });
+  return new Point({ x: (event as MouseEvent).clientX, y: (event as MouseEvent).clientY });
 };
 
 // Get distance between two touch points for pinch zoom
-const getTouchDistance = (event: React.TouchEvent): number => {
+const getTouchDistance = (event: TouchEvent): number => {
   if (event.touches.length < 2) return 0;
   const touch1 = event.touches[0];
   const touch2 = event.touches[1];
@@ -89,7 +89,7 @@ const getTouchDistance = (event: React.TouchEvent): number => {
 };
 
 // Get center point between two touches
-const getTouchCenter = (event: React.TouchEvent): Point => {
+const getTouchCenter = (event: TouchEvent): Point => {
   if (event.touches.length < 2) return getEventPoint(event);
   const touch1 = event.touches[0];
   const touch2 = event.touches[1];
@@ -161,7 +161,7 @@ export const InfiniteCanvas = forwardRef<InfiniteCanvasAPI, InfiniteCanvasProps>
   const animationFrameRef = useRef<number | null>(null);
 
   // Handle wheel events for zoom
-  const handleWheel = useCallback((event: React.WheelEvent) => {
+  const handleWheel = useCallback((event: WheelEvent) => {
     event.preventDefault();
     
     const rect = svgRef.current?.getBoundingClientRect();
@@ -297,7 +297,7 @@ export const InfiniteCanvas = forwardRef<InfiniteCanvasAPI, InfiniteCanvasProps>
   }, []);
 
   // Touch event handlers
-  const handleTouchStart = useCallback((event: React.TouchEvent) => {
+  const handleTouchStart = useCallback((event: TouchEvent) => {
     event.preventDefault();
     
     if (event.touches.length === 1) {
@@ -333,7 +333,7 @@ export const InfiniteCanvas = forwardRef<InfiniteCanvasAPI, InfiniteCanvasProps>
     }
   }, [viewport]);
 
-  const handleTouchMove = useCallback((event: React.TouchEvent) => {
+  const handleTouchMove = useCallback((event: TouchEvent) => {
     event.preventDefault();
     
     if (event.touches.length === 1 && isPanning) {
@@ -382,6 +382,71 @@ export const InfiniteCanvas = forwardRef<InfiniteCanvasAPI, InfiniteCanvasProps>
     setIsDraggingItem(false);
     setDraggedItemId(null);
   }, []);
+
+  // Add global event listeners and prevent browser zoom
+  useEffect(() => {
+    // Add CSS to prevent browser zoom globally when canvas is mounted
+    const style = document.createElement('style');
+    style.textContent = `
+      .infinite-canvas-active {
+        -webkit-user-zoom: none !important;
+        -moz-user-zoom: none !important;
+        -ms-user-zoom: none !important;
+        user-zoom: none !important;
+        zoom: reset !important;
+      }
+      
+      .infinite-canvas-active * {
+        -webkit-user-zoom: none !important;
+        -moz-user-zoom: none !important;
+        -ms-user-zoom: none !important;
+        user-zoom: none !important;
+      }
+    `;
+    document.head.appendChild(style);
+    document.body.classList.add('infinite-canvas-active');
+
+    return () => {
+      document.head.removeChild(style);
+      document.body.classList.remove('infinite-canvas-active');
+    };
+  }, []);
+
+  // Add event listeners with proper passive/non-passive configuration
+  useEffect(() => {
+    const svgElement = svgRef.current;
+    if (!svgElement) return;
+
+    // Native DOM event handlers - properly typed
+    const handleNativeWheel = (event: WheelEvent) => {
+      handleWheel(event);
+    };
+
+    const handleNativeTouchStart = (event: TouchEvent) => {
+      handleTouchStart(event);
+    };
+
+    const handleNativeTouchMove = (event: TouchEvent) => {
+      handleTouchMove(event);
+    };
+
+    const handleNativeTouchEnd = (event: TouchEvent) => {
+      handleTouchEnd();
+    };
+
+    // Non-passive event listeners for preventDefault support
+    svgElement.addEventListener('wheel', handleNativeWheel, { passive: false });
+    svgElement.addEventListener('touchstart', handleNativeTouchStart, { passive: false });
+    svgElement.addEventListener('touchmove', handleNativeTouchMove, { passive: false });
+    svgElement.addEventListener('touchend', handleNativeTouchEnd, { passive: false });
+
+    return () => {
+      svgElement.removeEventListener('wheel', handleNativeWheel);
+      svgElement.removeEventListener('touchstart', handleNativeTouchStart);
+      svgElement.removeEventListener('touchmove', handleNativeTouchMove);
+      svgElement.removeEventListener('touchend', handleNativeTouchEnd);
+    };
+  }, [handleWheel, handleTouchStart, handleTouchMove, handleTouchEnd]);
 
   // Add global event listeners
   useEffect(() => {
@@ -573,18 +638,19 @@ export const InfiniteCanvas = forwardRef<InfiniteCanvasAPI, InfiniteCanvasProps>
       style={{ 
         touchAction: 'none',
         overscrollBehavior: 'none',
-        // @ts-ignore - WebKit prefix for Safari support
+        // @ts-ignore - WebKit prefixes for Safari/iOS support
         WebkitOverscrollBehavior: 'none',
+        WebkitUserZoom: 'none',
+        WebkitTouchCallout: 'none',
+        WebkitTapHighlightColor: 'transparent',
+        userZoom: 'none',
+        zoom: 'reset',
       } as React.CSSProperties}
     >
       <svg
         ref={svgRef}
         className="w-full h-full"
-        onWheel={handleWheel}
         onMouseDown={handleMouseDown}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
         {/* Background pattern for visual reference */}
         <defs>

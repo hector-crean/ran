@@ -1,8 +1,11 @@
-import { FeatureCollection, GeoJSON, Geometry } from "geojson";
+import { FeatureCollection, Geometry } from "geojson";
 
 export type WorldMapProperties = {
   centroid: [number, number];
   name: string;
+  coordinate_system: string;
+  projection: string;
+  units: string;
 };
 
 export const worldGeojson: FeatureCollection<Geometry, WorldMapProperties> = {

@@ -97,30 +97,30 @@ const WorldMap = React.memo(<G extends Geometry, P extends WorldMapProperties>({
     const transitionProgress = useMotionValue(1);
 
 
-    const initialPath = useMemo(() => `M0,0 L${width},0 L${width},${height} L0,${height} Z`, [width, height]);
-    const [prevPath, setPrevPath] = useState<string>(initialPath);
-    const [currentPath, setCurrentPath] = useState<string>(initialPath);
+    // const initialPath = useMemo(() => `M0,0 L${width},0 L${width},${height} L0,${height} Z`, [width, height]);
+    // const [prevPath, setPrevPath] = useState<string>(initialPath);
+    // const [currentPath, setCurrentPath] = useState<string>(initialPath);
 
 
-    useEffect(() => {
-        if (prevPath !== currentPath) {
-            transitionProgress.set(0);
-            animate(transitionProgress, 1, {
-                duration: 0.7,
-                ease: 'easeInOut',
-            });
-        }
-    }, [prevPath, currentPath, transitionProgress]);
+    // useEffect(() => {
+    //     if (prevPath !== currentPath) {
+    //         transitionProgress.set(0);
+    //         animate(transitionProgress, 1, {
+    //             duration: 0.7,
+    //             ease: 'easeInOut',
+    //         });
+    //     }
+    // }, [prevPath, currentPath, transitionProgress]);
 
 
-    const morphingPath = useTransform(
-        transitionProgress,
-        [0, 1],
-        [prevPath, currentPath],
-        {
-            mixer: (a, b) => interpolate(a, b, { maxSegmentLength: 1 }),
-        }
-    );
+    // const morphingPath = useTransform(
+    //     transitionProgress,
+    //     [0, 1],
+    //     [prevPath, currentPath],
+    //     {
+    //         mixer: (a, b) => interpolate(a, b, { maxSegmentLength: 1 }),
+    //     }
+    // );
 
 
     const [maskedOpacity] = useState<number>(0.2);
@@ -132,6 +132,8 @@ const WorldMap = React.memo(<G extends Geometry, P extends WorldMapProperties>({
     const x2 = useMotionValue(width);
     const y2 = useMotionValue(height);
 
+    // Round motion values to integers to avoid sub-pixel rendering issues
+
 
     const viewbox = useTransform([x1, y1, x2, y2], (v) => `${v[0]} ${v[1]} ${v[2]} ${v[3]}`)
 
@@ -140,16 +142,16 @@ const WorldMap = React.memo(<G extends Geometry, P extends WorldMapProperties>({
         return createProjection(projection, collection, width, height);
     }, [projection, collection, width, height]);
 
-    const handleFeatureClick = useCallback((feature: Feature<G, P>, coordinates: [number, number], projection: d3.GeoProjection) => {
+    const handleFeatureClick = (feature: Feature<G, P>, coordinates: [number, number], projection: d3.GeoProjection) => {
         if (!enableTooltips || !feature.properties) return;
 
         const pathGenerator = d3.geoPath().projection(projection);
         const geometryPathData = pathGenerator(feature);
 
-        if (geometryPathData) {
-            setPrevPath(currentPath);
-            setCurrentPath(geometryPathData);
-        }
+        // if (geometryPathData) {
+        //     setPrevPath(currentPath);
+        //     setCurrentPath(geometryPathData);
+        // }
 
         const featureData: TooltipData<P> = {
             id: feature.id || 'unknown',
@@ -177,16 +179,22 @@ const WorldMap = React.memo(<G extends Geometry, P extends WorldMapProperties>({
             const isLargeCountry = bboxWidth > width * 0.3 || bboxHeight > height * 0.3;
             const padding = isNearEdge || isLargeCountry ? 10 : 20;
 
-            animate(x1, Math.max(0, minX - padding), { duration: 0.7, ease: "easeInOut" });
-            animate(y1, Math.max(0, minY - padding), { duration: 0.7, ease: "easeInOut" });
-            animate(x2, Math.min(width, bboxWidth + 2 * padding), { duration: 0.7, ease: "easeInOut" });
-            animate(y2, Math.min(height, bboxHeight + 2 * padding), { duration: 0.7, ease: "easeInOut" });
+            // Round all animation targets to integers
+            const targetX1 = Math.round(Math.max(0, minX - padding));
+            const targetY1 = Math.round(Math.max(0, minY - padding));
+            const targetX2 = Math.round(Math.min(width, bboxWidth + 2 * padding));
+            const targetY2 = Math.round(Math.min(height, bboxHeight + 2 * padding));
+
+            animate(x1, targetX1, { duration: 0.7, ease: "easeInOut" });
+            animate(y1, targetY1, { duration: 0.7, ease: "easeInOut" });
+            animate(x2, targetX2, { duration: 0.7, ease: "easeInOut" });
+            animate(y2, targetY2, { duration: 0.7, ease: "easeInOut" });
         }
-    }, [enableTooltips, tooltipOffset, currentPath, width, height, x1, y1, x2, y2]);
+    };
 
     // Memoize the features to prevent unnecessary re-renders
     const memoizedFeatures = useMemo(() => {
-        return collection.features.filter((feature) => feature.properties.name == 'India').map((feature, index) => (
+        return collection.features.map((feature, index) => (
             <WorldMapFeature
                 key={feature.id || index}
                 feature={feature}
@@ -198,8 +206,8 @@ const WorldMap = React.memo(<G extends Geometry, P extends WorldMapProperties>({
 
     const handleClickOutside = (event: React.PointerEvent<SVGRectElement>) => {
         if (tooltip) {
-            setPrevPath(currentPath)
-            setCurrentPath(initialPath);
+            // setPrevPath(currentPath)
+            // setCurrentPath(initialPath);
             setTooltip(null);
             // Reset viewBox to original view
             animate(x1, 0, { duration: 0.7, ease: "easeInOut" });
@@ -255,7 +263,7 @@ const WorldMap = React.memo(<G extends Geometry, P extends WorldMapProperties>({
                             />
                             {/* Effect-specific path rendering */}
 
-                            <motion.path d={morphingPath} fill="white" />
+                            {/* <motion.path d={morphingPath} fill="white" /> */}
                         </mask>
                     </defs>
 

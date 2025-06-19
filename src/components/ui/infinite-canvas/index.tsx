@@ -344,7 +344,7 @@ export const InfiniteCanvas = forwardRef<
           // Canvas panning - either no item clicked or non-selectable item
           if (!event.metaKey && !event.ctrlKey) {
             setSelectedItems(new Set());
-            fitAll({ animate: true, duration: 600 });
+            // fitAll({ animate: true, duration: 600 });
           }
 
           setIsPanning(true);

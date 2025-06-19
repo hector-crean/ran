@@ -134,7 +134,7 @@ const InfiniteCanvasPage = () => {
       x: 1641.67,//1653
       y: 322.95,//313
       width: 1634.17,
-      height: 2278.58,
+      height: 1500,
       render: ({ selected, viewport }) => <Europe />,
       expansion: {
         dx: 200,

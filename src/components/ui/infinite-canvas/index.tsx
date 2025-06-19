@@ -1,16 +1,15 @@
 "use client";
 
+import { AnimatePresence, motion } from "motion/react";
 import React, {
-  useRef,
-  useCallback,
-  useState,
-  useEffect,
-  useMemo,
-  useImperativeHandle,
   forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState
 } from "react";
 import { Point } from "../../drag/point";
-import { AnimatePresence, motion } from "motion/react";
 
 // Types for the infinite canvas
 export interface ViewportState {
@@ -19,12 +18,19 @@ export interface ViewportState {
   scale: number;
 }
 
+export interface InteractionModes {
+  selectable: boolean;
+  draggable: boolean;
+  hoverable?: boolean;
+}
 
 export type CanvasItemBase = {
+  type: 'HTML' | 'SVG'
   x: number;
   y: number;
   width: number;
   height: number;
+  interaction: InteractionModes;
   render: (props: {
     selected: boolean;
     viewport: ViewportState;
@@ -145,7 +151,7 @@ const getTouchDistance = (event: TouchEvent): number => {
   const touch2 = event.touches[1];
   return Math.sqrt(
     Math.pow(touch2.clientX - touch1.clientX, 2) +
-      Math.pow(touch2.clientY - touch1.clientY, 2)
+    Math.pow(touch2.clientY - touch1.clientY, 2)
   );
 };
 
@@ -316,22 +322,29 @@ export const InfiniteCanvas = forwardRef<
         );
 
         if (clickedItem) {
-          // Item interaction
-          if (!selectedItems.has(clickedItem.id)) {
-            if (event.metaKey || event.ctrlKey) {
-              setSelectedItems((prev) => new Set([...prev, clickedItem.id]));
-            } else {
-              setSelectedItems(new Set([clickedItem.id]));
+          // Handle selection - only for selectable items
+          if (clickedItem.interaction.selectable) {
+            if (!selectedItems.has(clickedItem.id)) {
+              if (event.metaKey || event.ctrlKey) {
+                setSelectedItems((prev) => new Set([...prev, clickedItem.id]));
+              } else {
+                setSelectedItems(new Set([clickedItem.id]));
+                fitToItemsAndSelect([clickedItem.id]);
+              }
             }
           }
 
-          setIsDraggingItem(true);
-          setDraggedItemId(clickedItem.id);
-          setItemDragStart(canvasPoint);
+          // Handle dragging - only for draggable items
+          if (clickedItem.interaction.draggable) {
+            setIsDraggingItem(true);
+            setDraggedItemId(clickedItem.id);
+            setItemDragStart(canvasPoint);
+          }
         } else {
-          // Canvas panning
+          // Canvas panning - either no item clicked or non-selectable item
           if (!event.metaKey && !event.ctrlKey) {
             setSelectedItems(new Set());
+            fitAll({ animate: true, duration: 600 });
           }
 
           setIsPanning(true);
@@ -365,7 +378,8 @@ export const InfiniteCanvas = forwardRef<
           const deltaY = canvasPoint.y - itemDragStart.y;
 
           const updatedItems = items.map((item) => {
-            if (selectedItems.has(item.id)) {
+            // Only move items that are selected AND draggable
+            if (selectedItems.has(item.id) && item.interaction.draggable) {
               return {
                 ...item,
                 x: item.x + deltaX,
@@ -867,14 +881,17 @@ export const InfiniteCanvas = forwardRef<
           </defs>
 
           <rect width="100%" height="100%" fill="url(#grid)" />
+          {/* Additional children */}
 
           {/* Main canvas content */}
           <g transform={transform}>
+            {children}
+
             {/* Render items */}
             {items.map((item) => (
               <g key={item.id}>
-                {/* Selection indicator */}
-                {selectedItems.has(item.id) && (
+                {/* Selection indicator - only for selectable items */}
+                {selectedItems.has(item.id) && item.interaction.selectable && (
                   <rect
                     x={item.x - 2}
                     y={item.y - 2}
@@ -883,14 +900,41 @@ export const InfiniteCanvas = forwardRef<
                     fill="none"
                     stroke="#007AFF"
                     strokeWidth={2 / viewport.scale}
-                    strokeDasharray={`${4 / viewport.scale} ${
-                      2 / viewport.scale
-                    }`}
+                    strokeDasharray={`${4 / viewport.scale} ${2 / viewport.scale
+                      }`}
+                  />
+                )}
+
+                {/* Non-interactive indicator */}
+                {!item.interaction.selectable && !item.interaction.draggable && (
+                  <rect
+                    x={item.x - 1}
+                    y={item.y - 1}
+                    width={item.width + 2}
+                    height={item.height + 2}
+                    fill="none"
+                    stroke="rgba(0,0,0,0.2)"
+                    strokeWidth={1 / viewport.scale}
+                    strokeDasharray={`${2 / viewport.scale} ${2 / viewport.scale}`}
+                  />
+                )}
+
+                {/* Draggable-only indicator */}
+                {!item.interaction.selectable && item.interaction.draggable && (
+                  <rect
+                    x={item.x - 1}
+                    y={item.y - 1}
+                    width={item.width + 2}
+                    height={item.height + 2}
+                    fill="none"
+                    stroke="rgba(255,165,0,0.5)"
+                    strokeWidth={1 / viewport.scale}
+                    strokeDasharray={`${3 / viewport.scale} ${1 / viewport.scale}`}
                   />
                 )}
 
                 {/* Item background */}
-                <rect
+                {/* <rect
                   x={item.x}
                   y={item.y}
                   width={item.width}
@@ -899,16 +943,30 @@ export const InfiniteCanvas = forwardRef<
                   stroke="rgba(0,0,0,0.2)"
                   strokeWidth={1 / viewport.scale}
                   rx={4 / viewport.scale}
-                />
+                /> */}
 
                 {/* Item content */}
+
                 <foreignObject
                   x={item.x}
                   y={item.y}
                   width={item.width}
                   height={item.height}
+                  style={{
+                    pointerEvents: 'all',
+                    cursor: item.interaction.draggable
+                      ? 'grab'
+                      : item.interaction.selectable
+                        ? 'pointer'
+                        : 'default'
+                  }}
                 >
-                  <div className="w-full h-full p-2 text-sm">
+                  <div className={`w-full h-full p-2 text-sm ${item.interaction.selectable || item.interaction.draggable
+                    ? item.interaction.draggable
+                      ? 'cursor-grab'
+                      : 'cursor-pointer'
+                    : 'cursor-default opacity-75'
+                    }`} >
                     {item.render({
                       selected: selectedItems.has(item.id),
                       viewport,
@@ -919,6 +977,8 @@ export const InfiniteCanvas = forwardRef<
                     })}
                   </div>
                 </foreignObject>
+
+
 
                 {/** Item reveal on select content */}
                 <AnimatePresence>
@@ -941,7 +1001,7 @@ export const InfiniteCanvas = forwardRef<
                       >
                         {item.expansion?.render({
                           selected: selectedItems.has(item.id),
-                          item,
+                          parent: item,
                           viewport,
                           isDragging: draggedItemId === item.id,
                           isPanning,
@@ -954,8 +1014,7 @@ export const InfiniteCanvas = forwardRef<
               </g>
             ))}
 
-            {/* Additional children */}
-            {children}
+
           </g>
         </svg>
 

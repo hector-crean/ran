@@ -1,12 +1,12 @@
 "use client";
 
-import React, { useState, useRef } from "react";
 import Head from "next/head";
+import React, { useRef, useState } from "react";
 import InfiniteCanvas, {
   CanvasItem,
   InfiniteCanvasAPI,
 } from "../../components/ui/infinite-canvas";
-import WorldMapSvg from "@/svgr/world-map";
+import { Australia, BaseCountries, EastAsia, Europe, SouthAfrica, SouthAmerica } from "./map/base-countries";
 
 const InfiniteCanvasPage = () => {
   const api = useRef<InfiniteCanvasAPI>(null);
@@ -32,23 +32,25 @@ const InfiniteCanvasPage = () => {
   }, []);
 
   const [items, setItems] = useState<CanvasItem[]>([
+
     {
-      id: "1",
-      x: 100,
-      y: 100,
-      width: 200,
-      height: 150,
-      render:  ({ selected, viewport }) => (
-        <div className="h-full bg-gradient-to-br from-blue-100 to-blue-200 rounded p-4">
-          <h3 className="font-bold text-blue-800 mb-2">Draggable</h3>
-          <p className="text-blue-600 text-sm">This is a draggable item.</p>
-        </div>
-      ),
+      type: 'SVG',
+      interaction: {
+        selectable: true,
+        draggable: false,
+        hoverable: true,
+      },
+      id: "5",
+      x: 2728.78,
+      y: 2612.96,
+      width: 228.01,
+      height: 200.95,
+      render: ({ selected, viewport }) => <SouthAfrica />,
       expansion: {
-        dx: 220,
+        dx: 200,
         dy: 0,
-        width: 300,
-        height: 200,
+        width: 228.01,
+        height: 200.95,
         render: ({ selected, parent, viewport }) => (
           <div className="bg-white border-2 border-blue-300 rounded-lg p-4 shadow-lg">
             <h4 className="font-bold text-blue-800 mb-2">🎉 Dynamic Reveal!</h4>
@@ -57,115 +59,126 @@ const InfiniteCanvasPage = () => {
             </p>
             <div className="text-xs text-gray-500 space-y-1">
               <div>Selected: {selected ? '✅' : '❌'}</div>
-              <div>Item ID: {parent.id}</div>
-              <div>Position: ({parent.x}, {parent.y})</div>
-              <div>Zoom Level: {Math.round(viewport.scale * 100)}%</div>
-              <div>Viewport: ({Math.round(viewport.x)}, {Math.round(viewport.y)})</div>
             </div>
           </div>
         ),
-      },
+      }
     },
     {
+      type: 'SVG',
+      interaction: {
+        selectable: true,
+        draggable: false,
+        hoverable: true,
+      },
       id: "2",
-      x: 400,
-      y: 200,
-      width: 220,
-      height: 200,
-      render:  ({ selected, viewport }) => (
-        <div className="h-full bg-gradient-to-br from-green-100 to-green-200 rounded p-4">
-          <h3 className="font-bold text-green-800 mb-2">Features</h3>
-          <ul className="text-green-600 text-sm space-y-1">
-            <li>• Pan with mouse or touch</li>
-            <li>• Zoom with wheel or pinch</li>
-            <li>• Multi-select with Cmd/Ctrl</li>
-            <li>• Drag items around</li>
-          </ul>
-        </div>
-      ),
+      x: 1370.14,
+      y: 2224.32,
+      width: 646.57,
+      height: 571.49,
+      render: ({ selected, viewport }) => <SouthAmerica />,
       expansion: {
-        dx: 0,
+        dx: 200,
         dy: 0,
-        width: 220,
-        height: 200,
-        render: ({ selected, parent }) => (
-          <div className="absolute inset-0 bg-green-800/90 rounded p-4 flex items-center justify-center">
-            <div className="text-white text-center">
-              <div className="text-2xl mb-2">✨</div>
-              <div className="font-bold">Simple Overlay!</div>
-              <div className="text-sm opacity-80">This overlays the original content</div>
+        width: 228.01,
+        height: 200.95,
+        render: ({ selected, parent, viewport }) => (
+          <div className="bg-white border-2 border-blue-300 rounded-lg p-4 shadow-lg">
+            <h4 className="font-bold text-blue-800 mb-2">🎉 Dynamic Reveal!</h4>
+            <p className="text-sm text-gray-700 mb-2">
+              This content is generated dynamically when selected.
+            </p>
+            <div className="text-xs text-gray-500 space-y-1">
+              <div>Selected: {selected ? '✅' : '❌'}</div>
             </div>
           </div>
         ),
+      }
+    },
+    {
+      type: 'SVG',
+      interaction: {
+        selectable: true,
+        draggable: false,
+        hoverable: true,
       },
-    },
-    {
       id: "3",
-      x: 150,
-      y: 350,
-      width: 160,
-      height: 150,
-      render:  ({ selected, viewport }) => (
-        <div className="h-full bg-gradient-to-br from-purple-100 to-purple-200 rounded p-4">
-          <h3 className="font-bold text-purple-800 mb-2">Touch Support</h3>
-          <p className="text-purple-600 text-sm">Mobile/tabletpinch-to-zoom!</p>
-        </div>
-      ),
+      x: 4068.4,
+      y: 2447.19,
+      width: 565.06,
+      height: 525.24,
+      render: ({ selected, viewport }) => <Australia />,
+      expansion: {
+        dx: 200,
+        dy: 0,
+        width: 228.01,
+        height: 200.95,
+        render: ({ selected, parent, viewport }) => (
+          <div className="bg-white border-2 border-blue-300 rounded-lg p-4 shadow-lg">
+            <h4 className="font-bold text-blue-800 mb-2">🎉 Dynamic Reveal!</h4>
+            <p className="text-sm text-gray-700 mb-2">
+              This content is generated dynamically when selected.
+            </p>
+          </div>
+        ),
+      }
     },
     {
+      type: 'SVG',
+      interaction: {
+        selectable: true,
+        draggable: false,
+        hoverable: true,
+      },
       id: "4",
-      x: 500,
-      y: 50,
-      width: 220,
-      height: 180,
-      render:  ({ selected, viewport }) => (
-        <div className="h-full bg-gradient-to-br from-orange-100 to-orange-200 rounded p-4">
-          <h3 className="font-bold text-orange-800 mb-2">Trackpad Gestures</h3>
-          <p className="text-orange-600 text-sm">
-            On Mac, use trackpad pinch gestures for smooth zooming and
-            two-finger scrolling for panning.
-          </p>
-        </div>
-      ),
+      x: 1641.67,//1653
+      y: 322.95,//313
+      width: 1634.17,
+      height: 2278.58,
+      render: ({ selected, viewport }) => <Europe />,
+      expansion: {
+        dx: 200,
+        dy: 0,
+        width: 228.01,
+        height: 200.95,
+        render: ({ selected, parent, viewport }) => (
+          <div className="bg-white border-2 border-blue-300 rounded-lg p-4 shadow-lg">
+            <h4 className="font-bold text-blue-800 mb-2">🎉 Dynamic Reveal!</h4>
+            <p className="text-sm text-gray-700 mb-2">
+              This content is generated dynamically when selected.
+            </p>
+          </div>
+        ),
+      }
     },
+
     {
-      id: "5",
-      x: 300,
-      y: 400,
-      width: 200,
-      height: 120,
-      render:  ({ selected, viewport }) => (
-        <div className="h-full bg-gradient-to-br from-red-100 to-red-200 rounded p-4 flex items-center">
-          <p className="text-red-600 text-sm">
-            <strong>Selecting multiple items:</strong> Hold Cmd/Ctrl and click
-            on different items
-          </p>
-        </div>
-      ),
-    },
-    {
+      type: 'SVG',
+      interaction: {
+        selectable: true,
+        draggable: false,
+        hoverable: true,
+      },
       id: "6",
-      x: 800,
-      y: 150,
-      width: 180,
-      height: 180,
-      render:  ({ selected, viewport }) => (
-        <div className="h-full bg-gradient-to-br from-yellow-100 to-yellow-200 rounded p-4">
-          <h3 className="font-bold text-yellow-800 mb-2">Programmatic API</h3>
-          <p className="text-yellow-600 text-sm">
-            Use the presentation controls to navigate between items
-            automatically
-          </p>
-        </div>
-      ),
-    },
-    {
-      id: "7",
-      x: 100,
-      y: 700,
-      width: 961,
-      height: 621,
-      render:  ({ selected, viewport }) => <WorldMapSvg />,
+      x: 3938.89,
+      y: 1587.68,
+      width: 584.07,
+      height: 692.22,
+      render: ({ selected, viewport }) => <EastAsia />,
+      expansion: {
+        dx: 200,
+        dy: 0,
+        width: 228.01,
+        height: 200.95,
+        render: ({ selected, parent, viewport }) => (
+          <div className="bg-white border-2 border-blue-300 rounded-lg p-4 shadow-lg">
+            <h4 className="font-bold text-blue-800 mb-2">🎉 Dynamic Reveal!</h4>
+            <p className="text-sm text-gray-700 mb-2">
+              This content is generated dynamically when selected.
+            </p>
+          </div>
+        ),
+      }
     },
   ]);
 
@@ -318,23 +331,7 @@ const InfiniteCanvasPage = () => {
           maxZoom={3}
           zoomSensitivity={0.03}
         >
-          {/* You can add additional SVG elements here if needed */}
-          <circle
-            cx={600}
-            cy={300}
-            r={30}
-            fill="rgba(255, 0, 0, 0.3)"
-            stroke="red"
-            strokeWidth={2}
-          />
-          <text
-            x={600}
-            y={305}
-            textAnchor="middle"
-            className="text-xs fill-red-600"
-          >
-            Fixed Element
-          </text>
+          <BaseCountries />
         </InfiniteCanvas>
       </div>
     </>

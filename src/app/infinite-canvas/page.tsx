@@ -45,7 +45,7 @@ const InfiniteCanvasPage = () => {
       y: 2612.96,
       width: 228.01,
       height: 200.95,
-      render: ({ selected, viewport }) => <SouthAfrica />,
+      render: ({ selected, viewport }) => <SouthAfrica selected={selected} />,
       expansion: {
         dx: 200,
         dy: 0,

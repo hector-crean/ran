@@ -879,6 +879,62 @@ export const InfiniteCanvas = forwardRef<
               />
             </pattern>
           </defs>
+          <defs>
+            <filter id="blur">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="10" />
+            </filter>
+
+            {/* Animated pulsing filter for selected elements */}
+            <filter id="selectedPulse" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+              <feColorMatrix
+                in="blur"
+                type="matrix"
+                values="0 0 0 0 0.02
+                        0 0 0 0 0.48
+                        0 0 0 0 1
+                        0 0 0 0.8 0"
+                result="glow"
+              />
+              <feOffset in="glow" dx="0" dy="0" result="glowOffset" />
+              <feMerge>
+                <feMergeNode in="glowOffset" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+
+              {/* Pulsing animation */}
+              <animate
+                attributeName="stdDeviation"
+                values="3;6;3"
+                dur="2s"
+                repeatCount="indefinite"
+              />
+            </filter>
+
+            {/* Alternative subtle glow filter */}
+            <filter id="selectedGlow" x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow
+                dx="0"
+                dy="0"
+                stdDeviation="4"
+                floodColor="#007AFF"
+                floodOpacity="0.6"
+              >
+                <animate
+                  attributeName="stdDeviation"
+                  values="2;6;2"
+                  dur="1.5s"
+                  repeatCount="indefinite"
+                />
+                <animate
+                  attributeName="flood-opacity"
+                  values="0.3;0.8;0.3"
+                  dur="1.5s"
+                  repeatCount="indefinite"
+                />
+              </feDropShadow>
+            </filter>
+          </defs>
 
           <rect width="100%" height="100%" fill="url(#grid)" />
           {/* Additional children */}
@@ -988,6 +1044,7 @@ export const InfiniteCanvas = forwardRef<
                       y={item.y + item.expansion!.dy}
                       width={item.expansion!.width}
                       height={item.expansion!.height}
+                      filter="url(#selectedGlow)"
                     >
                       <motion.div
                         className="w-full h-full p-2 text-sm"

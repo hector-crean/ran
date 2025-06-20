@@ -345,7 +345,7 @@ const EastAsia = () => {
     )
 }
 
-const Australia = () => {
+const Australia = ({ selected }: { selected: boolean }) => {
 
     return (
         <svg width="566" height="526" viewBox="0 0 566 526" fill="none" xmlns="http://www.w3.org/2000/svg">

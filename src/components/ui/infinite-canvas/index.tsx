@@ -1044,7 +1044,6 @@ export const InfiniteCanvas = forwardRef<
                       y={item.y + item.expansion!.dy}
                       width={item.expansion!.width}
                       height={item.expansion!.height}
-                      filter="url(#selectedGlow)"
                     >
                       <motion.div
                         className="w-full h-full p-2 text-sm"

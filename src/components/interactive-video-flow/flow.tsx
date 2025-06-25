@@ -14,6 +14,7 @@ import {
 } from '@xyflow/react';
 import { VideoSourceNode } from './video-source-node';
 import { CompositorNode } from './compositor-node';
+import { ObjectMappingNode } from './object-mapping-node';
 
 const initialNodes = [
   {
@@ -34,6 +35,12 @@ const initialNodes = [
     data: { label: 'Composited Output' },
     position: { x: 400, y: 150 },
   },
+  {
+    id: '4',
+    type: 'objectMapping',
+    data: { mappings: [] },
+    position: { x: 50, y: 450 },
+  },
 ];
 
 const initialEdges: Edge[] = [];
@@ -50,6 +57,7 @@ const InteractiveVideoFlow = () => {
   const nodeTypes = useMemo(() => ({
     videoSource: VideoSourceNode,
     compositor: CompositorNode,
+    objectMapping: ObjectMappingNode,
   }), []);
 
   return (

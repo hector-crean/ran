@@ -5,12 +5,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { useMemo, useRef, useState, useCallback, useEffect } from 'react';
 import { VideoSourceData } from './video-source-node';
-import { WebGPUCanvas, WebGPUCanvasHandle } from '@/components/webgpu-canvas';
+import { VideoMaskCanvas, VideoMaskCanvasHandle } from '@/components/webgpu-canvas';
 import { VideoPlayer, VideoPlayerHandle } from '@/components/video-player';
 import { VideoControls } from '@/components/ui/video-controls';
 import { AnimatePresence } from 'framer-motion';
 import { ColorProbeOverlay, ColorProbeOverlayHandle } from '@/components/color-probe-overlay';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { toast } from "sonner";
+import { ObjectMappingData } from './object-mapping-node';
 
 
 
@@ -20,7 +22,7 @@ const KERNEL_PIXELS = KERNEL_SIZE * KERNEL_SIZE;
 export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSourceData>>) => {
     const nodes = useNodes();
     const edges = useEdges();
-    const webGPUCanvasRef = useRef<WebGPUCanvasHandle>(null);
+    const videoMaskCanvasRef = useRef<VideoMaskCanvasHandle>(null);
     const videoPlayerRef = useRef<VideoPlayerHandle>(null);
     const maskVideoPlayerRef = useRef<VideoPlayerHandle>(null);
     const colorProbeOverlayRef = useRef<ColorProbeOverlayHandle>(null);
@@ -48,7 +50,7 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
     const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const lastPollingPositionRef = useRef<{ normX: number; normY: number; pixelX: number; pixelY: number; } | null>(null);
 
-    const { baseSrc, maskSrc } = useMemo(() => {
+    const { baseSrc, maskSrc, objectMappings } = useMemo(() => {
         const connectedEdges = edges.filter((edge) => edge.target === id);
         
         const getSourceVideo = (handleId: string) => {
@@ -58,9 +60,17 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
             return (sourceNode?.data as VideoSourceData)?.videoSrc;
         }
 
+        const getObjectMappings = () => {
+            const edge = connectedEdges.find((edge) => edge.targetHandle === 'object-mappings');
+            if (!edge) return null;
+            const sourceNode = nodes.find((node) => node.id === edge.source);
+            return (sourceNode?.data as ObjectMappingData) || null;
+        }
+
         return {
             baseSrc: getSourceVideo('video-base'),
             maskSrc: getSourceVideo('video-mask'),
+            objectMappings: getObjectMappings(),
         };
 
     }, [id, nodes, edges]);
@@ -81,10 +91,10 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
 
     // --- Non-blocking color probe reading ---
     const processColorProbe = useCallback(async (position: { normX: number; normY: number; pixelX: number; pixelY: number; }) => {
-        if (!webGPUCanvasRef.current) return;
+        if (!videoMaskCanvasRef.current) return;
 
         try {
-            const kernelResult = await webGPUCanvasRef.current.readKernelAt(position.normX, position.normY);
+            const kernelResult = await videoMaskCanvasRef.current.readKernelAt(position.normX, position.normY);
             if (kernelResult.length === 0) return;
 
             const centerIndex = Math.floor(KERNEL_PIXELS / 2);
@@ -146,7 +156,7 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
         const { videoWidth, videoHeight, duration } = videoElement;
         if (videoWidth && videoHeight) {
           setAspectRatio(videoWidth / videoHeight);
-          webGPUCanvasRef.current?.updateVideoTexture(videoWidth, videoHeight);
+          videoMaskCanvasRef.current?.updateVideoTexture(videoWidth, videoHeight);
           setIsVideoLoaded(true);
           setDuration(duration);
         }
@@ -171,7 +181,7 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
       }, [isVideoLoaded, isMaskVideoLoaded, processColorProbe]);
 
     // --- Video Control Handlers ---
-    const handlePlayPause = () => {
+    const handlePlayPause = async () => {
         if (isPlaying) {
         videoPlayerRef.current?.pause();
         maskVideoPlayerRef.current?.pause();
@@ -180,6 +190,30 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
         maskVideoPlayerRef.current?.play();
         }
         setIsPlaying(!isPlaying);
+
+        const kernelResult = await videoMaskCanvasRef.current?.readKernelAt(mousePositionRef.current?.normX || 0.5, mousePositionRef.current?.normY || 0.5);
+        if (kernelResult && kernelResult.length > 0) {
+            const centerIndex = Math.floor(KERNEL_PIXELS / 2);
+            const newCenterColor = kernelResult[centerIndex];
+            
+            // Use object mappings to identify the clicked object
+            if (objectMappings?.findObjectByColor) {
+                const matchedObject = objectMappings.findObjectByColor(newCenterColor);
+                if (matchedObject) {
+                    toast.success(`Clicked on: ${matchedObject.name}`, {
+                        description: `RGB(${newCenterColor.r}, ${newCenterColor.g}, ${newCenterColor.b})`,
+                    });
+                } else {
+                    toast.info(`Unknown object`, {
+                        description: `RGB(${newCenterColor.r}, ${newCenterColor.g}, ${newCenterColor.b})`,
+                    });
+                }
+            } else {
+                toast.success(`Color: ${newCenterColor.r}, ${newCenterColor.g}, ${newCenterColor.b}`);
+            }
+        }
+
+
     };
 
     const handleSeek = (value: number) => {
@@ -253,7 +287,7 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
     }, [isVideoLoaded, isMaskVideoLoaded])
 
   return (
-    <Card className="w-[1080px] nodrag">
+    <Card className="w-[1080px]">
        <CardHeader className="p-2 bg-gray-100 rounded-t-lg">
         <CardTitle className="text-sm text-center">Compositor</CardTitle>
       </CardHeader>
@@ -278,6 +312,16 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
                         isConnectable={isConnectable}
                     />
                     <Label>Mask Video</Label>
+                </div>
+                <div className='flex items-center h-8 gap-4'>
+                    <Handle
+                        className='bg-blue-500 w-4 h-4'
+                        type="target"
+                        position={Position.Left}
+                        id="object-mappings"
+                        isConnectable={isConnectable}
+                    />
+                    <Label>Object Mappings</Label>
                 </div>
             </div>
             <div className="flex items-center space-x-2 p-2">
@@ -313,8 +357,8 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
                     onClick={handlePlayPause}
                     className="w-full h-full isolate"
                 >
-                    <WebGPUCanvas
-                        ref={webGPUCanvasRef}
+                    <VideoMaskCanvas
+                        ref={videoMaskCanvasRef}
                         videoElement={videoPlayerRef.current?.getVideoElement() || null}
                         maskVideoElement={maskVideoPlayerRef.current?.getVideoElement() || null}
                         isVideoLoaded={isVideoLoaded}

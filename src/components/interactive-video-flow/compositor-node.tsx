@@ -10,6 +10,7 @@ import { VideoPlayer, VideoPlayerHandle } from '@/components/video-player';
 import { VideoControls } from '@/components/ui/video-controls';
 import { AnimatePresence } from 'framer-motion';
 import { ColorProbeOverlay, ColorProbeOverlayHandle } from '@/components/color-probe-overlay';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 
 
@@ -30,6 +31,7 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
     const [isMaskVideoLoaded, setIsMaskVideoLoaded] = useState(false);
     const [showControls, setShowControls] = useState(false);
     const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const [sampleLayer, setSampleLayer] = useState<'output' | 'base' | 'mask'>('output');
 
     // --- Video Player State ---
     const [isPlaying, setIsPlaying] = useState(false);
@@ -256,25 +258,44 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
         <CardTitle className="text-sm text-center">Compositor</CardTitle>
       </CardHeader>
       <CardContent className="p-2">
-        <div className="flex flex-col gap-2 p-2 border rounded-md mb-2">
-            <div className='flex justify-between items-center h-8'>
-                <Handle
-                    className='bg-red-500 '
-                    type="target"
-                    position={Position.Top}
-                    id="video-base"
-                    isConnectable={isConnectable}
-                />
-                <Label>Base Video</Label>
+        <div className="flex justify-between items-center p-2 border rounded-md mb-2">
+            <div className="flex flex-col gap-2">
+                <div className='flex items-center h-8 gap-4'>
+                    <Handle
+                        className='bg-red-500 w-4 h-4'
+                        type="target"
+                        position={Position.Top}
+                        id="video-base"
+                        isConnectable={isConnectable}
+                    />
+                    <Label>Base Video</Label>
+                </div>
+                <div className='flex items-center h-8 gap-4'>
+                    <Handle
+                        type="target"
+                        position={Position.Bottom}
+                        id="video-mask"
+                        isConnectable={isConnectable}
+                    />
+                    <Label>Mask Video</Label>
+                </div>
             </div>
-            <div className='flex justify-between items-center h-8'>
-                <Handle
-                    type="target"
-                    position={Position.Bottom}
-                    id="video-mask"
-                    isConnectable={isConnectable}
-                />
-                <Label>Mask Video</Label>
+            <div className="flex items-center space-x-2 p-2">
+                <Label>Color Picker Source:</Label>
+                <RadioGroup defaultValue="output" onValueChange={(value: 'output' | 'base' | 'mask') => setSampleLayer(value)} className="flex gap-4">
+                    <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="output" id={`r1-${id}`} />
+                    <Label htmlFor={`r1-${id}`}>Output</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="base" id={`r2-${id}`} />
+                    <Label htmlFor={`r2-${id}`}>Base</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="mask" id={`r3-${id}`} />
+                    <Label htmlFor={`r3-${id}`}>Mask</Label>
+                    </div>
+                </RadioGroup>
             </div>
         </div>
 
@@ -300,6 +321,7 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
                         isMaskVideoLoaded={isMaskVideoLoaded}
                         onPointerMove={() => {}}
                         className="border-2 border-gray-700 cursor-crosshair block rounded-lg w-full h-full"
+                        // sampleLayer={sampleLayer}
                     />
                     <AnimatePresence>
                         {showControls && (

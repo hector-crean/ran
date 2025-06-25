@@ -1,1 +1,0 @@
-/Users/hectorcrean/typescript/ran/cli/target/debug/extract_paths: /Users/hectorcrean/typescript/ran/cli/src/bin/extract_paths.rs /Users/hectorcrean/typescript/ran/cli/src/lib.rs /Users/hectorcrean/typescript/ran/cli/src/svg/extract_paths.rs /Users/hectorcrean/typescript/ran/cli/src/svg/mod.rs

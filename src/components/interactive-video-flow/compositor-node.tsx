@@ -1,0 +1,351 @@
+"use client";
+
+import { Handle, Position, NodeProps, useNodes, useEdges, Node } from '@xyflow/react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { useMemo, useRef, useState, useCallback, useEffect } from 'react';
+import { VideoSourceData } from './video-source-node';
+import { WebGPUCanvas, WebGPUCanvasHandle } from '@/components/webgpu-canvas';
+import { VideoPlayer, VideoPlayerHandle } from '@/components/video-player';
+import { VideoControls } from '@/components/ui/video-controls';
+import { AnimatePresence } from 'framer-motion';
+import { ColorProbeOverlay, ColorProbeOverlayHandle } from '@/components/color-probe-overlay';
+
+
+
+const KERNEL_SIZE = 15;
+const KERNEL_PIXELS = KERNEL_SIZE * KERNEL_SIZE;
+
+export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSourceData>>) => {
+    const nodes = useNodes();
+    const edges = useEdges();
+    const webGPUCanvasRef = useRef<WebGPUCanvasHandle>(null);
+    const videoPlayerRef = useRef<VideoPlayerHandle>(null);
+    const maskVideoPlayerRef = useRef<VideoPlayerHandle>(null);
+    const colorProbeOverlayRef = useRef<ColorProbeOverlayHandle>(null);
+
+    // --- Component State ---
+    const [aspectRatio, setAspectRatio] = useState(16 / 9);
+    const [isVideoLoaded, setIsVideoLoaded] = useState(false);
+    const [isMaskVideoLoaded, setIsMaskVideoLoaded] = useState(false);
+    const [showControls, setShowControls] = useState(false);
+    const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+    // --- Video Player State ---
+    const [isPlaying, setIsPlaying] = useState(false);
+    const [volume, setVolume] = useState(1);
+    const [progress, setProgress] = useState(0);
+    const [isMuted, setIsMuted] = useState(true);
+    const [playbackSpeed, setPlaybackSpeed] = useState(1);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
+
+    // --- Refs for throttling and mouse position ---
+    const mousePositionRef = useRef<{ normX: number; normY: number; pixelX: number; pixelY: number; } | null>(null);
+    const lastReadTimestampRef = useRef(0);
+    const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const lastPollingPositionRef = useRef<{ normX: number; normY: number; pixelX: number; pixelY: number; } | null>(null);
+
+    const { baseSrc, maskSrc } = useMemo(() => {
+        const connectedEdges = edges.filter((edge) => edge.target === id);
+        
+        const getSourceVideo = (handleId: string) => {
+            const edge = connectedEdges.find((edge) => edge.targetHandle === handleId);
+            if (!edge) return undefined;
+            const sourceNode = nodes.find((node) => node.id === edge.source);
+            return (sourceNode?.data as VideoSourceData)?.videoSrc;
+        }
+
+        return {
+            baseSrc: getSourceVideo('video-base'),
+            maskSrc: getSourceVideo('video-mask'),
+        };
+
+    }, [id, nodes, edges]);
+
+    // Add this useEffect to reset state when the base video changes
+    useEffect(() => {
+        setIsVideoLoaded(false);
+        setIsPlaying(false);
+        setProgress(0);
+        setCurrentTime(0);
+        setDuration(0);
+    }, [baseSrc]);
+
+    // Add this useEffect to reset state for the mask video
+    useEffect(() => {
+        setIsMaskVideoLoaded(false);
+    }, [maskSrc]);
+
+    // --- Non-blocking color probe reading ---
+    const processColorProbe = useCallback(async (position: { normX: number; normY: number; pixelX: number; pixelY: number; }) => {
+        if (!webGPUCanvasRef.current) return;
+
+        try {
+            const kernelResult = await webGPUCanvasRef.current.readKernelAt(position.normX, position.normY);
+            if (kernelResult.length === 0) return;
+
+            const centerIndex = Math.floor(KERNEL_PIXELS / 2);
+            const newCenterColor = kernelResult[centerIndex];
+            const newPosition = {
+                x: Math.floor(position.pixelX),
+                y: Math.floor(position.pixelY),
+            };
+
+            colorProbeOverlayRef.current?.updateProbe(kernelResult, newCenterColor, newPosition);
+        } catch (error) {
+            // Silently ignore errors
+        }
+    }, []);
+
+    const processMousePosition = useCallback(async () => {
+        if (!mousePositionRef.current) return;
+        const position = mousePositionRef.current;
+        mousePositionRef.current = null; // Consume
+        lastPollingPositionRef.current = position;
+        await processColorProbe(position);
+    }, [processColorProbe]);
+    
+    // --- Polling for video playback ---
+    const startPolling = useCallback(() => {
+        if (pollingIntervalRef.current) return;
+        pollingIntervalRef.current = setInterval(() => {
+            if (!lastPollingPositionRef.current || !isVideoLoaded || !isMaskVideoLoaded) return;
+            const now = performance.now();
+            if (now - lastReadTimestampRef.current > 500) { // 500ms polling throttle
+                lastReadTimestampRef.current = now;
+                processColorProbe(lastPollingPositionRef.current);
+            }
+        }, 100);
+    }, [isVideoLoaded, isMaskVideoLoaded, processColorProbe]);
+
+    const stopPolling = useCallback(() => {
+        if (pollingIntervalRef.current) {
+            clearInterval(pollingIntervalRef.current);
+            pollingIntervalRef.current = null;
+        }
+    }, []);
+
+    useEffect(() => {
+        if (isPlaying && isVideoLoaded && isMaskVideoLoaded && lastPollingPositionRef.current) {
+            startPolling();
+        } else {
+            stopPolling();
+        }
+        return stopPolling;
+    }, [isPlaying, isVideoLoaded, isMaskVideoLoaded, startPolling, stopPolling]);
+
+    // --- Mouse Handlers ---
+    const handleMouseMove = useCallback((normX: number, normY: number, pixelX: number, pixelY: number) => {
+        mousePositionRef.current = { normX, normY, pixelX, pixelY };
+    }, []);
+
+    const handleLoadedMetadata = useCallback((videoElement: HTMLVideoElement) => {
+        const { videoWidth, videoHeight, duration } = videoElement;
+        if (videoWidth && videoHeight) {
+          setAspectRatio(videoWidth / videoHeight);
+          webGPUCanvasRef.current?.updateVideoTexture(videoWidth, videoHeight);
+          setIsVideoLoaded(true);
+          setDuration(duration);
+        }
+      }, []);
+    
+      const handleMaskLoadedMetadata = useCallback(() => {
+        setIsMaskVideoLoaded(true);
+      }, []);
+
+      const handleTimeUpdate = useCallback(async (currentTime: number, duration: number) => {
+        const currentProgress = (currentTime / duration) * 100;
+        setProgress(isFinite(currentProgress) ? currentProgress : 0);
+        setCurrentTime(currentTime);
+
+        if (lastPollingPositionRef.current && isVideoLoaded && isMaskVideoLoaded) {
+            const now = performance.now();
+            if (now - lastReadTimestampRef.current > 100) { // 100ms throttle for time updates
+                lastReadTimestampRef.current = now;
+                processColorProbe(lastPollingPositionRef.current);
+            }
+        }
+      }, [isVideoLoaded, isMaskVideoLoaded, processColorProbe]);
+
+    // --- Video Control Handlers ---
+    const handlePlayPause = () => {
+        if (isPlaying) {
+        videoPlayerRef.current?.pause();
+        maskVideoPlayerRef.current?.pause();
+        } else {
+        videoPlayerRef.current?.play();
+        maskVideoPlayerRef.current?.play();
+        }
+        setIsPlaying(!isPlaying);
+    };
+
+    const handleSeek = (value: number) => {
+        if (videoPlayerRef.current && maskVideoPlayerRef.current && duration) {
+        const time = (value / 100) * duration;
+        if (isFinite(time)) {
+            videoPlayerRef.current.seek(time);
+            maskVideoPlayerRef.current.seek(time);
+            setProgress(value);
+        }
+        }
+    };
+
+    const handleVolumeChange = (value: number) => {
+        const newVolume = value / 100;
+        videoPlayerRef.current?.setVolume(newVolume);
+        setVolume(newVolume);
+        if (newVolume > 0 && isMuted) {
+          videoPlayerRef.current?.setMuted(false);
+          setIsMuted(false);
+        } else if (newVolume === 0) {
+          videoPlayerRef.current?.setMuted(true);
+          setIsMuted(true);
+        }
+      };
+    
+      const handleMuteToggle = () => {
+        const nextMuted = !isMuted;
+        videoPlayerRef.current?.setMuted(nextMuted);
+        setIsMuted(nextMuted);
+        if (!nextMuted && volume === 0) {
+          videoPlayerRef.current?.setVolume(1);
+          setVolume(1);
+        }
+      };
+    
+      const handleSpeedChange = (speed: number) => {
+        videoPlayerRef.current?.setPlaybackRate(speed);
+        maskVideoPlayerRef.current?.setPlaybackRate(speed);
+        setPlaybackSpeed(speed);
+      };
+
+      const handleViewerMouseMove = () => {
+        if (controlsTimeoutRef.current) {
+            clearTimeout(controlsTimeoutRef.current);
+        }
+        setShowControls(true);
+        controlsTimeoutRef.current = setTimeout(() => {
+            setShowControls(false);
+        }, 3000);
+
+        const now = performance.now();
+        if (mousePositionRef.current && now - lastReadTimestampRef.current > 100) { // 100ms throttle
+            lastReadTimestampRef.current = now;
+            processMousePosition();
+        }
+      };
+
+      const handleViewerMouseLeave = () => {
+        if (controlsTimeoutRef.current) {
+          clearTimeout(controlsTimeoutRef.current);
+        }
+        setShowControls(false);
+      };
+
+    useEffect(() => {
+        if(isVideoLoaded && isMaskVideoLoaded){
+            videoPlayerRef.current?.play();
+            maskVideoPlayerRef.current?.play();
+        }
+    }, [isVideoLoaded, isMaskVideoLoaded])
+
+  return (
+    <Card className="w-[1080px] nodrag">
+       <CardHeader className="p-2 bg-gray-100 rounded-t-lg">
+        <CardTitle className="text-sm text-center">Compositor</CardTitle>
+      </CardHeader>
+      <CardContent className="p-2">
+        <div className="flex flex-col gap-2 p-2 border rounded-md mb-2">
+            <div className='flex justify-between items-center h-8'>
+                <Handle
+                    className='bg-red-500 '
+                    type="target"
+                    position={Position.Top}
+                    id="video-base"
+                    isConnectable={isConnectable}
+                />
+                <Label>Base Video</Label>
+            </div>
+            <div className='flex justify-between items-center h-8'>
+                <Handle
+                    type="target"
+                    position={Position.Bottom}
+                    id="video-mask"
+                    isConnectable={isConnectable}
+                />
+                <Label>Mask Video</Label>
+            </div>
+        </div>
+
+        {baseSrc && maskSrc ? (
+            <ColorProbeOverlay
+                ref={colorProbeOverlayRef}
+                kernelSize={KERNEL_SIZE}
+                onMouseMove={handleMouseMove}
+                className="relative group w-full"
+                style={{ aspectRatio: `${aspectRatio}` }}
+            >
+                <div
+                    onMouseMove={handleViewerMouseMove}
+                    onMouseLeave={handleViewerMouseLeave}
+                    onClick={handlePlayPause}
+                    className="w-full h-full isolate"
+                >
+                    <WebGPUCanvas
+                        ref={webGPUCanvasRef}
+                        videoElement={videoPlayerRef.current?.getVideoElement() || null}
+                        maskVideoElement={maskVideoPlayerRef.current?.getVideoElement() || null}
+                        isVideoLoaded={isVideoLoaded}
+                        isMaskVideoLoaded={isMaskVideoLoaded}
+                        onPointerMove={() => {}}
+                        className="border-2 border-gray-700 cursor-crosshair block rounded-lg w-full h-full"
+                    />
+                    <AnimatePresence>
+                        {showControls && (
+                            <VideoControls
+                                isPlaying={isPlaying}
+                                volume={volume}
+                                progress={progress}
+                                isMuted={isMuted}
+                                playbackSpeed={playbackSpeed}
+                                currentTime={currentTime}
+                                duration={duration}
+                                onPlayPause={handlePlayPause}
+                                onVolumeChange={handleVolumeChange}
+                                onSeek={handleSeek}
+                                onMuteToggle={handleMuteToggle}
+                                onSpeedChange={handleSpeedChange}
+                            />
+                        )}
+                    </AnimatePresence>
+                </div>
+            </ColorProbeOverlay>
+        ) : (
+            <div className='h-48 bg-gray-200 mt-2 rounded flex items-center justify-center p-2 text-xs text-gray-500'>
+                <p>Connect a base and mask video source.</p>
+            </div>
+        )}
+         <VideoPlayer
+            ref={videoPlayerRef}
+            src={baseSrc || ''}
+            onLoadedMetadata={handleLoadedMetadata}
+            onTimeUpdate={handleTimeUpdate}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            className='hidden'
+          />
+          <VideoPlayer
+            ref={maskVideoPlayerRef}
+            src={maskSrc || ''}
+            onLoadedMetadata={handleMaskLoadedMetadata}
+            onTimeUpdate={() => {}}
+            onPlay={() => {}}
+            onPause={() => {}}
+            muted={true}
+            className="hidden"
+          />
+      </CardContent>
+    </Card>
+  );
+}; 

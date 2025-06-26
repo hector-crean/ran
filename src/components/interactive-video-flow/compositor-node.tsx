@@ -35,6 +35,15 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
     const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const [sampleLayer, setSampleLayer] = useState<'output' | 'base' | 'mask'>('output');
 
+    const SHOW_CONTROLS_OVERIDE = false;
+    const handleShowControls = useCallback((show: boolean) => {
+        if(SHOW_CONTROLS_OVERIDE) {
+            setShowControls(show);
+        } else {
+            setShowControls(false);
+        }
+    }, []);
+
     // --- Video Player State ---
     const [isPlaying, setIsPlaying] = useState(false);
     const [volume, setVolume] = useState(1);
@@ -43,6 +52,7 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
     const [playbackSpeed, setPlaybackSpeed] = useState(1);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
+    // Ping-pong feature removed; videos loop forward only
 
     // --- Refs for throttling and mouse position ---
     const mousePositionRef = useRef<{ normX: number; normY: number; pixelX: number; pixelY: number; } | null>(null);
@@ -171,6 +181,8 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
         setProgress(isFinite(currentProgress) ? currentProgress : 0);
         setCurrentTime(currentTime);
 
+        // Conventional looping handled by HTML video 'loop' attribute; no reverse playback
+
         if (lastPollingPositionRef.current && isVideoLoaded && isMaskVideoLoaded) {
             const now = performance.now();
             if (now - lastReadTimestampRef.current > 100) { // 100ms throttle for time updates
@@ -182,14 +194,23 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
 
     // --- Video Control Handlers ---
     const handlePlayPause = async () => {
-        if (isPlaying) {
-        videoPlayerRef.current?.pause();
-        maskVideoPlayerRef.current?.pause();
-        } else {
-        videoPlayerRef.current?.play();
-        maskVideoPlayerRef.current?.play();
+
+        if(SHOW_CONTROLS_OVERIDE) {
+            if (isPlaying) {
+                videoPlayerRef.current?.pause();
+                maskVideoPlayerRef.current?.pause();
+                } else {
+                // Ensure correct playback rate when resuming
+                videoPlayerRef.current?.setPlaybackRate(Math.abs(playbackSpeed));
+                maskVideoPlayerRef.current?.setPlaybackRate(Math.abs(playbackSpeed));
+                videoPlayerRef.current?.play();
+                maskVideoPlayerRef.current?.play();
+                }
+                setIsPlaying(!isPlaying);
+
         }
-        setIsPlaying(!isPlaying);
+
+      
 
         const kernelResult = await videoMaskCanvasRef.current?.readKernelAt(mousePositionRef.current?.normX || 0.5, mousePositionRef.current?.normY || 0.5);
         if (kernelResult && kernelResult.length > 0) {
@@ -251,16 +272,16 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
       };
     
       const handleSpeedChange = (speed: number) => {
-        videoPlayerRef.current?.setPlaybackRate(speed);
-        maskVideoPlayerRef.current?.setPlaybackRate(speed);
-        setPlaybackSpeed(speed);
+        videoPlayerRef.current?.setPlaybackRate(Math.abs(speed));
+        maskVideoPlayerRef.current?.setPlaybackRate(Math.abs(speed));
+        setPlaybackSpeed(Math.abs(speed));
       };
 
       const handleViewerMouseMove = () => {
         if (controlsTimeoutRef.current) {
             clearTimeout(controlsTimeoutRef.current);
         }
-        setShowControls(true);
+        handleShowControls(true);
         controlsTimeoutRef.current = setTimeout(() => {
             setShowControls(false);
         }, 3000);
@@ -281,10 +302,13 @@ export const CompositorNode = ({ id, isConnectable }: NodeProps<Node<VideoSource
 
     useEffect(() => {
         if(isVideoLoaded && isMaskVideoLoaded){
+            // Set initial playback rate
+            videoPlayerRef.current?.setPlaybackRate(Math.abs(playbackSpeed));
             videoPlayerRef.current?.play();
             maskVideoPlayerRef.current?.play();
+            setIsPlaying(true);
         }
-    }, [isVideoLoaded, isMaskVideoLoaded])
+    }, [isVideoLoaded, isMaskVideoLoaded, playbackSpeed])
 
   return (
     <Card className="w-[1080px]">

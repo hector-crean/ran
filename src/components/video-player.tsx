@@ -30,6 +30,7 @@ interface VideoPlayerProps {
   autoPlay?: boolean;
   muted?: boolean;
   playsInline?: boolean;
+  loop?: boolean;
 }
 
 export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
@@ -42,7 +43,8 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
     className = "hidden",
     autoPlay = true,
     muted = true,
-    playsInline = true
+    playsInline = true,
+    loop = true
   }, ref) => {
     const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -125,6 +127,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
         muted={muted}
         autoPlay={autoPlay}
         playsInline={playsInline}
+        loop={loop}
         onPlay={handlePlay}
         onPause={handlePause}
         onTimeUpdate={handleTimeUpdate}

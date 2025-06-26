@@ -57,11 +57,14 @@ interface VideoControlsProps {
   playbackSpeed: number;
   currentTime: number;
   duration: number;
+  isPingPongEnabled?: boolean;
+  isPlayingReverse?: boolean;
   onPlayPause: () => void;
   onVolumeChange: (value: number) => void;
   onSeek: (value: number) => void;
   onMuteToggle: () => void;
   onSpeedChange: (speed: number) => void;
+  onPingPongToggle?: () => void;
 }
 
 const VideoControls: React.FC<VideoControlsProps> = ({
@@ -72,11 +75,14 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   playbackSpeed,
   currentTime,
   duration,
+  isPingPongEnabled = false,
+  isPlayingReverse = false,
   onPlayPause,
   onVolumeChange,
   onSeek,
   onMuteToggle,
   onSpeedChange,
+  onPingPongToggle,
 }) => {
   return (
     <motion.div
@@ -147,6 +153,25 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
+          {onPingPongToggle && (
+            <motion.div whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}>
+              <Button
+                onClick={onPingPongToggle}
+                variant="ghost"
+                size="icon"
+                className={cn(
+                  "text-white hover:bg-[#111111d1] hover:text-white text-xs h-8 w-12",
+                  isPingPongEnabled && "bg-[#111111d1]"
+                )}
+                title="Toggle ping-pong looping"
+              >
+                <span className="flex items-center">
+                  ↹
+                  {isPlayingReverse && <span className="ml-1 text-[10px]">←</span>}
+                </span>
+              </Button>
+            </motion.div>
+          )}
           {[0.5, 1, 1.5, 2].map((speed) => (
             <motion.div
               whileHover={{ scale: 1.1 }}

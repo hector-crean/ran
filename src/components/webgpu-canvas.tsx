@@ -86,7 +86,9 @@ export const VideoMaskCanvas = forwardRef<VideoMaskCanvasHandle, VideoMaskCanvas
         samplerBindGroupLayout,
       } = resources;
 
-      if (!offscreenVideoTexture) {
+      if (!offscreenVideoTexture ||  !videoElement ||
+        videoElement.readyState < 2 ||         // no frame yet
+        !videoElement.videoWidth) {
         console.warn("[WebGPU Render] Offscreen video texture not available");
         return;
       }

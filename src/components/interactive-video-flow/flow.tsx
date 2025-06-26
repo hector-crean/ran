@@ -11,10 +11,36 @@ import {
   Background,
   Connection,
   Edge,
+  Node
 } from '@xyflow/react';
 import { VideoSourceNode } from './video-source-node';
 import { CompositorNode } from './compositor-node';
 import { ObjectMappingNode } from './object-mapping-node';
+
+import dagre from 'dagre';
+
+export function layoutElements(
+  nodes: Node[],
+  edges: Edge[],
+  direction: 'LR' | 'TB' = 'LR',   // LR = left-to-right, TB = top-to-bottom
+) {
+  const g = new dagre.graphlib.Graph();
+  g.setGraph({ rankdir: direction, ranksep: 80, nodesep: 40 });
+  g.setDefaultEdgeLabel(() => ({}));
+
+  // Dagre needs node sizes; pick something close to your cards
+  nodes.forEach((n) => g.setNode(n.id, { width: 200, height: 110 }));
+  edges.forEach((e) => g.setEdge(e.source, e.target));
+
+  dagre.layout(g);
+
+  const layoutedNodes = nodes.map((n) => {
+    const { x, y } = g.node(n.id);
+    return { ...n, position: { x, y } };
+  });
+
+  return { nodes: layoutedNodes, edges };
+}
 
 
 
@@ -86,27 +112,36 @@ const initialNodes = [
 
 const initialEdges: Edge[] = [
   {
-    id: 'e-1-3',
+    id: 'e-base',
     source: '1',
+    sourceHandle: 'video-output',
     target: '3',
+    targetHandle: 'video-base',
     type: 'smoothstep',
   },
   {
-    id: 'e-2-3',
+    id: 'e-mask',
     source: '2',
+    sourceHandle: 'video-output',
     target: '3',
+    targetHandle: 'video-mask',
     type: 'smoothstep',
   },
   {
-    id: 'e-4-3',
+    id: 'e-mappings',
     source: '4',
+    sourceHandle: 'mappings',
     target: '3',
+    targetHandle: 'object-mappings',
     type: 'smoothstep',
   },
-  
 ];
 
 const InteractiveVideoFlow = () => {
+
+  // const { nodes: laidOutNodes, edges: laidOutEdges } =
+  // layoutElements(initialNodes, initialEdges, 'TB'); // or 'LR'
+
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 

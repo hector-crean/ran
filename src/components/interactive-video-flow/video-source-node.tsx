@@ -47,7 +47,7 @@ export const VideoSourceNode = ({ id, data, isConnectable }: NodeProps<Node<Vide
         </div>
         {data.videoSrc && (
           <div className="mt-2">
-            <video src={data.videoSrc} controls muted className="w-full rounded" />
+            <video src={data.videoSrc} controls={false} muted className="w-full rounded" />
           </div>
         )}
         <Handle

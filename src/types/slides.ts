@@ -1,45 +1,43 @@
-interface RegularSlidePayload {
-  type: "Regular";
-  data: {
-    content: string;
-    annotations?: unknown[];
-  };
-}
+import { VideoSlideProps } from "@/app/video-slideshow/slide-types/video-slide";
+import {  SequenceSlideProps} from "@/app/video-slideshow/slide-types/sequence-slide";
 
-interface VideoSlidePayload {
-  type: "Video";
-  data: {
-    url: string;
-    autoplay?: boolean;
-    current_time?: number;
-  };
-}
+type SlideLike<T extends string,P> = { type: T, data: P};
 
-interface InteractiveSlidePayload {
-  type: "Interactive";
-  data: {
-    content: string;
-    interactive_elements: unknown[];
-  };
-}
 
-interface PollSlidePayload {
-  type: "Poll";
-  data: {
-    question: string;
-    options: string[];
-    results?: number[];
-  };
-}
+type RegularSlide = SlideLike<"Regular", {
+  content: string;
+  annotations?: unknown[];
+}>;
 
-export type SlidePayload =
-  | RegularSlidePayload
-  | VideoSlidePayload
-  | InteractiveSlidePayload
-  | PollSlidePayload;
+
+type VideoSlide = SlideLike<"Video", VideoSlideProps>;
+
+type InteractiveSlide = SlideLike<"Interactive", {
+  content: string;
+  interactive_elements: unknown[];
+}>;
+
+
+type PollSlide = SlideLike<"Poll", {
+  question: string;
+  options: string[];
+  results?: number[];
+}>;
+
+type SequenceSlide = SlideLike<"Sequence", SequenceSlideProps>;
+
+    
+export type SlideType =
+    | RegularSlide
+    | VideoSlide
+    | InteractiveSlide
+    | PollSlide
+    | SequenceSlide;
 
 export interface Slide {
   id: string;
   title: string;
-  slide_type: SlidePayload;
+  firstFramePoster: string;
+  lastFramePoster: string;
+  slide_type: SlideType;
 } 

@@ -7,10 +7,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 interface VideoSlideProps {
     slide: any;
     url: string;
+    poster: string;
     autoplay: boolean;
 }
 
-export function VideoSlide({ slide, url, autoplay }: VideoSlideProps) {
+export function VideoSlide({ slide, url, autoplay, poster }: VideoSlideProps) {
 
     const videoPlayerRef = useRef<VideoPlayerHandle>(null);
 
@@ -104,6 +105,7 @@ export function VideoSlide({ slide, url, autoplay }: VideoSlideProps) {
                 onPause={() => setIsPlaying(false)}
                 muted={true}
                 className="w-full h-full object-contain"
+                poster={poster}
             />
             <VideoControls
                 isPlaying={isPlaying}
@@ -124,3 +126,5 @@ export function VideoSlide({ slide, url, autoplay }: VideoSlideProps) {
         </div>
     );
 } 
+
+export type { VideoSlideProps };

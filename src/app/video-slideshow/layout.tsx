@@ -8,10 +8,10 @@ import { useCallback, useEffect } from "react";
 import { match } from "ts-pattern";
 import { slides } from "./slides-data";
 
-import { InteractiveSlide } from "./slide-types/interactive-slide";
 import { PollSlide } from "./slide-types/poll-slide";
 import { RegularSlide } from "./slide-types/regular-slide";
 import { VideoSlide } from "./slide-types/video-slide";
+import { SequenceSlide } from "./slide-types/sequence-slide";
 
 const renderSlide = (slide: Slide) => {
     return match(slide.slide_type)
@@ -23,20 +23,23 @@ const renderSlide = (slide: Slide) => {
                 slide={slide}
                 url={slideType.data.url}
                 autoplay={true}
+                poster={slideType.data.poster}
             />
         ))
-        .with({ type: "Interactive" }, (slideType) => (
-            <InteractiveSlide
-                slide={slide}
-                content={slideType.data.content}
-                elements={slideType.data.interactive_elements}
-            />
-        ))
+       
         .with({ type: "Poll" }, (slideType) => (
             <PollSlide
                 slide={slide}
                 question={slideType.data.question}
                 options={slideType.data.options}
+            />
+        ))
+        .with({ type: "Sequence" }, (slideType) => (
+            <SequenceSlide
+                slide={slide}
+                baseUrl={slideType.data.baseUrl}
+                frameCount={slideType.data.frameCount}
+                format={slideType.data.format}
             />
         ))
         .otherwise(() => <div>Unknown slide type</div>);

@@ -22,6 +22,7 @@ export interface VideoPlayerHandle {
 
 interface VideoPlayerProps {
   src?: string;
+  poster?: string;
   onLoadedMetadata?: (videoElement: HTMLVideoElement) => void;
   onTimeUpdate?: (currentTime: number, duration: number) => void;
   onPlay?: () => void;
@@ -36,6 +37,7 @@ interface VideoPlayerProps {
 export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
   ({ 
     src, 
+    poster,
     onLoadedMetadata, 
     onTimeUpdate, 
     onPlay, 
@@ -44,7 +46,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
     autoPlay = true,
     muted = true,
     playsInline = true,
-    loop = true
+    loop = false
   }, ref) => {
     const videoRef = useRef<HTMLVideoElement>(null);
 
@@ -124,6 +126,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
     return (
       <video
         ref={videoRef}
+        poster={poster}
         muted={muted}
         autoPlay={autoPlay}
         playsInline={playsInline}

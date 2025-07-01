@@ -1,6 +1,9 @@
+"use client";
+
 import { glob } from 'glob';
 import path from 'path';
 import { SequenceSliderClient } from './sequence-slider-client';
+import { use } from 'react';
 
 // Cache the sequence images to prevent re-reading on every request
 let cachedSequenceImages: string[] | null = null;
@@ -38,6 +41,7 @@ async function getSequenceImages(): Promise<string[]> {
 }
 
 export default async function SequenceSliderExample() {
-    const imagePaths = await getSequenceImages();
-    return <SequenceSliderClient imagePaths={imagePaths} />;
+
+    const paths = use(getSequenceImages());
+    return <SequenceSliderClient imagePaths={paths} />;
 }

@@ -1,6 +1,6 @@
 import type { Slide } from "@/types/slides";
 
-export const slides: Slide[] = [
+export const slides = [
   {
     id: "scene_1_1",
     title: "Scene 1.1",
@@ -354,4 +354,4 @@ export const slides: Slide[] = [
       },
     },
   },
-]; 
+] as Slide[];

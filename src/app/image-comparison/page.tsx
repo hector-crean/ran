@@ -7,14 +7,14 @@ const Page = () => {
       <ClipPathComparator
         beforeContent={
           <img
-            src="/red_distortion_2.webp"
+            src="/assets/Scene_1.1_poster.png"
             alt="Before"
             className="w-full h-full object-cover"
           />
         }
         afterContent={
           <img
-            src="/blue_distortion_2.webp"
+            src="/assets/Scene_2.1_poster.png"
             alt="After"
             className="w-full h-full object-cover"
           />

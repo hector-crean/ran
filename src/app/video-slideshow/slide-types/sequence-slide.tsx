@@ -11,33 +11,28 @@ import { Slide } from "@/types/slides";
 import { SequenceSliderClient } from "@/app/sequence-slider/sequence-slider-client";
 
 interface SequenceSlideProps {
-    slide: Slide;
-    baseUrl: string;
-    frameCount: number;
-    format: string;
+  slide: Slide;
+  baseUrl: string;
+  frameCount: number;
+  format: string;
 }
 
-
-
 export const SequenceSlide = ({
-    slide,
-    baseUrl,
-    frameCount,
-    format,
+  slide,
+  baseUrl,
+  frameCount,
+  format,
 }: SequenceSlideProps) => {
-    
+  const paths = useMemo(() => {
+    return Array.from(
+      { length: frameCount },
+      (_, i) => `${baseUrl}${(i + 1).toString().padStart(5, "0")}.${format}`
+    );
+  }, [baseUrl, frameCount, format]);
 
-    
-    const paths = useMemo(() => {
-        return Array.from({ length: frameCount }, (_, i) => `${baseUrl}${(i+1).toString().padStart(5, '0')}.${format}`);
-    }, [baseUrl, frameCount, format]);
-
-      
+  return <SequenceSliderClient imagePaths={paths} />;
+};
 
 
-
-    return <SequenceSliderClient imagePaths={paths} />;
-    
-}; 
 
 export type { SequenceSlideProps };

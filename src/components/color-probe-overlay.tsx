@@ -1,12 +1,12 @@
 "use client";
-import { 
-  forwardRef, 
-  useImperativeHandle, 
-  useRef, 
-  useState,
-  useCallback
+import { AnimatePresence, motion } from "motion/react";
+import {
+  forwardRef,
+  useCallback,
+  useImperativeHandle,
+  useRef,
+  useState
 } from "react";
-import { AnimatePresence, motion } from "framer-motion";
 import { ColorProbe } from "./ui/color-probe";
 import type { Color, Kernel } from "./webgpu-canvas";
 
@@ -33,7 +33,7 @@ export const ColorProbeOverlay = forwardRef<ColorProbeOverlayHandle, ColorProbeO
     const handlePointerMove = useCallback(
       (event: React.PointerEvent<HTMLDivElement>) => {
         if (!containerRef.current || !onMouseMove) return;
-        
+
         const rect = containerRef.current.getBoundingClientRect();
         const pixelX = event.clientX - rect.left;
         const pixelY = event.clientY - rect.top;

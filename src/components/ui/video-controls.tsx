@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
 import { Button } from "@/components/ui/button";
-import { Play, Pause, Volume2, Volume1, VolumeX } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
+import { Pause, Play, Volume1, Volume2, VolumeX } from "lucide-react";
+import { motion } from "motion/react";
+import React from "react";
 
 const formatTime = (seconds: number) => {
   if (isNaN(seconds)) return "0:00";
@@ -197,4 +197,4 @@ const VideoControls: React.FC<VideoControlsProps> = ({
   );
 };
 
-export { VideoControls }; 
+export { VideoControls };

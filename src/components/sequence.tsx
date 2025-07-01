@@ -1,5 +1,5 @@
 import { clamp, objectFit } from "@/lib/utils";
-import { MotionValue, useMotionValueEvent } from "framer-motion";
+import { MotionValue, useMotionValueEvent } from "motion/react";
 import { useCallback, useEffect, useRef } from "react";
 
 interface SequenceProps {

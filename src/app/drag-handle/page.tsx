@@ -1,15 +1,14 @@
 "use client";
 
-import GlowFilter from "@/components/ui/svg/filter/glow-filter";
 import {
   motion,
-  useMotionValue,
-  useTransform,
-  useSpring,
-  useMotionTemplate,
   useDragControls,
-} from "framer-motion";
-import { useMemo, useState, useEffect } from "react";
+  useMotionTemplate,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "motion/react";
+import { useState } from "react";
 // import { CSS, Transform } from '@dnd-kit/utilities';
 
 interface CircularArcProps {
@@ -77,13 +76,13 @@ const CircularArc = ({
         >
           {/* Add subtle gradient for 3D effect */}
           <defs>
-          <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-     <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
-     <feMerge>
-       <feMergeNode in="coloredBlur"/>
-       <feMergeNode in="SourceGraphic"/>
-     </feMerge>
-   </filter>
+            <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="4" result="coloredBlur" />
+              <feMerge>
+                <feMergeNode in="coloredBlur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
             <linearGradient
               id="circle-gradient"
               x1="0%"

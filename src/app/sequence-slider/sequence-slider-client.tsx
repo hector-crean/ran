@@ -5,7 +5,7 @@ import { Drag, HandlerArgs } from "@/components/drag";
 import { Sequence } from "@/components/sequence";
 import { useImageSequence } from "@/hooks/use-image-sequence";
 import { clamp } from "@/lib/utils";
-import { animate, motion, useMotionValue, useTransform } from "framer-motion";
+import { animate, motion, useMotionValue, useTransform } from "motion/react";
 
 
 //

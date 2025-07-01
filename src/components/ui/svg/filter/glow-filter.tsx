@@ -1,6 +1,6 @@
 "use client";
-import React, { useState, useEffect } from "react";
-import { motion, useAnimation, AnimatePresence } from "framer-motion";
+import { motion, useAnimation } from "motion/react";
+import React, { useEffect, useState } from "react";
 
 interface GlowFilterProps {
   id: string;
@@ -36,7 +36,7 @@ const GlowFilter = ({
   const [currentIntensity, setCurrentIntensity] = useState(intensity);
 
   // Generate glow layers dynamically
-  const glowSizes = Array.from({ length: glowLayers }, (_, i) => 
+  const glowSizes = Array.from({ length: glowLayers }, (_, i) =>
     (i + 1) * 2 * currentIntensity
   );
 
@@ -98,9 +98,9 @@ const GlowFilter = ({
       variants={glowVariants}
       initial={animated ? "initial" : undefined}
       animate={
-        animated 
-          ? isHovering && interactive 
-            ? "hover" 
+        animated
+          ? isHovering && interactive
+            ? "hover"
             : "animate"
           : undefined
       }
@@ -120,7 +120,7 @@ const GlowFilter = ({
           floodOpacity={1 - (index * 0.2)} // Reduce opacity for outer layers
           animate={{
             stdDeviation: animated ? [size * 0.8, size * 1.2, size] : size,
-            floodOpacity: animated 
+            floodOpacity: animated
               ? [0.8 - (index * 0.2), 1 - (index * 0.15), 0.9 - (index * 0.2)]
               : 1 - (index * 0.2),
           }}
@@ -133,7 +133,7 @@ const GlowFilter = ({
           }}
         />
       ))}
-      
+
       {/* Optional inner bright core */}
       <motion.feDropShadow
         dx="0"

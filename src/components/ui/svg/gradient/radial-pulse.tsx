@@ -1,6 +1,6 @@
 "use client";
+import { AnimatePresence, motion, useAnimation } from "motion/react";
 import React, { useEffect, useState } from "react";
-import { motion, useAnimation, AnimatePresence } from "framer-motion";
 
 interface RadialPulseProps {
   id: string;
@@ -16,18 +16,18 @@ interface RadialPulseProps {
   onComplete?: () => void;
 }
 
-const RadialPulse = ({ 
-  id, 
-  color, 
-  cx, 
-  cy, 
-  duration, 
-  delay, 
+const RadialPulse = ({
+  id,
+  color,
+  cx,
+  cy,
+  duration,
+  delay,
   intensity = 0.7,
   easing = "easeOut",
   pulseCount = 1,
   maxScale = 12,
-  onComplete 
+  onComplete
 }: RadialPulseProps): React.ReactNode => {
   const controls = useAnimation();
   const [pulses, setPulses] = useState<number[]>([]);
@@ -125,25 +125,25 @@ const RadialPulse = ({
 };
 
 // Enhanced version with more control
-export const AdvancedRadialPulse = ({ 
-  id, 
-  color, 
-  cx, 
-  cy, 
-  duration, 
+export const AdvancedRadialPulse = ({
+  id,
+  color,
+  cx,
+  cy,
+  duration,
   delay,
   intensity = 0.7,
   easing = "easeOut",
   pulseCount = 3,
   maxScale = 12,
-  onComplete 
+  onComplete
 }: RadialPulseProps) => {
   const [isActive, setIsActive] = useState(true);
 
   // Complex animation sequence
   const sequenceVariants = {
-    initial: { 
-      scale: 0, 
+    initial: {
+      scale: 0,
       opacity: 0,
       rotate: 0,
     },
@@ -245,13 +245,13 @@ export const useRadialPulse = (config: {
 };
 
 // Example usage components
-export const InteractivePulse = ({ 
-  id, 
-  color, 
-  cx, 
-  cy, 
-  duration = 2, 
-  delay = 0 
+export const InteractivePulse = ({
+  id,
+  color,
+  cx,
+  cy,
+  duration = 2,
+  delay = 0
 }: Omit<RadialPulseProps, 'intensity' | 'easing'>) => {
   const { isAnimating, handlers } = useRadialPulse({
     pulseOnHover: true,
@@ -276,7 +276,7 @@ export const InteractivePulse = ({
 };
 
 // Performance-optimized version for multiple instances
-export const BatchedRadialPulse = ({ 
+export const BatchedRadialPulse = ({
   pulses,
   globalDelay = 0,
 }: {
@@ -308,4 +308,3 @@ export const BatchedRadialPulse = ({
     </>
   );
 };
-  

@@ -32,7 +32,6 @@ export const SequenceSlide = ({
         return Array.from({ length: frameCount }, (_, i) => `${baseUrl}${(i+1).toString().padStart(5, '0')}.${format}`);
     }, [baseUrl, frameCount, format]);
 
-    console.log(paths)
       
 
 

@@ -195,7 +195,7 @@ export const slides: Slide[] = [
       type: 'Sequence',
       data:  {
         baseUrl: "/assets/Scene_5.3_",
-        frameCount: 350,
+        frameCount: 75,
         format: "png"
       }
     },

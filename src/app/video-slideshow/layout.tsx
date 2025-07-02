@@ -8,6 +8,8 @@ import { useCallback, useEffect } from "react";
 import { match } from "ts-pattern";
 import { slides } from "./slides-data";
 
+import { ResponsiveContainer } from "@/components/ui/responsive-container";
+import { SettingsProvider } from "@/contexts/settings-dialog";
 import { PollSlide } from "./slide-types/poll-slide";
 import { RegularSlide } from "./slide-types/regular-slide";
 import { SequenceSlide } from "./slide-types/sequence-slide";
@@ -338,11 +340,19 @@ export default function VideoSlideshowLayout({
     children: React.ReactNode;
 }) {
     return (
-        <SlideshowProvider slides={slides} renderSlide={renderSlide}>
-            <div className="relative w-full h-screen overflow-hidden bg-black text-white">
-                {children}
-                <PersistentUI />
-            </div>
-        </SlideshowProvider>
+        <SettingsProvider>
+            <SlideshowProvider slides={slides} renderSlide={renderSlide}>
+                <ResponsiveContainer
+                    width={1920}
+                    height={1080}
+                    scale={true}
+                    containerClassname="w-[calc(100vw-1rem)] h-[calc(100vh-1rem)]"
+                    contentClassname="rounded-md overflow-hidden"
+                >
+                    {children}
+                    <PersistentUI />
+                </ResponsiveContainer>
+            </SlideshowProvider>
+        </SettingsProvider>
     );
 } 

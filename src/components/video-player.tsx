@@ -53,7 +53,6 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
   }, ref) => {
     const videoRef = useRef<HTMLVideoElement>(null);
 
-    console.log(poster)
 
     const handleLoadedMetadata = () => {
       if (videoRef.current && onLoadedMetadata) {

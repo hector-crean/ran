@@ -48,8 +48,8 @@ export const SequenceSlide = ({
     enableFallback: false, // Keep original behavior for this component
   });
 
-  const width = 500;
-  const height = 500;
+  const width = 1920;
+  const height = 1080;
   const pathRef = useRef<SVGPathElement>(null);
   const dragKnobRef = useRef<SVGGElement>(null);
 

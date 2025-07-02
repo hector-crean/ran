@@ -6,6 +6,13 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+
+  --color-dark-blue: oklch(0.427 0.0901 261.24);
+  --color-medium-blue: oklch(0.6275 0.1317 246.86);
+  --color-light-blue: oklch(0.8117 0.0576 250.16);
+  --color-purple-light: oklch(0.6766 0.1882 313.08);
+
+  
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);

@@ -121,14 +121,17 @@ const BackgroundPoster = ({
   posterUrl,
   alt,
   layoutId,
-  useViewTransitions
+  useViewTransitions,
+  posterType = 'prev'
 }: {
   posterUrl: string;
   alt: string;
   layoutId: string;
   useViewTransitions: boolean;
+  posterType?: 'prev' | 'next';
 }) => {
-  const baseClassName = "absolute inset-0 z-10 pointer-events-none flex items-center justify-center slide-poster-transition";
+  const transitionClass = posterType === 'prev' ? 'slide-poster-prev-transition' : 'slide-poster-next-transition';
+  const baseClassName = `absolute inset-0 z-10 pointer-events-none flex items-center justify-center ${useViewTransitions ? transitionClass : ''}`;
 
   if (useViewTransitions) {
     // Use simple div when View Transitions API is supported
@@ -187,26 +190,28 @@ const Page = () => {
     <div className="relative w-full h-full overflow-hidden bg-black">
       {/* Layer 1: Previous slide background (z-10) */}
       <BackgroundWrapper>
-        {previousSlide && (
+        {previousSlide && !supportsViewTransitions && (
           <BackgroundPoster
             key={`prev-${previousSlide.id}`}
             posterUrl={previousSlide.lastFramePoster}
             alt={`${previousSlide.title} ending`}
             layoutId="preview-previous"
             useViewTransitions={supportsViewTransitions}
+            posterType='prev'
           />
         )}
       </BackgroundWrapper>
 
       {/* Layer 2: Next slide background (z-10) */}
       <BackgroundWrapper>
-        {nextSlide && (
+        {nextSlide && !supportsViewTransitions && (
           <BackgroundPoster
             key={`next-${nextSlide.id}`}
             posterUrl={nextSlide.firstFramePoster}
             alt={`${nextSlide.title} beginning`}
             layoutId="preview-next"
             useViewTransitions={supportsViewTransitions}
+            posterType='next'
           />
         )}
       </BackgroundWrapper>

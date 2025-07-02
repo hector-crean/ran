@@ -1,11 +1,10 @@
 "use client";
 
-import { 
-  forwardRef, 
-  useImperativeHandle, 
-  useRef, 
+import {
+  forwardRef,
   useEffect,
-  useState
+  useImperativeHandle,
+  useRef
 } from "react";
 
 export interface VideoPlayerHandle {
@@ -32,23 +31,29 @@ interface VideoPlayerProps {
   muted?: boolean;
   playsInline?: boolean;
   loop?: boolean;
+  preload?: 'none' | 'metadata' | 'auto';
+  crossOrigin?: 'anonymous' | 'use-credentials' | '';
 }
 
 export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
-  ({ 
-    src, 
+  ({
+    src,
     poster,
-    onLoadedMetadata, 
-    onTimeUpdate, 
-    onPlay, 
-    onPause, 
+    onLoadedMetadata,
+    onTimeUpdate,
+    onPlay,
+    onPause,
     className = "hidden",
     autoPlay = true,
     muted = true,
     playsInline = true,
-    loop = false
+    loop = false,
+    preload,
+    crossOrigin
   }, ref) => {
     const videoRef = useRef<HTMLVideoElement>(null);
+
+    console.log(poster)
 
     const handleLoadedMetadata = () => {
       if (videoRef.current && onLoadedMetadata) {
@@ -136,6 +141,8 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
         onTimeUpdate={handleTimeUpdate}
         onLoadedMetadata={handleLoadedMetadata}
         className={className}
+        preload={preload}
+        crossOrigin={crossOrigin}
       >
         Your browser does not support the video tag.
       </video>

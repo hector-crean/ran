@@ -37,17 +37,11 @@ export function VideoSlide({ slide, url, autoplay, poster }: VideoSlideProps) {
         setDuration(0);
     }, [url]);
 
-
-
-
     const handleTimeUpdate = useCallback(async (currentTime: number, duration: number) => {
         const currentProgress = (currentTime / duration) * 100;
         setProgress(isFinite(currentProgress) ? currentProgress : 0);
         setCurrentTime(currentTime);
-
-
     }, [isVideoLoaded]);
-
 
     const handleSeek = (value: number) => {
         if (videoPlayerRef.current && duration) {
@@ -96,7 +90,6 @@ export function VideoSlide({ slide, url, autoplay, poster }: VideoSlideProps) {
             {/* Option 1: object-contain - Maintains aspect ratio, fits entirely within container */}
 
             <VideoPlayer
-
                 ref={videoPlayerRef}
                 src={url || ''}
                 onLoadedMetadata={handleLoadedMetadata}
@@ -106,6 +99,9 @@ export function VideoSlide({ slide, url, autoplay, poster }: VideoSlideProps) {
                 muted={true}
                 className="w-full h-full object-contain"
                 poster={poster}
+                preload="metadata"
+                crossOrigin="anonymous"
+                playsInline={true}
             />
             <VideoControls
                 isPlaying={isPlaying}
@@ -125,6 +121,7 @@ export function VideoSlide({ slide, url, autoplay, poster }: VideoSlideProps) {
 
         </div>
     );
-} 
+}
 
 export type { VideoSlideProps };
+

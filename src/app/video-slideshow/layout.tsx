@@ -10,8 +10,136 @@ import { slides } from "./slides-data";
 
 import { PollSlide } from "./slide-types/poll-slide";
 import { RegularSlide } from "./slide-types/regular-slide";
-import { VideoSlide } from "./slide-types/video-slide";
 import { SequenceSlide } from "./slide-types/sequence-slide";
+import { VideoSlide } from "./slide-types/video-slide";
+
+// Asset preloader utility
+const preloadAsset = (url: string, type: 'image' | 'video' = 'image'): Promise<void> => {
+    return new Promise((resolve, reject) => {
+        if (type === 'image') {
+            const img = new Image();
+            img.onload = () => resolve();
+            img.onerror = reject;
+            img.src = url;
+        } else if (type === 'video') {
+            const video = document.createElement('video');
+            video.onloadeddata = () => resolve();
+            video.onerror = reject;
+            video.preload = 'metadata';
+            video.src = url;
+        }
+    });
+};
+
+// Service Worker utilities
+const registerServiceWorker = async () => {
+    if ('serviceWorker' in navigator) {
+        try {
+            const registration = await navigator.serviceWorker.register('/sw.js');
+            console.log('Service Worker registered:', registration);
+            return registration;
+        } catch (error) {
+            console.error('Service Worker registration failed:', error);
+        }
+    }
+};
+
+const preloadAssetsViaServiceWorker = (assets: string[]) => {
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+            type: 'PRELOAD_ASSETS',
+            assets: assets
+        });
+    }
+};
+
+const cleanupCache = () => {
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+        navigator.serviceWorker.controller.postMessage({
+            type: 'CLEANUP_CACHE'
+        });
+    }
+};
+
+// Preload sequence images
+const preloadSequence = async (baseUrl: string, frameCount: number, format: string, priority: 'high' | 'low' = 'low') => {
+    const promises: Promise<void>[] = [];
+    const batchSize = priority === 'high' ? 10 : 5;
+
+    // Also collect URLs for service worker preloading
+    const sequenceUrls: string[] = [];
+
+    for (let i = 1; i <= frameCount; i += batchSize) {
+        const batch = [];
+        for (let j = i; j < Math.min(i + batchSize, frameCount + 1); j++) {
+            const frameUrl = `${baseUrl}${j.toString().padStart(5, '0')}.${format}`;
+            batch.push(preloadAsset(frameUrl, 'image'));
+            sequenceUrls.push(frameUrl);
+        }
+
+        // Wait for each batch before starting the next
+        await Promise.allSettled(batch);
+
+        // Add a small delay to avoid overwhelming the browser
+        if (priority === 'low') {
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
+    }
+
+    // Send to service worker for background caching
+    if (priority === 'low') {
+        preloadAssetsViaServiceWorker(sequenceUrls);
+    }
+};
+
+// Generate preload links for critical assets using DOM manipulation
+const CriticalAssetPreloader = ({ currentSlideIndex }: { currentSlideIndex: number }) => {
+    useEffect(() => {
+        const currentSlide = slides[currentSlideIndex];
+        const nextSlide = slides[currentSlideIndex + 1];
+        const prevSlide = slides[currentSlideIndex - 1];
+
+        // Remove existing preload links
+        const existingLinks = document.querySelectorAll('link[data-slideshow-preload]');
+        existingLinks.forEach(link => link.remove());
+
+        // Add new preload links
+        const addPreloadLink = (href: string, as: string, rel: string = 'preload') => {
+            const link = document.createElement('link');
+            link.rel = rel;
+            link.as = as;
+            link.href = href;
+            link.setAttribute('data-slideshow-preload', 'true');
+            document.head.appendChild(link);
+        };
+
+        // Current slide assets
+        if (currentSlide) {
+            if (currentSlide.slide_type.type === 'Video') {
+                addPreloadLink(currentSlide.slide_type.data.poster, 'image');
+                addPreloadLink(currentSlide.slide_type.data.url, 'video');
+            } else if (currentSlide.slide_type.type === 'Sequence') {
+                // Preload first few frames of sequence
+                for (let i = 1; i <= Math.min(5, currentSlide.slide_type.data.frameCount); i++) {
+                    const frameUrl = `${currentSlide.slide_type.data.baseUrl}${i.toString().padStart(5, '0')}.${currentSlide.slide_type.data.format}`;
+                    addPreloadLink(frameUrl, 'image');
+                }
+            }
+        }
+
+        // Next slide poster
+        if (nextSlide) {
+            addPreloadLink(nextSlide.firstFramePoster, 'image', 'prefetch');
+        }
+
+        // Previous slide poster
+        if (prevSlide) {
+            addPreloadLink(prevSlide.lastFramePoster, 'image', 'prefetch');
+        }
+    }, [currentSlideIndex]);
+
+    return null;
+};
 
 const renderSlide = (slide: Slide) => {
     return match(slide.slide_type)
@@ -26,7 +154,7 @@ const renderSlide = (slide: Slide) => {
                 poster={slideType.data.poster}
             />
         ))
-       
+
         .with({ type: "Poll" }, (slideType) => (
             <PollSlide
                 slide={slide}
@@ -80,6 +208,66 @@ function Dot({ isSelected, onClick }: { isSelected: boolean, onClick: () => void
 function PersistentUI() {
     const { slides, currentPage, setPage } = useSlideshowContext();
 
+    // Register service worker on mount
+    useEffect(() => {
+        registerServiceWorker();
+
+        // Cleanup cache periodically (every 5 minutes)
+        const cleanupInterval = setInterval(cleanupCache, 5 * 60 * 1000);
+
+        return () => clearInterval(cleanupInterval);
+    }, []);
+
+    // Asset preloading effect
+    useEffect(() => {
+        const preloadAssets = async () => {
+            const currentSlide = slides[currentPage];
+            const nextSlide = slides[currentPage + 1];
+            const prevSlide = slides[currentPage - 1];
+
+            // Preload current slide assets with high priority
+            if (currentSlide) {
+                if (currentSlide.slide_type.type === 'Video') {
+                    preloadAsset(currentSlide.slide_type.data.poster, 'image');
+                    preloadAsset(currentSlide.slide_type.data.url, 'video');
+                } else if (currentSlide.slide_type.type === 'Sequence') {
+                    // Preload first few frames of sequence immediately
+                    const { baseUrl, frameCount, format } = currentSlide.slide_type.data;
+                    preloadSequence(baseUrl, Math.min(frameCount, 20), format, 'high');
+                }
+            }
+
+            // Preload next slide assets
+            if (nextSlide) {
+                setTimeout(() => {
+                    const nextAssets: string[] = [];
+
+                    if (nextSlide.slide_type.type === 'Video') {
+                        preloadAsset(nextSlide.firstFramePoster, 'image');
+                        preloadAsset(nextSlide.slide_type.data.url, 'video');
+                        nextAssets.push(nextSlide.firstFramePoster, nextSlide.slide_type.data.url);
+                    } else if (nextSlide.slide_type.type === 'Sequence') {
+                        const { baseUrl, frameCount, format } = nextSlide.slide_type.data;
+                        preloadSequence(baseUrl, frameCount, format, 'low');
+                    }
+
+                    // Send to service worker for background caching
+                    if (nextAssets.length > 0) {
+                        preloadAssetsViaServiceWorker(nextAssets);
+                    }
+                }, 1000);
+            }
+
+            // Preload previous slide poster
+            if (prevSlide) {
+                preloadAsset(prevSlide.lastFramePoster, 'image');
+                preloadAssetsViaServiceWorker([prevSlide.lastFramePoster]);
+            }
+        };
+
+        preloadAssets();
+    }, [currentPage, slides]);
+
     // Navigation functions
     const paginate = useCallback(
         (navDirection: number) => {
@@ -116,6 +304,7 @@ function PersistentUI() {
 
     return (
         <>
+            <CriticalAssetPreloader currentSlideIndex={currentPage} />
             <Pagination
                 id={'pagination'}
                 currentPage={currentPage}

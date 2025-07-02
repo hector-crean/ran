@@ -2,8 +2,22 @@
 
 import { useSlideshowContext } from "@/contexts/slideshow-context";
 import { Slide } from "@/types/slides";
-import { motion, Variants, AnimatePresence } from "motion/react";
+import { AnimatePresence, motion, Variants } from "motion/react";
 import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+
+// Hook to detect View Transitions API support
+const useViewTransitionsSupport = () => {
+  const [isSupported, setIsSupported] = useState(false);
+
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      setIsSupported('startViewTransition' in document);
+    }
+  }, []);
+
+  return isSupported;
+};
 
 // Crossfade variants for main content
 const crossfadeVariants: Variants = {
@@ -56,89 +70,158 @@ const previewVariants: Variants = {
   },
 };
 
-// Main content layer
-const MainSlide = ({ slide, renderSlide }: { slide: Slide; renderSlide: (slide: Slide) => React.ReactNode }) => (
-  <motion.div
-    key={slide.id}
-    variants={crossfadeVariants}
-    initial="enter"
-    animate="center"
-    exit="exit"
-    layoutId="main-slide"
-    className="absolute inset-0 z-30 flex items-center justify-center"
-    style={{
-      backfaceVisibility: "hidden",
-      willChange: "transform, opacity, filter",
-    }}
-  >
-    {renderSlide(slide)}
-  </motion.div>
-);
+// Main content layer with conditional animation
+const MainSlide = ({
+  slide,
+  renderSlide,
+  useViewTransitions
+}: {
+  slide: Slide;
+  renderSlide: (slide: Slide) => React.ReactNode;
+  useViewTransitions: boolean;
+}) => {
+  const baseClassName = "absolute inset-0 z-30 flex items-center justify-center slide-content-transition";
+  const baseStyle = {
+    backfaceVisibility: "hidden" as const,
+    willChange: "transform, opacity, filter",
+  };
 
-// Background poster layer
-const BackgroundPoster = ({ posterUrl, alt, layoutId }: { posterUrl: string; alt: string; layoutId: string }) => (
-  <motion.div
-    key={layoutId}
-    variants={previewVariants}
-    initial="hidden"
-    animate="visible"
-    exit="hidden"
-    layoutId={layoutId}
-    className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center"
-  >
-    <img
-      src={posterUrl}
-      alt={alt}
-      className="w-full object-contain max-h-full"
-    />
-    {/* <div className="absolute inset-0 bg-black/20" /> */}
-  </motion.div>
-);
+  if (useViewTransitions) {
+    // Use simple div when View Transitions API is supported
+    return (
+      <div
+        key={slide.id}
+        className={baseClassName}
+        style={baseStyle}
+      >
+        {renderSlide(slide)}
+      </div>
+    );
+  }
+
+  // Fallback to Framer Motion
+  return (
+    <motion.div
+      key={slide.id}
+      variants={crossfadeVariants}
+      initial="enter"
+      animate="center"
+      exit="exit"
+      layoutId="main-slide"
+      className={baseClassName}
+      style={baseStyle}
+    >
+      {renderSlide(slide)}
+    </motion.div>
+  );
+};
+
+// Background poster layer with conditional animation
+const BackgroundPoster = ({
+  posterUrl,
+  alt,
+  layoutId,
+  useViewTransitions
+}: {
+  posterUrl: string;
+  alt: string;
+  layoutId: string;
+  useViewTransitions: boolean;
+}) => {
+  const baseClassName = "absolute inset-0 z-10 pointer-events-none flex items-center justify-center slide-poster-transition";
+
+  if (useViewTransitions) {
+    // Use simple div when View Transitions API is supported
+    return (
+      <div
+        key={layoutId}
+        className={baseClassName}
+      >
+        <img
+          src={posterUrl}
+          alt={alt}
+          className="w-full object-contain max-h-full"
+        />
+      </div>
+    );
+  }
+
+  // Fallback to Framer Motion
+  return (
+    <motion.div
+      key={layoutId}
+      variants={previewVariants}
+      initial="hidden"
+      animate="visible"
+      exit="hidden"
+      layoutId={layoutId}
+      className={baseClassName}
+    >
+      <img
+        src={posterUrl}
+        alt={alt}
+        className="w-full object-contain max-h-full"
+      />
+    </motion.div>
+  );
+};
 
 const Page = () => {
   const { slides, renderSlide, currentPage } = useSlideshowContext();
   const { slide_id } = useParams<{ slide_id: string }>();
+  const supportsViewTransitions = useViewTransitionsSupport();
 
   const previousSlide = currentPage - 1 >= 0 ? slides[currentPage - 1] : null;
   const currentSlide = currentPage >= 0 && currentPage < slides.length ? slides[currentPage] : null;
   const nextSlide = currentPage + 1 < slides.length ? slides[currentPage + 1] : null;
 
+  const AnimationWrapper = supportsViewTransitions ?
+    ({ children }: { children: React.ReactNode }) => <>{children}</> :
+    ({ children }: { children: React.ReactNode }) => <AnimatePresence mode="wait">{children}</AnimatePresence>;
+
+  const BackgroundWrapper = supportsViewTransitions ?
+    ({ children }: { children: React.ReactNode }) => <>{children}</> :
+    ({ children }: { children: React.ReactNode }) => <AnimatePresence mode="sync">{children}</AnimatePresence>;
+
   return (
     <div className="relative w-full h-full overflow-hidden bg-black">
       {/* Layer 1: Previous slide background (z-10) */}
-      <AnimatePresence mode="sync">
+      <BackgroundWrapper>
         {previousSlide && (
           <BackgroundPoster
             key={`prev-${previousSlide.id}`}
             posterUrl={previousSlide.lastFramePoster}
             alt={`${previousSlide.title} ending`}
             layoutId="preview-previous"
+            useViewTransitions={supportsViewTransitions}
           />
         )}
-      </AnimatePresence>
+      </BackgroundWrapper>
 
       {/* Layer 2: Next slide background (z-10) */}
-      <AnimatePresence mode="sync">
+      <BackgroundWrapper>
         {nextSlide && (
           <BackgroundPoster
             key={`next-${nextSlide.id}`}
             posterUrl={nextSlide.firstFramePoster}
             alt={`${nextSlide.title} beginning`}
             layoutId="preview-next"
+            useViewTransitions={supportsViewTransitions}
           />
         )}
-      </AnimatePresence>
+      </BackgroundWrapper>
 
       {/* Layer 3: Main slide content (z-30) */}
-      <AnimatePresence mode="wait">
+      <AnimationWrapper>
         {currentSlide && (
           <MainSlide
             key={currentSlide.id}
             slide={currentSlide}
             renderSlide={renderSlide}
+            useViewTransitions={supportsViewTransitions}
           />
         )}
-      </AnimatePresence>
+      </AnimationWrapper>
 
       {/* Loading state */}
       {!currentSlide && (

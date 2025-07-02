@@ -42,10 +42,21 @@ export const SlideshowProvider: React.FC<SlideshowProviderProps> = ({
         return index !== -1 ? index : 0;
     }, [slides, slide_id]);
 
-    // Simple navigation function - just navigate to the route
+    // Enhanced navigation function with View Transitions API
     const setPage = useCallback((newPage: number, newDirection?: number) => {
         if (newPage >= 0 && newPage < slides.length) {
-            router.push(`/video-slideshow/${slides[newPage].id}`);
+            const newSlideId = slides[newPage].id;
+
+            // Check if View Transitions API is supported
+            if ('startViewTransition' in document) {
+                // Use View Transitions API for smooth transitions
+                document.startViewTransition(() => {
+                    router.push(`/video-slideshow/${newSlideId}`);
+                });
+            } else {
+                // Fallback to regular navigation
+                router.push(`/video-slideshow/${newSlideId}`);
+            }
         }
     }, [slides, router]);
 

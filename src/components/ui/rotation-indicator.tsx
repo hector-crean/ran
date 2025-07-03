@@ -4,6 +4,8 @@ import { motion, MotionValue, useMotionTemplate, useTransform } from "motion/rea
 import { ReactNode } from "react";
 
 interface RotationIndicatorProps {
+    circumferenceRatio: number;
+    handleToCircumferenceRatio: number;
     dragAngle: MotionValue<number>;
     dragging: boolean;
     radius?: number;
@@ -16,6 +18,8 @@ interface RotationIndicatorProps {
 }
 
 export const RotationIndicator = ({
+    circumferenceRatio,
+    handleToCircumferenceRatio,
     dragAngle,
     dragging,
     radius = 45,
@@ -26,15 +30,13 @@ export const RotationIndicator = ({
     children,
 }: RotationIndicatorProps) => {
 
-    const CIRCUMFERENCE_RATIO = 0.8;
-    const HANDLE_TO_CIRCUMFERENCE_RATIO = 0.02;
 
     const circumference = 2 * Math.PI * radius;
-    const arcLength = circumference * HANDLE_TO_CIRCUMFERENCE_RATIO;
+    const arcLength = circumference * handleToCircumferenceRatio;
     const dashOffset = circumference - arcLength;
 
     const transform3d = useMotionTemplate`rotate3d(1,0,0,-78deg)`;
-    const handleTransform = useTransform(dragAngle, (v) => `rotate(${clamp(v, 0, (CIRCUMFERENCE_RATIO - HANDLE_TO_CIRCUMFERENCE_RATIO) * 360)}deg)`);
+    const handleTransform = useTransform(dragAngle, (v) => `rotate(${clamp(v, 0, (circumferenceRatio - handleToCircumferenceRatio) * 360)}deg)`);
 
     const x = useTransform(dragAngle, (v) => {
         return radius * Math.cos(v * Math.PI / 180);
@@ -113,7 +115,7 @@ export const RotationIndicator = ({
 
                     <motion.g
                         style={{
-                            transform:`scaleX(-1) rotate(${-90 + 0.5 * (1 - CIRCUMFERENCE_RATIO ) * 360}deg)`,
+                            transform:`scaleX(-1) rotate(${-90 + 0.5 * (1 - circumferenceRatio ) * 360}deg)`,
                             transformOrigin: "center",
 
                         }}
@@ -126,7 +128,7 @@ export const RotationIndicator = ({
                             fill="none"
                             stroke="url(#circle-gradient)"
                             strokeWidth={strokeWidth}
-                            strokeDasharray={circumference * CIRCUMFERENCE_RATIO}
+                            strokeDasharray={circumference * circumferenceRatio}
                             filter="url(#glow)"
                         />
 

@@ -34,11 +34,14 @@ export const RotationalSequenceSlide = ({
     );
   }, [baseUrl, frameCount, format]);
 
+  const CIRCUMFERENCE_RATIO = 0.8;
+  const HANDLE_TO_CIRCUMFERENCE_RATIO = 0.02;
+
   const slider = useRef<HTMLDivElement>(null);
 
   const progress = useMotionValue(0);
 
-  const dragAngle = useTransform(progress, [0, 1], [0, 360]);
+  const dragAngle = useTransform(progress, [0, 0.6], [0, 360 * CIRCUMFERENCE_RATIO]);
 
   const memoizedImagePaths = useMemo(() => paths, [paths]);
 
@@ -67,9 +70,9 @@ export const RotationalSequenceSlide = ({
 
   const handleDragEnd = () => {
     setDragging(false);
-    const currentProgress = progress.get();
+    const currentDragAngle = dragAngle.get();
 
-    if (currentProgress < 0.95) {
+    if (currentDragAngle < 0.8 * 360 * CIRCUMFERENCE_RATIO) {
       animate(progress, 0, { type: "spring", stiffness: 300, damping: 30 });
     } else {
       animate(progress, 1, { type: "spring", stiffness: 300, damping: 30 });
@@ -108,6 +111,8 @@ export const RotationalSequenceSlide = ({
           </motion.div>
 
           <RotationIndicator
+            circumferenceRatio={0.8}
+            handleToCircumferenceRatio={0.02}
             dragAngle={dragAngle}
             dragging={dragging}
             strokeWidth={1.5}

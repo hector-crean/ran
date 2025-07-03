@@ -25,19 +25,29 @@ export const RotationIndicator = ({
     perspective = 1000,
     children,
 }: RotationIndicatorProps) => {
-    const HANDLE_RADIUS = 0.05;
+
+    const CIRCUMFERENCE_RATIO = 0.8;
+    const HANDLE_TO_CIRCUMFERENCE_RATIO = 0.02;
+
     const circumference = 2 * Math.PI * radius;
-    const arcLength = circumference * HANDLE_RADIUS;
+    const arcLength = circumference * HANDLE_TO_CIRCUMFERENCE_RATIO;
     const dashOffset = circumference - arcLength;
 
-    const transform3d = useMotionTemplate`rotate3d(1,0,0,-80deg)`;
-    const handleTransform = useTransform(dragAngle, (v) => `rotate(${clamp(v, 0, 0.8 * 360)}deg)`);
+    const transform3d = useMotionTemplate`rotate3d(1,0,0,-78deg)`;
+    const handleTransform = useTransform(dragAngle, (v) => `rotate(${clamp(v, 0, (CIRCUMFERENCE_RATIO - HANDLE_TO_CIRCUMFERENCE_RATIO) * 360)}deg)`);
+
+    const x = useTransform(dragAngle, (v) => {
+        return radius * Math.cos(v * Math.PI / 180);
+    });
+    const y = useTransform(dragAngle, (v) => {
+        return radius * Math.sin(v * Math.PI / 180);
+    });
 
 
     return (
         <motion.div
             className="relative w-full h-full flex items-center justify-center"
-        // style={{ perspective: perspective, touchAction: "none" }}
+            style={{ perspective: perspective, touchAction: "none" }}
         >
             <motion.div
                 style={{
@@ -103,7 +113,7 @@ export const RotationIndicator = ({
 
                     <motion.g
                         style={{
-                            transform: "rotate(-45deg)",
+                            transform:`scaleX(-1) rotate(${-90 + 0.5 * (1 - CIRCUMFERENCE_RATIO ) * 360}deg)`,
                             transformOrigin: "center",
 
                         }}
@@ -116,7 +126,7 @@ export const RotationIndicator = ({
                             fill="none"
                             stroke="url(#circle-gradient)"
                             strokeWidth={strokeWidth}
-                            strokeDasharray={circumference * 0.8}
+                            strokeDasharray={circumference * CIRCUMFERENCE_RATIO}
                             filter="url(#glow)"
                         />
 
@@ -141,7 +151,16 @@ export const RotationIndicator = ({
                                 transform: handleTransform,
                             }}
                         />
+                        {/* <motion.circle
+                            cx={x}
+                            cy={y}
+                            r={4}
+                            fill="red"
+                            stroke="none"
+                        /> */}
+                       
                     </motion.g>
+                    
 
 
                 </motion.svg>

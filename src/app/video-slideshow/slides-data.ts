@@ -35,7 +35,7 @@ export const slides = [
     firstFramePoster: "/assets/Scene_2.2.1_00001.png",
     lastFramePoster: "/assets/Scene_2.2.1_00100.png",
     slide_type: {
-      type: 'Sequence',
+      type: 'RotationalSequence',
       data:  {
         id: "scene_2_2_1",
         baseUrl: "/assets/Scene_2.2.1_",
@@ -192,7 +192,7 @@ export const slides = [
     firstFramePoster: "/assets/Scene_5.3_00001.png",
     lastFramePoster: "/assets/Scene_5.3_00075.png",
     slide_type: {
-      type: 'Sequence',
+      type: 'RotationalSequence',
       data:  {
         baseUrl: "/assets/Scene_5.3_",
         frameCount: 75,
@@ -220,7 +220,7 @@ export const slides = [
     firstFramePoster: "/assets/Scene_5.5_00001.png",
     lastFramePoster: "/assets/Scene_5.5_00025.png",
     slide_type: {
-      type: 'Sequence',
+      type: 'RotationalSequence',
       data:  {
         baseUrl: "/assets/Scene_5.5_",
         frameCount: 25,
@@ -304,7 +304,7 @@ export const slides = [
     firstFramePoster: "/assets/Scene_9.3_00001.png",
     lastFramePoster: "/assets/Scene_9.3_00075.png",
     slide_type: {
-      type: 'Sequence',
+      type: 'RotationalSequence',
       data:  {
         baseUrl: "/assets/Scene_9.3_",
         frameCount: 75,

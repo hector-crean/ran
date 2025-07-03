@@ -110,6 +110,8 @@ export const SequenceSlide = ({
           <RotationIndicator
             dragAngle={dragAngle}
             dragging={dragging}
+            strokeWidth={1.5}
+            radius={48}
           />
           <motion.div className="absolute inset-0" initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

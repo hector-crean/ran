@@ -57,7 +57,7 @@ const Page = () => {
                   onDragMove={onDragMove}
                   onDragEnd={onDragEnd}
                   perspective={1000}
-                  radius={45}
+                  radius={4}
                 />
               )}
             </FramerMotionDragHandle>

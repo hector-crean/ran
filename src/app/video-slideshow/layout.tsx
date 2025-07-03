@@ -12,7 +12,7 @@ import { ResponsiveContainer } from "@/components/ui/responsive-container";
 import { SettingsProvider } from "@/contexts/settings-dialog";
 import { PollSlide } from "./slide-types/poll-slide";
 import { RegularSlide } from "./slide-types/regular-slide";
-import { SequenceSlide } from "./slide-types/sequence-slide";
+import { RotationalSequenceSlide } from "./slide-types/rotational-sequence-slide";
 import { VideoSlide } from "./slide-types/video-slide";
 
 // Asset preloader utility
@@ -120,7 +120,7 @@ const CriticalAssetPreloader = ({ currentSlideIndex }: { currentSlideIndex: numb
             if (currentSlide.slide_type.type === 'Video') {
                 addPreloadLink(currentSlide.slide_type.data.poster, 'image');
                 addPreloadLink(currentSlide.slide_type.data.url, 'video');
-            } else if (currentSlide.slide_type.type === 'Sequence') {
+            } else if (currentSlide.slide_type.type === 'RotationalSequence') {
                 // Preload first few frames of sequence
                 for (let i = 1; i <= Math.min(5, currentSlide.slide_type.data.frameCount); i++) {
                     const frameUrl = `${currentSlide.slide_type.data.baseUrl}${i.toString().padStart(5, '0')}.${currentSlide.slide_type.data.format}`;
@@ -164,8 +164,8 @@ const renderSlide = (slide: Slide) => {
                 options={slideType.data.options}
             />
         ))
-        .with({ type: "Sequence" }, (slideType) => (
-            <SequenceSlide
+        .with({ type: "RotationalSequence" }, (slideType) => (
+            <RotationalSequenceSlide
                 slide={slide}
                 baseUrl={slideType.data.baseUrl}
                 frameCount={slideType.data.frameCount}
@@ -232,7 +232,7 @@ function PersistentUI() {
                 if (currentSlide.slide_type.type === 'Video') {
                     preloadAsset(currentSlide.slide_type.data.poster, 'image');
                     preloadAsset(currentSlide.slide_type.data.url, 'video');
-                } else if (currentSlide.slide_type.type === 'Sequence') {
+                } else if (currentSlide.slide_type.type === 'RotationalSequence') {
                     // Preload first few frames of sequence immediately
                     const { baseUrl, frameCount, format } = currentSlide.slide_type.data;
                     preloadSequence(baseUrl, Math.min(frameCount, 20), format, 'high');
@@ -248,7 +248,7 @@ function PersistentUI() {
                         preloadAsset(nextSlide.firstFramePoster, 'image');
                         preloadAsset(nextSlide.slide_type.data.url, 'video');
                         nextAssets.push(nextSlide.firstFramePoster, nextSlide.slide_type.data.url);
-                    } else if (nextSlide.slide_type.type === 'Sequence') {
+                    } else if (nextSlide.slide_type.type === 'RotationalSequence') {
                         const { baseUrl, frameCount, format } = nextSlide.slide_type.data;
                         preloadSequence(baseUrl, frameCount, format, 'low');
                     }

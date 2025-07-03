@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { SequenceSlide } from "../video-slideshow/slide-types/sequence-slide";
+import { RotationalSequenceSlide } from "../video-slideshow/slide-types/rotational-sequence-slide";
 import { Slide } from "@/types/slides";
 
 const Page = () => {
@@ -19,7 +19,7 @@ const Page = () => {
   };
 
   return (
-    <SequenceSlide
+    <RotationalSequenceSlide
       slide={slide as Slide}
       baseUrl={slide.slide_type.data.baseUrl}
       frameCount={slide.slide_type.data.frameCount}

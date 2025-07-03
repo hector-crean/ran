@@ -1,5 +1,5 @@
 import { VideoSlideProps } from "@/app/video-slideshow/slide-types/video-slide";
-import {  SequenceSlideProps} from "@/app/video-slideshow/slide-types/sequence-slide";
+import {  RotationalSequenceSlideProps} from "@/app/video-slideshow/slide-types/rotational-sequence-slide";
 
 type SlideLike<T extends string,P> = { type: T, data: P};
 
@@ -24,7 +24,7 @@ type PollSlide = SlideLike<"Poll", {
   results?: number[];
 }>;
 
-type SequenceSlide = SlideLike<"Sequence", SequenceSlideProps>;
+type RotationalSequenceSlide = SlideLike<"RotationalSequence", RotationalSequenceSlideProps>;
 
     
 export type SlideType =
@@ -32,7 +32,7 @@ export type SlideType =
     | VideoSlide
     | InteractiveSlide
     | PollSlide
-    | SequenceSlide;
+    | RotationalSequenceSlide;
 
 export interface Slide {
   id: string;

@@ -1,4 +1,5 @@
 import type { Slide } from "@/types/slides";
+import InfiniteCanvasPage from "../infinite-canvas/page";
 
 export const slides = [
   {
@@ -12,6 +13,29 @@ export const slides = [
         url: "/assets/Scene_1.1.mp4",
         poster: "/assets/Scene_1.1_poster.png",
         autoplay: true,
+      },
+    },
+  },
+  {
+    id: "scene_1_2",
+    title: "Scene 1.1",
+    firstFramePoster: "/assets/Scene_2.1_poster.png",
+    lastFramePoster: "/assets/Scene_2.1_poster.png",
+    // initialSheet: <InfiniteCanvasPage/>,
+    slide_type: {
+      type: 'FreezeFrame',
+      data: {
+        poster: "/assets/Scene_2.1_poster.png",
+        elements: [
+          {
+            position: {x: 1008, y: 274}, 
+            width: 912, 
+            height: 567,
+            node: { type: "InfiniteCanvasMap", data: {} },
+          },
+        ],
+        
+      
       },
     },
   },

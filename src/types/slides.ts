@@ -2,6 +2,7 @@ import { VideoSlideProps } from "@/app/video-slideshow/slide-types/video-slide";
 import {  RotationalSequenceSlideProps} from "@/app/video-slideshow/slide-types/rotational-sequence-slide";
 import { FreezeFrameProps } from "@/app/video-slideshow/slide-types/freeze-frame";
 import { ReactNode } from "react";
+import { InteractiveVideoProps } from "@/app/video-slideshow/slide-types/interactive-video";
 
 type SlideLike<T extends string,P> = { type: T, data: P};
 
@@ -31,6 +32,8 @@ type RotationalSequenceSlide = SlideLike<"RotationalSequence", RotationalSequenc
 
 type FreezeFrameSlide = SlideLike<"FreezeFrame", FreezeFrameProps>;
 
+type InteractiveVideoSlide = SlideLike<"InteractiveVideo", InteractiveVideoProps>;
+
     
 export type SlideType =
     | RegularSlide
@@ -38,7 +41,8 @@ export type SlideType =
     | InteractiveSlide
     | PollSlide
     | RotationalSequenceSlide
-    | FreezeFrameSlide;
+    | FreezeFrameSlide
+    | InteractiveVideoSlide;
 
 export interface Slide {
   id: string;
@@ -59,6 +63,7 @@ type RenderableNodeLike<T extends string,P> = { type: T, data: P};
 
 type InfiniteCanvasMap = RenderableNodeLike<"InfiniteCanvasMap", {}>
 
-export type RenderableNode = InfiniteCanvasMap;
+
+export type RenderableNode = InfiniteCanvasMap ;
 
 

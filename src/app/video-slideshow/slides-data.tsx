@@ -286,11 +286,12 @@ export const slides = [
     firstFramePoster: "/assets/Scene_8.1_poster.png",
     lastFramePoster: "/assets/Scene_8.1_poster.png",
     slide_type: {
-      type: "Video",
+      type: 'InteractiveVideo',
       data: {
-        url: "/assets/Scene_8.1.mp4",
-        poster: "/assets/Scene_8.1_poster.png",
-        autoplay: true,
+        baseSrc: "/assets/Scene_8.1.mp4",
+        maskSrc: "/assets/Scene_8.1-masked.mp4",
+        objectMappings: [],
+        ar: 16 / 9,
       },
     },
   },

@@ -47,6 +47,7 @@ import {
 import { Button } from "@/components/ui/button";
 import InfiniteCanvasPage from "../infinite-canvas/page";
 import { InfiniteCanvasMap } from "@/components/ui/infinite-canvas/infinite-canvas-map";
+import { InteractiveVideo } from "./slide-types/interactive-video";
 
 
 
@@ -88,6 +89,15 @@ const renderSlide = (slide: Slide) => {
       ))
       .with({ type: "FreezeFrame" }, (slideType) => (
         <FreezeFrame slide={slide} poster={slideType.data.poster} elements={slideType.data.elements} />
+      ))
+      .with({ type: "InteractiveVideo" }, (slideType) => (
+        <InteractiveVideo
+        //   slide={slide}
+          baseSrc={slideType.data.baseSrc}
+          maskSrc={slideType.data.maskSrc}
+          objectMappings={slideType.data.objectMappings}
+          ar={slideType.data.ar}
+        />
       ))
       .otherwise(() => <div>Unknown slide type</div>);
   

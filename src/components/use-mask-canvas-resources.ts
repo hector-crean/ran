@@ -106,7 +106,11 @@ import {
               @fragment
               fn fragment_simple_video(@location(0) uv: vec2f) -> @location(0) vec4f {
                 let videoColor = textureSampleBaseClampToEdge(mainVideoTexture, videoSampler, uv);
-                return vec4(videoColor.rgb, 1.0);
+                  let maskColor = textureSampleBaseClampToEdge(maskVideoTexture, videoSampler, uv);
+
+                  let compositeColor = mix(videoColor.rgb, maskColor.rgb, maskColor.r);
+
+                return vec4(compositeColor.rgb, 1.0);
               }
               
               @fragment

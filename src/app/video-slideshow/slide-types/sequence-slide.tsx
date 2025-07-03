@@ -55,7 +55,7 @@ export const SequenceSlide = ({
 
   const [dragging, setDragging] = useState(false);
 
-  const dragX = useTransform(progress, [0, 1], [50, width - 50]);
+  const dragX = useTransform(progress, [0, 1], [0, width]);
 
   const handleDragMove = (args: HandlerArgs) => {
     const newProgress = clamp(args.dx / (width - 100), 0, 1);
@@ -129,7 +129,7 @@ export const SequenceSlide = ({
                 onDragStart={handleDragStart}
                 onDragMove={handleDragMove}
                 onDragEnd={handleDragEnd}
-                x={50}
+                x={0}
                 y={height / 2}
                 width={width}
                 height={height}
@@ -142,14 +142,20 @@ export const SequenceSlide = ({
                     style={{
                       cursor: isDragging ? "grabbing" : "grab",
                       x: dragX,
-                      y: height / 2,
+                      y: 0
                     }}
                     onPointerDown={dragStart}
                     onPointerUp={dragEnd}
                     onPointerMove={dragMove}
                     animate={{ scale: isDragging || dragging ? 1.2 : 1 }}
                   >
-                    <motion.circle r="20" fill="white" />
+                    {/* <motion.circle r="20" fill="white" /> */}
+                    <motion.rect
+                      width={width}
+                      height={height}
+                      fill="rgba(255,255,255,0.1)"
+                      style={{ pointerEvents: dragging ? "none" : "auto" }}
+                    />
                   </motion.g>
                 )}
               </Drag>

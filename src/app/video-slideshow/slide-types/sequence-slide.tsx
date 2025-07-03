@@ -8,6 +8,7 @@ import { Sequence } from "@/components/sequence";
 import { useImageSequence } from "@/hooks/use-image-sequence";
 import { clamp } from "@/lib/utils";
 import { Slide } from "@/types/slides";
+import { RotationIndicator } from "@/components/ui/rotation-indicator";
 
 
 
@@ -37,6 +38,8 @@ export const SequenceSlide = ({
 
   const progress = useMotionValue(0);
 
+  const dragAngle = useTransform(progress, [0, 1], [0, 360]);
+
   const memoizedImagePaths = useMemo(() => paths, [paths]);
 
   const {
@@ -58,7 +61,7 @@ export const SequenceSlide = ({
   const dragX = useTransform(progress, [0, 1], [0, width]);
 
   const handleDragMove = (args: HandlerArgs) => {
-    const newProgress = clamp(args.dx / (width - 100), 0, 1);
+    const newProgress = clamp(args.dx / width, 0, 1);
     progress.set(newProgress);
   };
 
@@ -103,6 +106,11 @@ export const SequenceSlide = ({
               className={"aspect-[1920/1080] w-full"}
             />
           </motion.div>
+
+          <RotationIndicator
+            dragAngle={dragAngle}
+            dragging={dragging}
+          />
           <motion.div className="absolute inset-0" initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}

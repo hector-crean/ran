@@ -39,7 +39,8 @@
     "sonner": "^2.0.5",
     "tailwind-merge": "^3.3.1",
     "ts-pattern": "^5.7.1",
-    "typegpu": "^0.5.9"
+    "typegpu": "^0.5.9",
+    "vaul": "^1.1.2"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

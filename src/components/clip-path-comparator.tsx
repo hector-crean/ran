@@ -1,4 +1,5 @@
 import { motion, useDragControls, useMotionValue, useTransform } from 'framer-motion';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import React, { useCallback, useRef, useState } from 'react';
 
 interface ClipPathComparatorProps {
@@ -67,17 +68,17 @@ const ClipPathComparator: React.FC<ClipPathComparatorProps> = ({
   }, [x, dragControls]);
 
   return (
-    <div className="w-full h-full !dark:border !dark:border-gray-400 !dark:shadow-none relative my-8 rounded-xl border-b border-t border-gray-400 bg-white dark:bg-[#0B0B09] sm:border-l sm:border-r sm:border-none sm:shadow-sm">
+    <div className="w-full h-full !dark:border !dark:border-gray-400 !dark:shadow-none relative my-8  border-b border-t border-gray-400 bg-white dark:bg-[#0B0B09] sm:border-l sm:border-r sm:border-none sm:shadow-sm">
       <div
         ref={containerRef}
-        className="flex h-full w-full px-4 py-6 sm:rounded-xl overflow-hidden !p-0 relative select-none cursor-ew-resize"
+        className="flex h-full w-full px-4 py-6  overflow-hidden !p-0 relative select-none cursor-ew-resize"
         onClick={handleContainerClick}
         onPointerDown={handlePointerDown}
         style={{ touchAction: 'none' }}
       >
         {/* Before Content (Background) */}
         <div className="absolute inset-0 w-full h-full pointer-events-none">
-          {beforeContent}
+          {afterContent}
         </div>
 
         {/* After Content (Clipped) */}
@@ -87,7 +88,7 @@ const ClipPathComparator: React.FC<ClipPathComparatorProps> = ({
           }}
           className="absolute inset-0 w-full h-full pointer-events-none"
         >
-          {afterContent}
+          {beforeContent}
         </motion.div>
 
         {/* Draggable Slider Handle */}
@@ -99,21 +100,18 @@ const ClipPathComparator: React.FC<ClipPathComparatorProps> = ({
           dragMomentum={false}
           style={{
             x,
-            left: 0,
-            transform: 'translateX(-50%)'
           }}
-          className="absolute inset-y-0 z-10 flex h-full w-4 cursor-ew-resize outline-none focus-visible:shadow-focus-ring-button md:w-2.5"
-          whileHover={{ opacity: 1 }}
-          initial={{ opacity: 0.75 }}
+          className="absolute z-10 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex w-32 h-16 cursor-ew-resize outline-none focus-visible:shadow-focus-ring-button "
+          whileHover={{ filter: "brightness(1.2)" }}
+          initial={{ filter: "brightness(1)" }}
         >
-          <div className="h-full w-1.5 bg-white/60 transition-colors hover:bg-white/80 rounded-full shadow-lg" />
+          <div className="h-full w-full bg-purple-light transition-colors hover:bg-white/80 rounded-sm shadow-lg flex items-center justify-center gap-4">
+            <ChevronLeft className="w-16 h-16 text-white" />
+            <ChevronRight className="w-16 h-16 text-white" />
+          </div>
 
           {/* Handle Icon */}
-          <div className="cursor-pointer absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-8 h-8 bg-white rounded-full shadow-lg flex items-center justify-center">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" className="text-gray-600">
-              <path d="M8 7L4 12l4 5M16 7l4 5-4 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </div>
+
         </motion.div>
 
         {/* Labels */}
@@ -139,3 +137,4 @@ const ClipPathComparator: React.FC<ClipPathComparatorProps> = ({
 export default ClipPathComparator;
 
 export type { ClipPathComparatorProps };
+

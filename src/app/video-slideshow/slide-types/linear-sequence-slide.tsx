@@ -8,14 +8,12 @@ import { Sequence } from "@/components/sequence";
 import { LinearIndicator } from "@/components/ui/linear-indicator";
 import { useImageSequence } from "@/hooks/use-image-sequence";
 import { clamp } from "@/lib/utils";
-import { Slide } from "@/types/slides";
 
 
 
 
 
 interface LinearSequenceSlideProps {
-  slide: Slide;
   baseUrl: string;
   frameCount: number;
   format: string;
@@ -23,7 +21,6 @@ interface LinearSequenceSlideProps {
 }
 
 export const LinearSequenceSlide = ({
-  slide,
   baseUrl,
   frameCount,
   format,

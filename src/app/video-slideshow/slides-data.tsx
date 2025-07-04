@@ -138,7 +138,7 @@ export const slides: Slide[] = [
   },
   {
     id: "scene_3_1",
-    title: "Scene 3.1",
+    title: "Scene 3.1.1",
     firstFramePoster: "/assets/Scene_3.1_poster.png",
     lastFramePoster: "/assets/Scene_3.1_poster.png",
     onFinishAction: 'next_slide',
@@ -146,10 +146,28 @@ export const slides: Slide[] = [
     initialSheet: null,
     initialDialog: null,
     slide_type: {
+      type: "Video",
+      data: {
+        url: "/assets/Scene_3.1.mp4",
+        poster: "/assets/Scene_3.1_poster.png",
+        autoplay: true,
+      },
+    },
+  },
+  {
+    id: "scene_3_1_2",
+    title: "Scene 3.1.2",
+    firstFramePoster: "/assets/Scene_4.1_poster.png",
+    lastFramePoster: "/assets/Scene_4.1_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
+    slide_type: {
       type: 'ClipPathComparator',
       data: {
-        beforeContent: <video src="/assets/Scene_3.1.mp4" />,
-        afterContent: <video src="/assets/Scene_4.1.mp4" />,
+        beforeContent: <img src="/assets/Scene_4.1_poster.png" />,
+        afterContent: <img src="/assets/Scene_4.1_poster.png" className="filter invert" />,
       },
     },
   },

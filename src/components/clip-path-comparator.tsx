@@ -137,3 +137,5 @@ const ClipPathComparator: React.FC<ClipPathComparatorProps> = ({
 };
 
 export default ClipPathComparator;
+
+export type { ClipPathComparatorProps };

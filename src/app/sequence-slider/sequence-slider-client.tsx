@@ -59,7 +59,7 @@ export const SequenceSliderClient = ({
   };
 
   return (
-    <div className="w-full h-full max-h-screen max-w-screen relative flex items-center justify-center" ref={slider}>
+    <div className="w-full h-full relative flex items-center justify-center" ref={slider}>
       {loaded && (
         <>
           <Sequence
@@ -67,7 +67,7 @@ export const SequenceSliderClient = ({
             value={progress}
             className={"aspect-[1920/1080] w-full"}
           />
-``
+          ``
           <div className="absolute inset-0">
             <svg className="w-full h-full" viewBox={`0 0 ${width} ${height}`}>
               <path

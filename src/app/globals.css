@@ -7,6 +7,7 @@
 
 @theme inline {
 
+  --color-white: oklch(1 0 0);
   --color-dark-blue: oklch(0.427 0.0901 261.24);
   --color-medium-blue: oklch(0.6275 0.1317 246.86);
   --color-light-blue: oklch(0.8117 0.0576 250.16);

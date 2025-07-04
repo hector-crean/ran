@@ -5,13 +5,12 @@ import { VideoPlayer, VideoPlayerHandle } from "@/components/video-player";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface VideoSlideProps {
-    slide: any;
     url: string;
     poster: string;
     autoplay: boolean;
 }
 
-export function VideoSlide({ slide, url, autoplay, poster }: VideoSlideProps) {
+export function VideoSlide({ url, autoplay, poster }: VideoSlideProps) {
 
     const videoPlayerRef = useRef<VideoPlayerHandle>(null);
 

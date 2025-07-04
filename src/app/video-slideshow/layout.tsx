@@ -11,21 +11,15 @@ import { useCallback, useEffect, useState } from "react";
 import { match } from "ts-pattern";
 import { slides } from "./slides-data";
 
-import { ResponsiveContainer } from "@/components/ui/responsive-container";
-import { SettingsProvider } from "@/contexts/settings-dialog";
-import { PollSlide } from "./slide-types/poll-slide";
-import { RegularSlide } from "./slide-types/regular-slide";
-import { RotationalSequenceSlide } from "./slide-types/rotational-sequence-slide";
-import { VideoSlide } from "./slide-types/video-slide";
-import { FreezeFrame } from "./slide-types/freeze-frame";
+import ClipPathComparator from "@/components/clip-path-comparator";
+import { Button } from "@/components/ui/button";
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
 import {
   Drawer,
   DrawerClose,
@@ -33,83 +27,91 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
+  DrawerTitle
 } from "@/components/ui/drawer";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import InfiniteCanvasPage from "../infinite-canvas/page";
 import { InfiniteCanvasMap } from "@/components/ui/infinite-canvas/infinite-canvas-map";
+import { ResponsiveContainer } from "@/components/ui/responsive-container";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle
+} from "@/components/ui/sheet";
+import { SettingsProvider } from "@/contexts/settings-dialog";
+import { FreezeFrame } from "./slide-types/freeze-frame";
 import { InteractiveVideo } from "./slide-types/interactive-video";
+import { LinearSequenceSlide } from "./slide-types/linear-sequence-slide";
+import { RegularSlide } from "./slide-types/regular-slide";
+import { RotationalSequenceSlide } from "./slide-types/rotational-sequence-slide";
+import { VideoSlide } from "./slide-types/video-slide";
 
 
 
 export const renderNode = (node: RenderableNode) => {
-    return match(node).with({ type: "InfiniteCanvasMap" }, (node) => (
-        <InfiniteCanvasMap/>
-    )).exhaustive();
+  return match(node).with({ type: "InfiniteCanvasMap" }, (node) => (
+    <InfiniteCanvasMap />
+  )).exhaustive();
 }
 
 
 const renderSlide = (slide: Slide) => {
-    const slideInner = match(slide.slide_type)
-      .with({ type: "Regular" }, (slideType) => (
-        <RegularSlide slide={slide} content={slideType.data.content} />
-      ))
-      .with({ type: "Video" }, (slideType) => (
-        <VideoSlide
-          slide={slide}
-          url={slideType.data.url}
-          autoplay={true}
-          poster={slideType.data.poster}
-        />
-      ))
-  
-      .with({ type: "Poll" }, (slideType) => (
-        <PollSlide
-          slide={slide}
-          question={slideType.data.question}
-          options={slideType.data.options}
-        />
-      ))
-      .with({ type: "RotationalSequence" }, (slideType) => (
-        <RotationalSequenceSlide
-          slide={slide}
-          baseUrl={slideType.data.baseUrl}
-          frameCount={slideType.data.frameCount}
-          format={slideType.data.format}
-        />
-      ))
-      .with({ type: "FreezeFrame" }, (slideType) => (
-        <FreezeFrame slide={slide} poster={slideType.data.poster} elements={slideType.data.elements} />
-      ))
-      .with({ type: "InteractiveVideo" }, (slideType) => (
-        <InteractiveVideo
-        //   slide={slide}
-          baseSrc={slideType.data.baseSrc}
-          maskSrc={slideType.data.maskSrc}
-          objectMappings={slideType.data.objectMappings}
-          ar={slideType.data.ar}
-        />
-      ))
-      .otherwise(() => <div>Unknown slide type</div>);
-  
-    return (
-      <>
-        {slideInner}
-        {slide.initialDrawer && <SlideDrawer>{slide.initialDrawer}</SlideDrawer>}
-        {slide.initialSheet && <SlideSheet>{slide.initialSheet}</SlideSheet>}
-        {slide.initialDialog && <SlideDialog>{slide.initialDialog}</SlideDialog>}
-      </>
-    );
-  };
+  const slideInner = match(slide.slide_type)
+    .with({ type: "Regular" }, (slideType) => (
+      <RegularSlide slide={slide} content={slideType.data.content} />
+    ))
+    .with({ type: "Video" }, (slideType) => (
+      <VideoSlide
+        url={slideType.data.url}
+        autoplay={true}
+        poster={slideType.data.poster}
+      />
+    ))
+
+
+    .with({ type: "RotationalSequence" }, (slideType) => (
+      <RotationalSequenceSlide
+        baseUrl={slideType.data.baseUrl}
+        frameCount={slideType.data.frameCount}
+        format={slideType.data.format}
+      />
+    ))
+    .with({ type: "FreezeFrame" }, (slideType) => (
+      <FreezeFrame poster={slideType.data.poster} elements={slideType.data.elements} />
+    ))
+    .with({ type: "InteractiveVideo" }, (slideType) => (
+      <InteractiveVideo
+        baseSrc={slideType.data.baseSrc}
+        maskSrc={slideType.data.maskSrc}
+        objectMappings={slideType.data.objectMappings}
+        ar={slideType.data.ar}
+      />
+    ))
+    .with({ type: "LinearSequence" }, (slideType) => (
+      <LinearSequenceSlide
+        baseUrl={slideType.data.baseUrl}
+        frameCount={slideType.data.frameCount}
+        format={slideType.data.format}
+        sliderText={slideType.data.sliderText}
+      />
+    ))
+    .with({ type: "ClipPathComparator" }, (slideType) => (
+      <ClipPathComparator
+        beforeContent={slideType.data.beforeContent}
+        afterContent={slideType.data.afterContent}
+      />
+    ))
+    .otherwise(() => <div>Unknown slide type</div>);
+
+  return (
+    <>
+      {slideInner}
+      {slide.initialDrawer && <SlideDrawer>{slide.initialDrawer}</SlideDrawer>}
+      {slide.initialSheet && <SlideSheet>{slide.initialSheet}</SlideSheet>}
+      {slide.initialDialog && <SlideDialog>{slide.initialDialog}</SlideDialog>}
+    </>
+  );
+};
 
 
 

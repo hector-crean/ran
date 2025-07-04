@@ -1,8 +1,10 @@
-import { VideoSlideProps } from "@/app/video-slideshow/slide-types/video-slide";
-import {  RotationalSequenceSlideProps} from "@/app/video-slideshow/slide-types/rotational-sequence-slide";
 import { FreezeFrameProps } from "@/app/video-slideshow/slide-types/freeze-frame";
-import { ReactNode } from "react";
 import { InteractiveVideoProps } from "@/app/video-slideshow/slide-types/interactive-video";
+import { LinearSequenceSlideProps } from "@/app/video-slideshow/slide-types/linear-sequence-slide";
+import { RotationalSequenceSlideProps } from "@/app/video-slideshow/slide-types/rotational-sequence-slide";
+import { VideoSlideProps } from "@/app/video-slideshow/slide-types/video-slide";
+import { ClipPathComparatorProps } from "@/components/clip-path-comparator";
+import { ReactNode } from "react";
 
 type SlideLike<T extends string,P> = { type: T, data: P};
 
@@ -29,10 +31,13 @@ type PollSlide = SlideLike<"Poll", {
 
 type RotationalSequenceSlide = SlideLike<"RotationalSequence", RotationalSequenceSlideProps>;
 
+type LinearSequenceSlide = SlideLike<"LinearSequence", LinearSequenceSlideProps>;
 
 type FreezeFrameSlide = SlideLike<"FreezeFrame", FreezeFrameProps>;
 
 type InteractiveVideoSlide = SlideLike<"InteractiveVideo", InteractiveVideoProps>;
+
+type ClipPathComparatorSlide = SlideLike<"ClipPathComparator", ClipPathComparatorProps>;
 
     
 export type SlideType =
@@ -41,14 +46,17 @@ export type SlideType =
     | InteractiveSlide
     | PollSlide
     | RotationalSequenceSlide
+    | LinearSequenceSlide
     | FreezeFrameSlide
-    | InteractiveVideoSlide;
+    | InteractiveVideoSlide
+    | ClipPathComparatorSlide;
 
 export interface Slide {
   id: string;
   title: string;
   firstFramePoster: string;
   lastFramePoster: string;
+  onFinishAction: 'none' | 'next_slide';
   initialDrawer: ReactNode | null,
   initialSheet: ReactNode | null,
   initialDialog: ReactNode | null,

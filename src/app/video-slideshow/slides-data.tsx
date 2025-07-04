@@ -1,12 +1,15 @@
 import type { Slide } from "@/types/slides";
-import InfiniteCanvasPage from "../infinite-canvas/page";
 
-export const slides = [
+export const slides: Slide[] = [
   {
     id: "scene_1_1",
     title: "Scene 1.1",
     firstFramePoster: "/assets/Scene_1.1_poster.png",
     lastFramePoster: "/assets/Scene_1.1_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
@@ -21,21 +24,24 @@ export const slides = [
     title: "Scene 1.1",
     firstFramePoster: "/assets/Scene_2.1_poster.png",
     lastFramePoster: "/assets/Scene_2.1_poster.png",
-    // initialSheet: <InfiniteCanvasPage/>,
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: 'FreezeFrame',
       data: {
         poster: "/assets/Scene_2.1_poster.png",
         elements: [
           {
-            position: {x: 1008, y: 274}, 
-            width: 912, 
+            position: { x: 1008, y: 274 },
+            width: 912,
             height: 567,
             node: { type: "InfiniteCanvasMap", data: {} },
           },
         ],
-        
-      
+
+
       },
     },
   },
@@ -44,6 +50,10 @@ export const slides = [
     title: "Scene 2.1",
     firstFramePoster: "/assets/Scene_2.1_poster.png",
     lastFramePoster: "/assets/Scene_2.1_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
@@ -58,10 +68,13 @@ export const slides = [
     title: "Scene 2.2.1 - Interactive Sequence",
     firstFramePoster: "/assets/Scene_2.2.1_00001.png",
     lastFramePoster: "/assets/Scene_2.2.1_00100.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: 'RotationalSequence',
-      data:  {
-        id: "scene_2_2_1",
+      data: {
         baseUrl: "/assets/Scene_2.2.1_",
         frameCount: 100,
         format: "png"
@@ -73,10 +86,13 @@ export const slides = [
     title: "Scene 2.2.2",
     firstFramePoster: "/assets/Scene_2.2.2_poster.png",
     lastFramePoster: "/assets/Scene_2.2.2_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
-        id: "scene_2_2_2",
         url: "/assets/Scene_2.2.2.mp4",
         poster: "/assets/Scene_2.2.2_poster.png",
         autoplay: true,
@@ -88,13 +104,17 @@ export const slides = [
     title: "Scene 2.2.3 - Interactive Sequence",
     firstFramePoster: "/assets/Scene_2.2.3_00001.png",
     lastFramePoster: "/assets/Scene_2.2.3_00075.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
-      type: "Sequence",
-      data:{
-        id: "scene_2_2_3",
+      type: 'LinearSequence',
+      data: {
         baseUrl: "/assets/Scene_2.2.3_",
         frameCount: 75,
-        format: "png"
+        format: "png",
+        sliderText: "Please use the slider to form the immune complex"
       }
     },
   },
@@ -103,6 +123,10 @@ export const slides = [
     title: "Scene 2.2.4",
     firstFramePoster: "/assets/Scene_2.2.4_poster.png",
     lastFramePoster: "/assets/Scene_2.2.4_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
@@ -117,12 +141,15 @@ export const slides = [
     title: "Scene 3.1",
     firstFramePoster: "/assets/Scene_3.1_poster.png",
     lastFramePoster: "/assets/Scene_3.1_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
-      type: "Video",
+      type: 'ClipPathComparator',
       data: {
-        url: "/assets/Scene_3.1.mp4",
-        poster: "/assets/Scene_3.1_poster.png",
-        autoplay: true,
+        beforeContent: <video src="/assets/Scene_3.1.mp4" />,
+        afterContent: <video src="/assets/Scene_4.1.mp4" />,
       },
     },
   },
@@ -131,6 +158,10 @@ export const slides = [
     title: "Scene 4.1",
     firstFramePoster: "/assets/Scene_4.1_poster.png",
     lastFramePoster: "/assets/Scene_4.1_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
@@ -145,6 +176,10 @@ export const slides = [
     title: "Scene 4.2",
     firstFramePoster: "/assets/Scene_4.2_poster.png",
     lastFramePoster: "/assets/Scene_4.2_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
@@ -159,6 +194,10 @@ export const slides = [
     title: "Scene 4.3",
     firstFramePoster: "/assets/Scene_4.3_poster.png",
     lastFramePoster: "/assets/Scene_4.3_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
@@ -173,6 +212,10 @@ export const slides = [
     title: "Scene 4.4",
     firstFramePoster: "/assets/Scene_4.4_poster.png",
     lastFramePoster: "/assets/Scene_4.4_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
@@ -187,6 +230,10 @@ export const slides = [
     title: "Scene 5.1",
     firstFramePoster: "/assets/Scene_5.1_poster.png",
     lastFramePoster: "/assets/Scene_5.1_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
@@ -201,13 +248,17 @@ export const slides = [
     title: "Scene 5.2",
     firstFramePoster: "/assets/Scene_5.2_poster.png",
     lastFramePoster: "/assets/Scene_5.2_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
         url: "/assets/Scene_5.2.mp4",
         poster: "/assets/Scene_5.2_poster.png",
         autoplay: true,
-        },
+      },
     },
   },
   {
@@ -215,9 +266,13 @@ export const slides = [
     title: "Scene 5.3 - Interactive Sequence",
     firstFramePoster: "/assets/Scene_5.3_00001.png",
     lastFramePoster: "/assets/Scene_5.3_00075.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: 'RotationalSequence',
-      data:  {
+      data: {
         baseUrl: "/assets/Scene_5.3_",
         frameCount: 75,
         format: "png"
@@ -229,6 +284,10 @@ export const slides = [
     title: "Scene 5.4",
     firstFramePoster: "/assets/Scene_5.4_poster.png",
     lastFramePoster: "/assets/Scene_5.4_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
@@ -243,9 +302,13 @@ export const slides = [
     title: "Scene 5.5 - Interactive Sequence",
     firstFramePoster: "/assets/Scene_5.5_00001.png",
     lastFramePoster: "/assets/Scene_5.5_00025.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: 'RotationalSequence',
-      data:  {
+      data: {
         baseUrl: "/assets/Scene_5.5_",
         frameCount: 25,
         format: "png"
@@ -257,6 +320,10 @@ export const slides = [
     title: "Scene 6.1",
     firstFramePoster: "/assets/Scene_6.1_poster.png",
     lastFramePoster: "/assets/Scene_6.1_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
@@ -271,6 +338,10 @@ export const slides = [
     title: "Scene 7.1",
     firstFramePoster: "/assets/Scene_7.1_poster.png",
     lastFramePoster: "/assets/Scene_7.1_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
@@ -285,6 +356,10 @@ export const slides = [
     title: "Scene 8.1",
     firstFramePoster: "/assets/Scene_8.1_poster.png",
     lastFramePoster: "/assets/Scene_8.1_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: 'InteractiveVideo',
       data: {
@@ -300,6 +375,10 @@ export const slides = [
     title: "Scene 9.1",
     firstFramePoster: "/assets/Scene_9.1_poster.png",
     lastFramePoster: "/assets/Scene_9.1_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
@@ -314,6 +393,10 @@ export const slides = [
     title: "Scene 9.2",
     firstFramePoster: "/assets/Scene_9.2_poster.png",
     lastFramePoster: "/assets/Scene_9.2_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
@@ -328,9 +411,13 @@ export const slides = [
     title: "Scene 9.3 - Interactive Sequence",
     firstFramePoster: "/assets/Scene_9.3_00001.png",
     lastFramePoster: "/assets/Scene_9.3_00075.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: 'RotationalSequence',
-      data:  {
+      data: {
         baseUrl: "/assets/Scene_9.3_",
         frameCount: 75,
         format: "png"
@@ -342,6 +429,10 @@ export const slides = [
     title: "Scene 9.4",
     firstFramePoster: "/assets/Scene_9.4_poster.png",
     lastFramePoster: "/assets/Scene_9.4_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
@@ -356,6 +447,10 @@ export const slides = [
     title: "Scene 10.1",
     firstFramePoster: "/assets/Scene_10.1_poster.png",
     lastFramePoster: "/assets/Scene_10.1_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
@@ -370,6 +465,10 @@ export const slides = [
     title: "Scene 11.1",
     firstFramePoster: "/assets/Scene_11.1_poster.png",
     lastFramePoster: "/assets/Scene_11.1_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
     slide_type: {
       type: "Video",
       data: {
@@ -379,4 +478,4 @@ export const slides = [
       },
     },
   },
-] as Slide[];
+] 

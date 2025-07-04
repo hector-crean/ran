@@ -5,24 +5,21 @@ import { useMemo, useRef, useState } from "react";
 
 import { Drag, HandlerArgs } from "@/components/drag";
 import { Sequence } from "@/components/sequence";
+import { RotationIndicator } from "@/components/ui/rotation-indicator";
 import { useImageSequence } from "@/hooks/use-image-sequence";
 import { clamp } from "@/lib/utils";
-import { Slide } from "@/types/slides";
-import { RotationIndicator } from "@/components/ui/rotation-indicator";
 
 
 
 
 
 interface RotationalSequenceSlideProps {
-  slide: Slide;
   baseUrl: string;
   frameCount: number;
   format: string;
 }
 
 export const RotationalSequenceSlide = ({
-  slide,
   baseUrl,
   frameCount,
   format,
@@ -84,7 +81,7 @@ export const RotationalSequenceSlide = ({
   };
 
   return (
-    <div className="w-full h-full max-h-screen max-w-screen relative flex items-center justify-center" ref={slider}>
+    <div className="w-full h-full  relative flex items-center justify-center select-none" ref={slider}>
       <motion.div
         key="loading"
         className="absolute inset-0 flex items-center justify-center"
@@ -168,7 +165,7 @@ export const RotationalSequenceSlide = ({
                     <motion.rect
                       width={width}
                       height={height}
-                      fill="rgba(255,255,255,0.1)"
+                      fill="rgba(255,255,255,0.0)"
                       style={{ pointerEvents: dragging ? "none" : "auto" }}
                     />
                   </motion.g>

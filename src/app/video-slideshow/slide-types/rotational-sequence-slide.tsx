@@ -38,7 +38,7 @@ export const RotationalSequenceSlide = ({
 
   const progress = useMotionValue(0);
 
-  const dragAngle = useTransform(progress, [0, 0.6], [0, 360 * CIRCUMFERENCE_RATIO]);
+  const dragAngle = useTransform(progress, [0, 0.6], [0, 360 * 3 / 4]);
 
   const memoizedImagePaths = useMemo(() => paths, [paths]);
 
@@ -92,30 +92,7 @@ export const RotationalSequenceSlide = ({
       </motion.div>
       {loaded && (
         <AnimatePresence>
-          <motion.div
-            key="sequence"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="absolute inset-0 flex items-center justify-center"
-          >
-            <Sequence
-              frames={images}
-              value={progress}
-              className={"aspect-[1920/1080] w-full"}
-            />
-          </motion.div>
-
-          <RotationIndicator
-            circumferenceRatio={0.8}
-            handleToCircumferenceRatio={0.02}
-            dragAngle={dragAngle}
-            dragging={dragging}
-            strokeWidth={1.5}
-            radius={48}
-          />
-          <motion.div className="absolute inset-0" initial={{ opacity: 0 }}
+          <motion.div className="absolute inset-0 z-30" initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
@@ -173,6 +150,28 @@ export const RotationalSequenceSlide = ({
               </Drag>
             </svg>
           </motion.div>
+          <RotationIndicator
+            dragAngle={dragAngle}
+            dragging={dragging}
+            radius={48}
+          />
+
+          <motion.div
+            key="sequence"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+            className="absolute inset-0 flex items-center justify-center"
+          >
+            <Sequence
+              frames={images}
+              value={progress}
+              className={"aspect-[1920/1080] w-full"}
+            />
+          </motion.div>
+
+
         </AnimatePresence>
       )}
     </div>

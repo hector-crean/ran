@@ -5,29 +5,29 @@ import { useMemo, useRef, useState } from "react";
 
 import { Drag, HandlerArgs } from "@/components/drag";
 import { Sequence } from "@/components/sequence";
-import { LinearIndicator } from "@/components/ui/linear-indicator";
 import { useImageSequence } from "@/hooks/use-image-sequence";
 import { clamp } from "@/lib/utils";
 
 
 
+type Vec2 = { x: number, y: number };
 
-
-interface LinearSequenceSlideProps {
+interface TargetedLinearSequenceSlideProps {
   baseUrl: string;
   frameCount: number;
   format: string;
   sliderText: string;
+  normalisedDragDirection: Vec2;
 }
 
-export const LinearSequenceSlide = ({
+export const TargetedLinearSequenceSlide = ({
   baseUrl,
   frameCount,
   format,
-  sliderText
-}: LinearSequenceSlideProps) => {
+  sliderText,
+  normalisedDragDirection
+}: TargetedLinearSequenceSlideProps) => {
 
-  console.log(sliderText)
   const paths = useMemo(() => {
     return Array.from(
       { length: frameCount },
@@ -39,7 +39,6 @@ export const LinearSequenceSlide = ({
 
   const progress = useMotionValue(0);
 
-  const dragAngle = useTransform(progress, [0, 1], [0, 360]);
 
   const memoizedImagePaths = useMemo(() => paths, [paths]);
 
@@ -63,7 +62,8 @@ export const LinearSequenceSlide = ({
   const dragX = useTransform(progress, [0, 1], [0, width]);
 
   const handleDragMove = (args: HandlerArgs) => {
-    const newProgress = clamp(DRAG_SCALE_FACTOR * args.dx / width, 0, 1);
+    console.log(args.dx, args.dy)
+    const newProgress = clamp(DRAG_SCALE_FACTOR * (args.dx * normalisedDragDirection.x / width + args.dy * normalisedDragDirection.y / height), 0, 1);
     progress.set(newProgress);
   };
 
@@ -75,19 +75,17 @@ export const LinearSequenceSlide = ({
       animate(progress, 0, { type: "spring", stiffness: 300, damping: 30 });
     } else {
       animate(progress, 1, { type: "spring", stiffness: 300, damping: 30 });
-      progress.set(0);
     }
   };
 
   const handleDragStart = () => {
     setDragging(true);
-
   };
 
   return (
     <div className="w-full h-full max-h-screen  relative flex items-center justify-center select-none" ref={slider}>
       <motion.div
-        key="loading-frame"
+        key="loading"
         className="absolute inset-0 flex items-center justify-center"
       // initial={{ opacity: 1 }}
       // exit={{ opacity: 0, transition: { duration: 0.5, delay: 0.5 } }}
@@ -95,9 +93,9 @@ export const LinearSequenceSlide = ({
         <img src={paths[0]} alt="Sequence" className="w-full h-full object-contain aspect-[1920/1080]" />
       </motion.div>
       {loaded && (
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           <motion.div
-            key="sequence-container"
+            key="sequence"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -118,30 +116,25 @@ export const LinearSequenceSlide = ({
             radius={48}
           /> */}
 
-          <motion.div
-            key="linear-indicator"
-            className="absolute bottom-16 left-0 right-0 z-10 w-full pointer-events-none flex items-center justify-center"
+          <motion.div className="absolute bottom-16 left-0 right-0 z-10 w-full pointer-events-none flex items-center justify-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <LinearIndicator
-              progressRatio={progress}
-              className="w-2/3"
-              sliderText={sliderText}
-            />
-          </motion.div>
 
-          <motion.div
-            key="drag-overlay"
-            className="absolute inset-0"
-            initial={{ opacity: 0 }}
+            <HollowButton>
+              {sliderText}
+            </HollowButton>
+          </motion.div>
+          <motion.div className="absolute inset-0" initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
+
           >
             <svg className="w-full h-full" viewBox={`0 0 ${width} ${height}`}>
+
               <Drag
                 onDragStart={handleDragStart}
                 onDragMove={handleDragMove}
@@ -155,7 +148,6 @@ export const LinearSequenceSlide = ({
               >
                 {({ dragStart, dragEnd, dragMove, isDragging }) => (
                   <motion.g
-                    key="drag-handle"
                     ref={dragKnobRef}
                     style={{
                       cursor: isDragging ? "grabbing" : "grab",
@@ -169,7 +161,6 @@ export const LinearSequenceSlide = ({
                   >
                     {/* <motion.circle r="20" fill="white" /> */}
                     <motion.rect
-                      key="drag-area"
                       width={width}
                       height={height}
                       fill="rgba(255,255,255,0.0)"
@@ -188,5 +179,48 @@ export const LinearSequenceSlide = ({
 
 
 
-export type { LinearSequenceSlideProps };
+export type { TargetedLinearSequenceSlideProps };
 
+
+
+
+
+interface HollowButtonProps {
+  children: React.ReactNode;
+}
+
+const HollowButton = ({ children }: HollowButtonProps) => {
+
+  return (
+    <div className="px-32 py-8">
+      <div
+        className="flex items-center justify-center"
+        style={{
+          boxShadow: '0 0 0 5px rgba(206, 209, 222, 1.0)',
+          padding: '5px',
+          borderRadius: '18px'
+        }}
+      >
+        {/* Inner container */}
+        <div
+          className="flex items-center justify-center py-4 px-12"
+          style={{
+            backgroundColor: 'rgb(206, 209, 222)',
+            borderRadius: '14px'
+
+          }}
+        >
+          <div
+            className={`relative flex items-center w-full h-full`}
+            style={{
+
+              backgroundColor: 'rgb(206, 209, 222)'
+            }}
+          >
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

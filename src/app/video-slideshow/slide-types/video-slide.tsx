@@ -2,6 +2,7 @@
 
 import { VideoControls } from "@/components/ui/video-controls";
 import { VideoPlayer, VideoPlayerHandle } from "@/components/video-player";
+import { useSlideshowContext } from "@/contexts/slideshow-context";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 interface VideoSlideProps {
@@ -84,6 +85,12 @@ export function VideoSlide({ url, autoplay, poster }: VideoSlideProps) {
         setIsPlaying(!isPlaying);
     };
 
+    const { setPage, currentPage } = useSlideshowContext();
+
+    const handleVideoEnded = () => {
+        setPage(currentPage + 1);
+    };
+
     return (
         <div className="w-full h-full flex items-center justify-center bg-black">
             {/* Option 1: object-contain - Maintains aspect ratio, fits entirely within container */}
@@ -95,6 +102,7 @@ export function VideoSlide({ url, autoplay, poster }: VideoSlideProps) {
                 onTimeUpdate={handleTimeUpdate}
                 onPlay={() => setIsPlaying(true)}
                 onPause={() => setIsPlaying(false)}
+                onEnded={handleVideoEnded}
                 muted={true}
                 className="w-full h-full object-contain"
                 poster={poster}

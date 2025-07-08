@@ -1,3 +1,4 @@
+import { InfiniteCanvasMap } from "@/components/ui/infinite-canvas/infinite-canvas-map";
 import type { Slide } from "@/types/slides";
 
 export const slides: Slide[] = [
@@ -32,15 +33,7 @@ export const slides: Slide[] = [
       type: 'FreezeFrame',
       data: {
         poster: "/assets/Scene_2.1_poster.png",
-        elements: [
-          {
-            position: { x: 1008, y: 274 },
-            width: 912,
-            height: 567,
-            node: { type: "InfiniteCanvasMap", data: {} },
-          },
-        ],
-
+        children: <InfiniteCanvasMap />,
 
       },
     },
@@ -289,11 +282,13 @@ export const slides: Slide[] = [
     initialSheet: null,
     initialDialog: null,
     slide_type: {
-      type: 'RotationalSequence',
+      type: 'TargetedLinearSequence',
       data: {
         baseUrl: "/assets/Scene_5.3_",
         frameCount: 75,
-        format: "png"
+        format: "png",
+        sliderText: "To continue, please drag APRIL to bind TACI",
+        normalisedDragDirection: { x: 1 / Math.sqrt(2), y: 1 / Math.sqrt(2) }
       }
     },
   },
@@ -325,11 +320,13 @@ export const slides: Slide[] = [
     initialSheet: null,
     initialDialog: null,
     slide_type: {
-      type: 'RotationalSequence',
+      type: 'TargetedLinearSequence',
       data: {
         baseUrl: "/assets/Scene_5.5_",
         frameCount: 25,
-        format: "png"
+        format: "png",
+        normalisedDragDirection: { x: 0, y: 1 },
+        sliderText: "To continue, please drag APRIL to bind with BCMA",
       }
     },
   },

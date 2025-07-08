@@ -2,6 +2,7 @@ import { FreezeFrameProps } from "@/app/video-slideshow/slide-types/freeze-frame
 import { InteractiveVideoProps } from "@/app/video-slideshow/slide-types/interactive-video";
 import { LinearSequenceSlideProps } from "@/app/video-slideshow/slide-types/linear-sequence-slide";
 import { RotationalSequenceSlideProps } from "@/app/video-slideshow/slide-types/rotational-sequence-slide";
+import { TargetedLinearSequenceSlideProps } from "@/app/video-slideshow/slide-types/targeted-linear-sequence-slide";
 import { VideoSlideProps } from "@/app/video-slideshow/slide-types/video-slide";
 import { ClipPathComparatorProps } from "@/components/clip-path-comparator";
 import { ReactNode } from "react";
@@ -39,6 +40,8 @@ type InteractiveVideoSlide = SlideLike<"InteractiveVideo", InteractiveVideoProps
 
 type ClipPathComparatorSlide = SlideLike<"ClipPathComparator", ClipPathComparatorProps>;
 
+type TargetedLinearSequenceSlide = SlideLike<"TargetedLinearSequence", TargetedLinearSequenceSlideProps>;
+
     
 export type SlideType =
     | RegularSlide
@@ -49,7 +52,8 @@ export type SlideType =
     | LinearSequenceSlide
     | FreezeFrameSlide
     | InteractiveVideoSlide
-    | ClipPathComparatorSlide;
+    | ClipPathComparatorSlide
+    | TargetedLinearSequenceSlide;
 
 export interface Slide {
   id: string;

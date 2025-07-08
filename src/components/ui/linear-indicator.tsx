@@ -3,8 +3,6 @@ import { MotionValue, motion, useTransform } from "motion/react";
 interface LinearIndicatorProps {
     progressRatio: MotionValue<number>;
     sliderText: string;
-    width?: number;
-    height?: number;
     trackColor?: string;
     progressColor?: string;
     thumbColor?: string;
@@ -13,48 +11,63 @@ interface LinearIndicatorProps {
 
 const LinearIndicator = ({
     progressRatio,
-    width = 1200,
-    height = 30,
     trackColor = "rgb(176, 178, 192)",
     progressColor = "rgb(52, 79, 129)",
     thumbColor = "rgb(204, 108, 244)",
     className = "",
-    sliderText
+    sliderText,
 }: LinearIndicatorProps) => {
+    // Use responsive height based on viewport and container
+    const baseHeight = 'clamp(1.5rem, 4vw, 2rem)'; // Responsive between 24px-32px
+
+
+    const progressRatioOver100 = useTransform(progressRatio, [0, 1], [0, 100]);
     // Transform the progress ratio to percentage for width and position
-    const progressPercentage = useTransform(progressRatio, [0, 1], [0, 100]);
-    const thumbPosition = useTransform(progressRatio, [0, 1], [0, 100]);
+    const progressPercentage = useTransform(progressRatio, [0, 1], ['0%', '100%']);
 
-    // Calculate thumb dimensions
-    const thumbHeight = 2 * Math.min(height * 0.6, 12);
-    const thumbWidth = thumbHeight * 3; // aspect ratio 3:1
 
-    console.log(sliderText)
 
     return (
-        <div className="px-32 py-8">
+        <div
+            className="w-full px-4 py-2 sm:px-8 sm:py-4 lg:px-16 lg:py-6"
+            style={{
+                '--indicator-height': baseHeight,
+                '--track-height': 'calc(var(--indicator-height) * 0.3)',
+                '--thumb-height': 'calc(var(--indicator-height) * 0.8)',
+                '--thumb-width': 'calc(var(--thumb-height) * 3)',
+                '--arrow-height': 'calc(var(--indicator-height) * 1.5)',
+                '--arrow-width': 'calc(var(--indicator-height) * 0.12)',
+                '--tooltip-offset': 'calc(var(--indicator-height) * -4)',
+                '--border-radius': 'calc(var(--indicator-height) * 0.6)',
+                '--outer-padding': 'clamp(0.25rem, 1vw, 0.5rem)',
+                '--inner-padding-x': 'clamp(1rem, 3vw, 3rem)',
+                '--inner-padding-y': 'clamp(0.5rem, 1.5vw, 1rem)',
+            } as React.CSSProperties}
+        >
             <div
-                className="flex items-center justify-center"
+                className="flex items-center justify-center w-full rounded-2xl"
                 style={{
-                    boxShadow: '0 0 0 5px rgba(206, 209, 222, 1.0)',
-                    padding: '5px',
-                    borderRadius: '18px'
+                    boxShadow: '0 0 0 var(--outer-padding) rgba(206, 209, 222, 1.0)',
+                    padding: 'var(--outer-padding)',
+                    borderRadius: 'var(--border-radius)'
                 }}
             >
                 {/* Inner container */}
                 <div
-                    className="flex items-center justify-center py-4 px-12"
+                    className="flex items-center justify-center w-full"
                     style={{
                         backgroundColor: 'rgb(206, 209, 222)',
-                        borderRadius: '14px'
-
+                        borderRadius: 'calc(var(--border-radius) * 0.8)',
+                        paddingLeft: 'var(--inner-padding-x)',
+                        paddingRight: 'var(--inner-padding-x)',
+                        paddingTop: 'var(--inner-padding-y)',
+                        paddingBottom: 'var(--inner-padding-y)'
                     }}
                 >
                     <div
-                        className={`relative flex items-center ${className}`}
+                        className={`relative flex items-center w-full ${className}`}
                         style={{
-                            width: `${width}px`,
-                            height: `${height}px`,
+                            height: 'var(--indicator-height)',
                             backgroundColor: 'rgb(206, 209, 222)'
                         }}
                     >
@@ -63,7 +76,7 @@ const LinearIndicator = ({
                             className="absolute inset-0 rounded-full"
                             style={{
                                 backgroundColor: trackColor,
-                                height: `${Math.min(height * 0.4, 8)}px`,
+                                height: 'var(--track-height)',
                                 top: '50%',
                                 transform: 'translateY(-50%)'
                             }}
@@ -71,72 +84,71 @@ const LinearIndicator = ({
 
                         {/* Progress bar */}
                         <motion.div
+                            key="progress-bar"
                             className="absolute rounded-full"
                             style={{
                                 backgroundColor: progressColor,
-                                height: `${Math.min(height * 0.4, 8)}px`,
+                                height: 'var(--track-height)',
                                 top: '50%',
                                 transform: 'translateY(-50%)',
-                                width: useTransform(progressPercentage, (value) => `${value}%`)
+                                width: progressPercentage
                             }}
                         />
 
-                        {/* Thumb */}
+                        {/* Thumb - Optimized with transform3d */}
                         <motion.div
+                            key="thumb"
                             className="absolute rounded-full shadow-sm"
                             style={{
                                 backgroundColor: thumbColor,
-                                height: `${thumbHeight}px`,
-                                aspectRatio: '3 / 1',
+                                height: 'var(--thumb-height)',
+                                width: 'var(--thumb-width)',
                                 top: '50%',
                                 transform: 'translateY(-50%)',
-                                left: useTransform(thumbPosition, (value) => `calc(${value}% - ${thumbWidth / 2}px)`)
+                                left: progressPercentage,
                             }}
                         />
 
-                        {/* Tapered arrow pointing up */}
+                        {/* Tapered arrow pointing up - Optimized */}
                         <motion.div
+                            key="arrow-up"
                             className="absolute bg-white"
                             style={{
-                                width: '3px',
-                                height: '40px',
+                                width: 'var(--arrow-width)',
+                                height: 'var(--arrow-height)',
                                 clipPath: 'polygon(0 100%, 50% 0, 100% 100%)',
-                                top: '-250%',
+                                top: 'calc(var(--tooltip-offset) + var(--arrow-height))',
                                 transform: 'translateX(-50%)',
-                                left: useTransform(thumbPosition, (value) => `${value}%`)
+                                left: progressPercentage
                             }}
                         />
 
-                        {/* Tapered arrow pointing down */}
+                        {/* Tapered arrow pointing down - Optimized */}
                         <motion.div
+                            key="arrow-down"
                             className="absolute bg-white"
                             style={{
-                                width: '3px',
-                                height: '40px',
+                                width: 'var(--arrow-width)',
+                                height: 'var(--arrow-height)',
                                 clipPath: 'polygon(0 0, 50% 100%, 100% 0)',
-                                bottom: '-250%',
+                                bottom: 'calc(var(--tooltip-offset) + var(--arrow-height))',
                                 transform: 'translateX(-50%)',
-                                left: useTransform(thumbPosition, (value) => `${value}%`)
+                                left: progressPercentage
                             }}
                         />
 
-                        {/* Tooltip */}
+                        {/* Tooltip - Optimized with clamped positioning */}
                         <motion.div
+                            key="tooltip"
                             className="absolute rounded-full shadow-sm flex flex-col items-center justify-center"
                             style={{
                                 width: 'fit-content',
-                                top: '-320%',
+                                top: 'var(--tooltip-offset)',
                                 transform: 'translateY(-50%) translateX(-50%)',
-                                left: useTransform(thumbPosition, (value) => {
-                                    // Clamp the tooltip position to stay within bounds
-                                    const minOffset = 0; // Minimum distance from edge (in %)
-                                    const maxOffset = 100; // Maximum distance from edge (in %)
-                                    const clampedValue = Math.max(minOffset, Math.min(maxOffset, value));
-                                    return `${clampedValue}%`;
-                                })
+                                left: progressPercentage
                             }}
                         >
-                            <div className="text-2xl text-white whitespace-nowrap">
+                            <div className="text-sm sm:text-lg lg:text-2xl text-white whitespace-nowrap px-2 py-1">
                                 {sliderText}
                             </div>
                         </motion.div>

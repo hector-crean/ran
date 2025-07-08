@@ -19,30 +19,34 @@ const ClipPathComparator: React.FC<ClipPathComparatorProps> = ({
   const dragControls = useDragControls();
 
   // Use motion value for smooth dragging
-  const x = useMotionValue(0);
-  const [containerWidth, setContainerWidth] = useState(1000);
+  const [containerWidth, setContainerWidth] = useState(1920);
+  const previousWidthRef = useRef(1920); // Store previous width for ratio calculation
 
-  // Transform x position to percentage
-  const sliderPosition = useTransform(x,
-    [0, containerWidth],
-    [0, 100]
-  );
+  const x = useMotionValue(containerWidth / 2);
+
+
+  // Transform x position directly to pixels for clip path
+  const clipPath = useTransform(x, (value) => `inset(0px ${containerWidth - value}px 0px 0px)`);
+
 
   // Update container width on mount and resize
   React.useEffect(() => {
     const updateWidth = () => {
+      console.log("updateWidth");
       if (containerRef.current) {
+
         const width = containerRef.current.offsetWidth;
+        const ratio = x.get() / previousWidthRef.current; // Use previous width for ratio
+        x.set(ratio * width);
         setContainerWidth(width);
-        // Set initial position to 38.04% of width
-        x.set(width * 0.3804);
+        previousWidthRef.current = width; // Update previous width after calculation
       }
     };
 
     updateWidth();
     window.addEventListener('resize', updateWidth);
     return () => window.removeEventListener('resize', updateWidth);
-  }, [x]);
+  }, []);
 
   // Handle clicks anywhere on the container
   const handleContainerClick = useCallback((e: React.MouseEvent) => {
@@ -84,8 +88,9 @@ const ClipPathComparator: React.FC<ClipPathComparatorProps> = ({
         {/* After Content (Clipped) */}
         <motion.div
           style={{
-            clipPath: useTransform(sliderPosition, (pos) => `inset(0px ${100 - pos}% 0px 0px)`)
+            clipPath: clipPath
           }}
+          initial={{ clipPath: `inset(0px ${containerWidth - x.get()}px 0px 0px)` }}
           className="absolute inset-0 w-full h-full pointer-events-none"
         >
           {beforeContent}

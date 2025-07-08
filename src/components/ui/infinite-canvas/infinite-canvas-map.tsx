@@ -1,14 +1,67 @@
 "use client";
 
+import { Australia, BaseCountries, EastAsia, Europe, SouthAfrica, SouthAmerica } from "@/app/infinite-canvas/map/base-countries";
+import {
+  Table,
+  TableBody,
+  TableCaption,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { useSlideshowContext } from "@/contexts/slideshow-context";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import Head from "next/head";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import InfiniteCanvas, {
   CanvasItem,
   InfiniteCanvasAPI,
 } from ".";
-import { Australia, BaseCountries, EastAsia, Europe, SouthAfrica, SouthAmerica } from "@/app/infinite-canvas/map/base-countries";
+import { Button } from "../button";
+import { Sheet, SheetContent } from "../sheet";
 
-const InfiniteCanvasMap = () => {
+type CountryInfo = {
+  country: string
+  value: number
+} | {
+  country: string
+  range: [number, number]
+}
+
+interface CountryInfoBoxProps {
+  grouping: string
+  data: CountryInfo[]
+}
+
+const CountryInfoBox = ({ grouping, data }: CountryInfoBoxProps) => {
+  return (
+    <div className="w-full h-full bg-transparent rounded-lg p-2 flex flex-col gap-2 border-1 border-white">
+      <div className="w-full h-full bg-white rounded-lg p-2">
+        <Table>
+          <TableCaption >{grouping} - Incidence rates per 100,000 people</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[100px]">Country</TableHead>
+              <TableHead>Incidence rate</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.map((item) => (
+              <TableRow key={item.country}>
+                <TableCell>{item.country}</TableCell>
+                <TableCell>{'value' in item ? item.value : `${item.range[0]}-${item.range[1]}`}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
+  );
+};
+
+
+const InfiniteCanvasMap = ({ onFinish }: { onFinish: () => void }) => {
   const api = useRef<InfiniteCanvasAPI>(null);
 
   // Apply root-level CSS for optimal touch handling
@@ -43,24 +96,19 @@ const InfiniteCanvasMap = () => {
       id: "1",
       x: 2728.78,
       y: 2612.96,
-      width: 228.01,
-      height: 200.95,
+      width: 320,
+      height: 220,
       render: ({ selected, viewport }) => <SouthAfrica selected={selected} />,
       expansion: {
-        dx: 200,
+        dx: 0,
         dy: 0,
         width: 228.01,
         height: 200.95,
         render: ({ selected, parent, viewport }) => (
-          <div className="bg-white border-2 border-blue-300 rounded-lg p-4 shadow-lg">
-            <h4 className="font-bold text-blue-800 mb-2">🎉 Dynamic Reveal!</h4>
-            <p className="text-sm text-gray-700 mb-2">
-              This content is generated dynamically when selected.
-            </p>
-            <div className="text-xs text-gray-500 space-y-1">
-              <div>Selected: {selected ? '✅' : '❌'}</div>
-            </div>
-          </div>
+          <CountryInfoBox grouping="Southern Africa" data={[
+            { country: "South Africa", value: 0.06 },
+
+          ]} />
         ),
       }
     },
@@ -78,20 +126,16 @@ const InfiniteCanvasMap = () => {
       height: 571.49,
       render: ({ selected, viewport }) => <SouthAmerica />,
       expansion: {
-        dx: 200,
+        dx: 0,
         dy: 0,
         width: 228.01,
         height: 200.95,
         render: ({ selected, parent, viewport }) => (
-          <div className="bg-white border-2 border-blue-300 rounded-lg p-4 shadow-lg">
-            <h4 className="font-bold text-blue-800 mb-2">🎉 Dynamic Reveal!</h4>
-            <p className="text-sm text-gray-700 mb-2">
-              This content is generated dynamically when selected.
-            </p>
-            <div className="text-xs text-gray-500 space-y-1">
-              <div>Selected: {selected ? '✅' : '❌'}</div>
-            </div>
-          </div>
+          <CountryInfoBox grouping="South America" data={[
+            { country: "Peru", value: 1.7 },
+            { country: "Brazil", value: 0.33 },
+
+          ]} />
         ),
       }
     },
@@ -109,17 +153,15 @@ const InfiniteCanvasMap = () => {
       height: 525.24,
       render: ({ selected, viewport }) => <Australia selected={selected} />,
       expansion: {
-        dx: 200,
+        dx: 0,
         dy: 0,
         width: 228.01,
         height: 200.95,
         render: ({ selected, parent, viewport }) => (
-          <div className="bg-white border-2 border-blue-300 rounded-lg p-4 shadow-lg">
-            <h4 className="font-bold text-blue-800 mb-2">🎉 Dynamic Reveal!</h4>
-            <p className="text-sm text-gray-700 mb-2">
-              This content is generated dynamically when selected.
-            </p>
-          </div>
+          <CountryInfoBox grouping="Australasia" data={[
+            { country: "Australia", range: [1.41, 10.5] },
+
+          ]} />
         ),
       }
     },
@@ -137,17 +179,26 @@ const InfiniteCanvasMap = () => {
       height: 1500,
       render: ({ selected, viewport }) => <Europe />,
       expansion: {
-        dx: 200,
+        dx: 0,
         dy: 0,
-        width: 228.01,
-        height: 200.95,
+        width: 320,
+        height: 600,
         render: ({ selected, parent, viewport }) => (
-          <div className="bg-white border-2 border-blue-300 rounded-lg p-4 shadow-lg">
-            <h4 className="font-bold text-blue-800 mb-2">🎉 Dynamic Reveal!</h4>
-            <p className="text-sm text-gray-700 mb-2">
-              This content is generated dynamically when selected.
-            </p>
-          </div>
+          <CountryInfoBox grouping="Europe" data={[
+            { country: "The Netherlands", value: 1.9 },
+            { country: "Italy", value: 0.84 },
+            { country: "Czechia", value: 1.16 },
+            { country: "Norway", value: 0.85 },
+            { country: "Estonia", value: 1.4 },
+            { country: "Denmark", value: 1.08 },
+            { country: "Poland", value: 0.62 },
+            { country: "Spain", value: 0.34 },
+            { country: "Germany", value: 1.72 },
+            { country: "Lithiania", value: 1.93 },
+            { country: "United Kingdom", value: 0.99 },
+            { country: 'France', range: [2.5, 3.1] }
+
+          ]} />
         ),
       }
     },
@@ -166,17 +217,17 @@ const InfiniteCanvasMap = () => {
       height: 692.22,
       render: ({ selected, viewport }) => <EastAsia />,
       expansion: {
-        dx: 200,
+        dx: 0,
         dy: 0,
         width: 228.01,
-        height: 200.95,
+        height: 250,
         render: ({ selected, parent, viewport }) => (
-          <div className="bg-white border-2 border-blue-300 rounded-lg p-4 shadow-lg">
-            <h4 className="font-bold text-blue-800 mb-2">🎉 Dynamic Reveal!</h4>
-            <p className="text-sm text-gray-700 mb-2">
-              This content is generated dynamically when selected.
-            </p>
-          </div>
+          <CountryInfoBox grouping="East Asia" data={[
+            { country: "Japan", value: 4.2 },
+            { country: "Taiwan", value: 1.8 },
+            { country: "Singapore", value: 0.55 },
+
+          ]} />
         ),
       }
     },
@@ -195,6 +246,10 @@ const InfiniteCanvasMap = () => {
   };
 
   const nextSlide = () => {
+    if (currentSlide === items.length - 1) {
+      onFinish();
+      return;
+    }
     const nextIndex = (currentSlide + 1) % items.length;
     const prevIndex = currentSlide === 0 ? items.length - 1 : currentSlide - 1;
     setCurrentSlide(nextIndex);
@@ -239,103 +294,127 @@ const InfiniteCanvasMap = () => {
         />
         <title>Infinite Canvas Demo</title>
       </Head>
-      <div className="h-full w-full overflow-clip rounded-lg shadow-lg">
-        <div className="absolute top-4 left-4 z-10 bg-[#DBDBDE]  p-4 max-w-md">
-          <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            Infinite Canvas Demo
-          </h1>
-          <p className="text-gray-600 text-sm"></p>
-          <ul className="text-gray-600 text-sm mt-2 space-y-1">
-            <li>
-              🖱️ <strong>Pan:</strong> Click and drag empty space
-            </li>
-            <li>
-              🔍 <strong>Zoom:</strong> Mouse wheel or trackpad pinch
-            </li>
-            <li>
-              📱 <strong>Touch:</strong> Single finger pan, two finger zoom
-            </li>
-            <li>
-              🎯 <strong>Select:</strong> Click items, Cmd/Ctrl for multi-select
-            </li>
-            <li>
-              ↔️ <strong>Drag:</strong> Click and drag selected items
-            </li>
-          </ul>
-        </div>
+      <div className="h-full w-full  grid grid-cols-1 grid-rows-[30px_1fr_80px] bg-transparent pointer-events-auto">
+        <div className="row-start-2 row-span-1 overflow-clip  flex flex-col items-center justify-center rounded-bl-lg rounded-tl-lg border-1 border-white p-1.5">
+          <div className="text-2xl rounded-tl-lg p-2 bg-white text-dark-blue w-full">
+            Please select the locations below to reveal location specific information
+          </div>
 
-        {/* Presentation Controls */}
-        <div className="absolute top-4 right-4 z-10 bg-white rounded-lg shadow-lg p-4">
-          <h2 className="text-lg font-bold text-gray-800 mb-3">
-            Presentation Mode
-          </h2>
-          <div className="flex flex-col gap-2">
-            <button
-              onClick={startPresentation}
-              className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
-            >
-              🎬 Start Presentation
-            </button>
-            <div className="flex gap-2">
-              <button
-                onClick={prevSlide}
-                className="px-3 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
-              >
-                ← Prev
-              </button>
-              <button
-                onClick={nextSlide}
-                className="px-3 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm"
-              >
-                Next →
-              </button>
+
+
+
+          <div className="w-full flex-1 bg-light-blue rounded-bl-lg relative aspect-[16/9]">
+            {/* Presentation Controls */}
+            <div className="absolute bottom-4 right-4 z-10 bg-white rounded-lg shadow-lg p-4">
+
+              <div className="flex flex-col gap-2">
+                <Button
+                  onClick={startPresentation}
+                  disabled={currentSlide === 0}
+                >
+                  Restart
+                </Button>
+                <div className="flex gap-2 items-center justify-center">
+                  <Button
+                    onClick={prevSlide}
+                    disabled={currentSlide === 0}
+                  >
+                    <ArrowLeft />
+                  </Button>
+                  <Button
+                    onClick={nextSlide}
+                  >
+                    {currentSlide === items.length - 1 ? 'Finish' : <ArrowRight />}
+                  </Button>
+                </div>
+                <div className="text-xs text-gray-600 text-center">
+                  Slide {currentSlide + 1} of {items.length}
+                </div>
+              </div>
             </div>
-            <div className="text-xs text-gray-600 text-center">
-              Slide {currentSlide + 1} of {items.length}
-            </div>
+
+            {/* Viewport Controls */}
+            {/* <div className="absolute bottom-4 left-4 z-10 bg-white rounded-lg shadow-lg p-4">
+              <h2 className="text-lg font-bold text-gray-800 mb-3">
+                Viewport Controls
+              </h2>
+              <div className="flex flex-col gap-2">
+                <button
+                  onClick={fitAllItems}
+                  className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
+                >
+                  📐 Fit All Items
+                </button>
+                <button
+                  onClick={zoomToCenter}
+                  className="px-3 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm"
+                >
+                  🎯 Zoom to Center
+                </button>
+                <button
+                  onClick={resetView}
+                  className="px-3 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 text-sm"
+                >
+                  🏠 Reset View
+                </button>
+              </div>
+            </div> */}
+            <InfiniteCanvas
+              ref={api}
+              items={items}
+              onItemsChange={handleItemsChange}
+              minZoom={0.1}
+              maxZoom={3}
+              zoomSensitivity={0.03}
+              initialViewport={{
+                "x": 53.68550200572031,
+                "y": 56.051491651119875,
+                "scale": 0.24883199999999994
+              }}>
+              < BaseCountries />
+            </InfiniteCanvas>
           </div>
         </div>
-
-        {/* Viewport Controls */}
-        <div className="absolute bottom-4 left-4 z-10 bg-white rounded-lg shadow-lg p-4">
-          <h2 className="text-lg font-bold text-gray-800 mb-3">
-            Viewport Controls
-          </h2>
-          <div className="flex flex-col gap-2">
-            <button
-              onClick={fitAllItems}
-              className="px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600 text-sm"
-            >
-              📐 Fit All Items
-            </button>
-            <button
-              onClick={zoomToCenter}
-              className="px-3 py-2 bg-purple-500 text-white rounded hover:bg-purple-600 text-sm"
-            >
-              🎯 Zoom to Center
-            </button>
-            <button
-              onClick={resetView}
-              className="px-3 py-2 bg-orange-500 text-white rounded hover:bg-orange-600 text-sm"
-            >
-              🏠 Reset View
-            </button>
-          </div>
-        </div>
-
-        <InfiniteCanvas
-          ref={api}
-          items={items}
-          onItemsChange={handleItemsChange}
-          minZoom={0.1}
-          maxZoom={3}
-          zoomSensitivity={0.03}
-        >
-          <BaseCountries />
-        </InfiniteCanvas>
-      </div>
+      </div >
     </>
   );
 };
 
-export { InfiniteCanvasMap };
+
+
+
+const InfiniteCanvasMapInSheet = () => {
+
+  const api = useSlideshowContext();
+  const [open, setOpen] = useState(true);
+
+  const handleFinish = () => {
+    setOpen(false);
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    setOpen(open);
+
+  }
+
+  useEffect(() => {
+    if (open == false) {
+      setTimeout(() => {
+        api.setPage(api.currentPage + 1);
+      }, 800); // 800ms delay
+    }
+  }, [open]);
+
+  return (
+    <Sheet open={open} onOpenChange={handleOpenChange}>
+      <SheetContent side='right' className="w-[60vw] sm:max-w-[80vw] bg-transparent border-none">
+        <InfiniteCanvasMap onFinish={handleFinish} />
+      </SheetContent>
+    </Sheet>
+  );
+};
+
+
+
+export { InfiniteCanvasMapInSheet as InfiniteCanvasMap };
+

@@ -30,13 +30,11 @@ import {
   DrawerTitle
 } from "@/components/ui/drawer";
 import { InfiniteCanvasMap } from "@/components/ui/infinite-canvas/infinite-canvas-map";
-import { ResponsiveContainer } from "@/components/ui/responsive-container";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
-  SheetHeader,
-  SheetTitle
+  SheetHeader
 } from "@/components/ui/sheet";
 import { SettingsProvider } from "@/contexts/settings-dialog";
 import { FreezeFrame } from "./slide-types/freeze-frame";
@@ -44,6 +42,7 @@ import { InteractiveVideo } from "./slide-types/interactive-video";
 import { LinearSequenceSlide } from "./slide-types/linear-sequence-slide";
 import { RegularSlide } from "./slide-types/regular-slide";
 import { RotationalSequenceSlide } from "./slide-types/rotational-sequence-slide";
+import { TargetedLinearSequenceSlide } from "./slide-types/targeted-linear-sequence-slide";
 import { VideoSlide } from "./slide-types/video-slide";
 
 
@@ -77,7 +76,7 @@ const renderSlide = (slide: Slide) => {
       />
     ))
     .with({ type: "FreezeFrame" }, (slideType) => (
-      <FreezeFrame poster={slideType.data.poster} elements={slideType.data.elements} />
+      <FreezeFrame {...slideType.data} />
     ))
     .with({ type: "InteractiveVideo" }, (slideType) => (
       <InteractiveVideo
@@ -93,6 +92,11 @@ const renderSlide = (slide: Slide) => {
         frameCount={slideType.data.frameCount}
         format={slideType.data.format}
         sliderText={slideType.data.sliderText}
+      />
+    ))
+    .with({ type: "TargetedLinearSequence" }, (slideType) => (
+      <TargetedLinearSequenceSlide
+        {...slideType.data}
       />
     ))
     .with({ type: "ClipPathComparator" }, (slideType) => (
@@ -461,18 +465,23 @@ export default function VideoSlideshowLayout({
   return (
     <SettingsProvider>
       <SlideshowProvider slides={slides} renderSlide={renderSlide}>
-        <ResponsiveContainer
+        {/* <ResponsiveContainer
           width={1920}
           height={1080}
           scale={true}
           containerClassname="w-[calc(100vw-1rem)] h-[calc(100vh-1rem)]"
           contentClassname="rounded-md overflow-hidden"
-        >
-          {children}
-          <PersistentUI />
-        </ResponsiveContainer>
-      </SlideshowProvider>
-    </SettingsProvider>
+        > */}
+        <div className="p-4 w-[calc(100vw-1rem)] h-[calc(100vh-1rem)]  overflow-hidden flex items-center justify-center ">
+          <div className="aspect-video w-full max-h-[1080px] max-w-[1920px] rounded-lg overflow-clip relative">
+            {children}
+            <PersistentUI />
+          </div>
+        </div>
+        {/* </ResponsiveContainer> */}
+
+      </SlideshowProvider >
+    </SettingsProvider >
   );
 }
 
@@ -503,9 +512,9 @@ const SlideSheet = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <Sheet open={open} onOpenChange={(open) => setOpen(open)}>
-      <SheetContent className="w-[50vw] sm:w-[80vw]">
+      <SheetContent side='right' className="w-[50vw] sm:max-w-[80vw]">
         <SheetHeader>
-          <SheetTitle>Are you absolutely sure?</SheetTitle>
+          {/* <SheetTitle></SheetTitle> */}
           <SheetDescription>
             This action cannot be undone. This will permanently delete your
             account and remove your data from our servers.

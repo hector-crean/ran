@@ -78,6 +78,7 @@ export interface InfiniteCanvasProps {
   maxZoom?: number;
   zoomSensitivity?: number;
   children?: React.ReactNode;
+  initialViewport?: ViewportState;
 }
 
 export interface InfiniteCanvasAPI {
@@ -216,7 +217,7 @@ export const InfiniteCanvas = forwardRef<
       minZoom = 0.1,
       maxZoom = 5,
       zoomSensitivity = 0.002,
-
+      initialViewport,
       children,
     },
     ref
@@ -225,7 +226,7 @@ export const InfiniteCanvas = forwardRef<
     const containerRef = useRef<HTMLDivElement>(null);
 
     // Viewport state
-    const [viewport, setViewport] = useState<ViewportState>({
+    const [viewport, setViewport] = useState<ViewportState>(initialViewport ?? {
       x: 0,
       y: 0,
       scale: 1,
@@ -839,6 +840,8 @@ export const InfiniteCanvas = forwardRef<
     // Calculate transform string
     const transform = `translate(${viewport.x}, ${viewport.y}) scale(${viewport.scale})`;
 
+
+    console.log(viewport);
     return (
       <div
         ref={containerRef}
@@ -1044,9 +1047,10 @@ export const InfiniteCanvas = forwardRef<
                       y={item.y + item.expansion!.dy}
                       width={item.expansion!.width}
                       height={item.expansion!.height}
+                      transform={`translate(${item.x + item.expansion!.dx}, ${item.y + item.expansion!.dy}) scale(${1 / viewport.scale}) translate(${-(item.x + item.expansion!.dx)}, ${-(item.y + item.expansion!.dy)})`}
                     >
                       <motion.div
-                        className="w-full h-full p-2 text-sm"
+                        className="w-full h-full"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{

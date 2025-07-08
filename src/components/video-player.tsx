@@ -26,6 +26,7 @@ interface VideoPlayerProps {
   onTimeUpdate?: (currentTime: number, duration: number) => void;
   onPlay?: () => void;
   onPause?: () => void;
+  onEnded?: () => void;
   className?: string;
   autoPlay?: boolean;
   muted?: boolean;
@@ -43,6 +44,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
     onTimeUpdate,
     onPlay,
     onPause,
+    onEnded,
     className = "hidden",
     autoPlay = true,
     muted = true,
@@ -142,6 +144,7 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
         className={className}
         preload={preload}
         crossOrigin={crossOrigin}
+        onEnded={onEnded}
       >
         Your browser does not support the video tag.
       </video>

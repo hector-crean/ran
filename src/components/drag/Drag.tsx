@@ -2,7 +2,7 @@
 
 /* eslint-disable react/jsx-handler-names */
 import React from 'react';
-import useDrag, { UseDrag, UseDragOptions, HandlerArgs as HandlerArgsType } from './useDrag';
+import useDrag, { HandlerArgs as HandlerArgsType, UseDrag, UseDragOptions } from './useDrag';
 
 export type HandlerArgs = HandlerArgsType;
 
@@ -54,17 +54,17 @@ export default function Drag({
 
   return (
     <>
-      {drag.isDragging && captureDragArea && (
+      {/* {drag.isDragging && captureDragArea && (
         <rect
           width={width}
           height={height}
           onPointerDown={drag.dragStart}
           onPointerMove={drag.dragMove}
           onPointerUp={drag.dragEnd}
-          
+
           fill="transparent"
         />
-      )}
+      )} */}
       {children(drag)}
     </>
   );

@@ -12,6 +12,7 @@ import { match } from "ts-pattern";
 import { slides } from "./slides-data";
 
 import ClipPathComparator from "@/components/clip-path-comparator";
+import { DragDropGrid } from "@/components/drag-drop/index";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -98,6 +99,9 @@ const renderSlide = (slide: Slide) => {
       <ClipPathComparator
         {...slideType.data}
       />
+    ))
+    .with({ type: 'DragDropGrid' }, (slideType) => (
+      <DragDropGrid {...slideType.data} />
     ))
     .otherwise(() => <div>Unknown slide type</div>);
 

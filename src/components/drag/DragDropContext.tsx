@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useCallback, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 export type DragData<T = any> = {
   id: string;
@@ -21,16 +21,16 @@ export type DropZone<T = any> = {
 export type DragDropContextType = {
   // Current drag state
   activeDrag: DragData | null;
-  
+
   // Drop zone management
   registerDropZone: (dropZone: DropZone) => () => void;
   updateDropZoneBounds: (id: string, bounds: DOMRect) => void;
-  
+
   // Drag operations
   startDrag: (dragData: DragData) => void;
   updateDragPosition: (position: { x: number; y: number }) => void;
   endDrag: (position?: { x: number; y: number }) => void;
-  
+
   // Drop zone states
   getDropZoneState: (id: string) => { isOver: boolean; canDrop: boolean };
 };
@@ -79,35 +79,43 @@ export function isDragDataOfType<T>(dragData: DragData, predicate: (data: any) =
 
 export function DragDropProvider({ children }: { children: React.ReactNode }) {
   const [activeDrag, setActiveDrag] = useState<DragData | null>(null);
-  const dropZones = useRef<Map<string, DropZone>>(new Map());
-  const [dropZoneStates, setDropZoneStates] = useState<Map<string, { isOver: boolean; canDrop: boolean }>>(new Map());
+
+  // Use refs to avoid unnecessary rerenders
+  const activeDragRef = useRef<DragData | null>(null);
+  const dropZonesRef = useRef<DropZone[]>([]);
+  const currentlyOverDropZoneRef = useRef<DropZone | null>(null);
+  const dropZoneStatesRef = useRef<Array<{ id: string; isOver: boolean; canDrop: boolean }>>([]);
+
+  // Keep refs in sync with state
+  useEffect(() => {
+    activeDragRef.current = activeDrag;
+  }, [activeDrag]);
 
   // Register a drop zone
   const registerDropZone = useCallback((dropZone: DropZone) => {
-    dropZones.current.set(dropZone.id, dropZone);
-    
+    dropZonesRef.current = [...dropZonesRef.current, dropZone];
+
     // Return cleanup function
     return () => {
-      dropZones.current.delete(dropZone.id);
-      setDropZoneStates(prev => {
-        const next = new Map(prev);
-        next.delete(dropZone.id);
-        return next;
-      });
+      dropZonesRef.current = dropZonesRef.current.filter(zone => zone.id !== dropZone.id);
+      dropZoneStatesRef.current = dropZoneStatesRef.current.filter(state => state.id !== dropZone.id);
     };
   }, []);
 
   // Update drop zone bounds (called when elements resize/move)
   const updateDropZoneBounds = useCallback((id: string, bounds: DOMRect) => {
-    const dropZone = dropZones.current.get(id);
-    if (dropZone) {
-      dropZones.current.set(id, { ...dropZone, bounds });
+    const dropZoneIndex = dropZonesRef.current.findIndex(zone => zone.id === id);
+    if (dropZoneIndex !== -1) {
+      dropZonesRef.current[dropZoneIndex] = {
+        ...dropZonesRef.current[dropZoneIndex],
+        bounds
+      };
     }
   }, []);
 
   // Check if a point intersects with a drop zone
   const getDropZoneAtPoint = useCallback((x: number, y: number): DropZone | null => {
-    for (const dropZone of dropZones.current.values()) {
+    for (const dropZone of dropZonesRef.current) {
       const { bounds } = dropZone;
       if (x >= bounds.left && x <= bounds.right && y >= bounds.top && y <= bounds.bottom) {
         return dropZone;
@@ -119,78 +127,90 @@ export function DragDropProvider({ children }: { children: React.ReactNode }) {
   // Start dragging
   const startDrag = useCallback((dragData: DragData) => {
     setActiveDrag(dragData);
-    
+
     // Initialize drop zone states
-    const initialStates = new Map();
-    for (const [id, dropZone] of dropZones.current) {
-      initialStates.set(id, {
-        isOver: false,
-        canDrop: dropZone.accepts(dragData.data),
-      });
-    }
-    setDropZoneStates(initialStates);
+    dropZoneStatesRef.current = dropZonesRef.current.map(dropZone => ({
+      id: dropZone.id,
+      isOver: false,
+      canDrop: dropZone.accepts(dragData.data),
+    }));
+
+    currentlyOverDropZoneRef.current = null;
   }, []);
 
   // Update drag position and check for collisions
   const updateDragPosition = useCallback((position: { x: number; y: number }) => {
-    if (!activeDrag) return;
+    const currentActiveDrag = activeDragRef.current;
+    if (!currentActiveDrag) return;
 
     setActiveDrag(prev => prev ? { ...prev, position } : null);
 
     const dropZoneAtPoint = getDropZoneAtPoint(position.x, position.y);
-    
-    setDropZoneStates(prev => {
-      const next = new Map(prev);
-      
-      // Update all drop zones
-      for (const [id, dropZone] of dropZones.current) {
-        const currentState = prev.get(id) || { isOver: false, canDrop: false };
-        const isCurrentlyOver = dropZone === dropZoneAtPoint;
-        const wasOver = currentState.isOver;
-        
-        // Handle enter/leave events
-        if (isCurrentlyOver && !wasOver) {
-          dropZone.onDragEnter?.(activeDrag.data);
-        } else if (!isCurrentlyOver && wasOver) {
-          dropZone.onDragLeave?.(activeDrag.data);
+    const previousDropZone = currentlyOverDropZoneRef.current;
+
+    // Only update if the drop zone has changed
+    if (dropZoneAtPoint !== previousDropZone) {
+      // Handle leave event for previous drop zone
+      if (previousDropZone) {
+        previousDropZone.onDragLeave?.(currentActiveDrag.data);
+
+        // Update state for previous drop zone
+        const prevStateIndex = dropZoneStatesRef.current.findIndex(state => state.id === previousDropZone.id);
+        if (prevStateIndex !== -1) {
+          dropZoneStatesRef.current[prevStateIndex] = {
+            ...dropZoneStatesRef.current[prevStateIndex],
+            isOver: false,
+          };
         }
-        
-        next.set(id, {
-          ...currentState,
-          isOver: isCurrentlyOver,
-        });
       }
-      
-      return next;
-    });
-  }, [activeDrag, getDropZoneAtPoint]);
+
+      // Handle enter event for new drop zone
+      if (dropZoneAtPoint) {
+        dropZoneAtPoint.onDragEnter?.(currentActiveDrag.data);
+
+        // Update state for new drop zone
+        const newStateIndex = dropZoneStatesRef.current.findIndex(state => state.id === dropZoneAtPoint.id);
+        if (newStateIndex !== -1) {
+          dropZoneStatesRef.current[newStateIndex] = {
+            ...dropZoneStatesRef.current[newStateIndex],
+            isOver: true,
+          };
+        }
+      }
+
+      currentlyOverDropZoneRef.current = dropZoneAtPoint;
+    }
+  }, [getDropZoneAtPoint]);
 
   // End dragging
   const endDrag = useCallback((position?: { x: number; y: number }) => {
-    if (!activeDrag) return;
+    const currentActiveDrag = activeDragRef.current;
+    if (!currentActiveDrag) return;
 
-    const finalPosition = position || activeDrag.position;
+    const finalPosition = position || currentActiveDrag.position;
     const dropZoneAtPoint = getDropZoneAtPoint(finalPosition.x, finalPosition.y);
-    
+
     // Handle drop
-    if (dropZoneAtPoint && dropZoneAtPoint.accepts(activeDrag.data)) {
-      dropZoneAtPoint.onDrop(activeDrag.data, finalPosition);
+    if (dropZoneAtPoint && dropZoneAtPoint.accepts(currentActiveDrag.data)) {
+      dropZoneAtPoint.onDrop(currentActiveDrag.data, finalPosition);
     }
-    
+
     // Clean up
     setActiveDrag(null);
-    setDropZoneStates(new Map());
-    
-    // Send drag leave to all zones
-    for (const dropZone of dropZones.current.values()) {
-      dropZone.onDragLeave?.(activeDrag.data);
+    dropZoneStatesRef.current = [];
+    currentlyOverDropZoneRef.current = null;
+
+    // Send drag leave to all zones that might still be listening
+    for (const dropZone of dropZonesRef.current) {
+      dropZone.onDragLeave?.(currentActiveDrag.data);
     }
-  }, [activeDrag, getDropZoneAtPoint]);
+  }, [getDropZoneAtPoint]);
 
   // Get current state for a drop zone
   const getDropZoneState = useCallback((id: string) => {
-    return dropZoneStates.get(id) || { isOver: false, canDrop: false };
-  }, [dropZoneStates]);
+    const state = dropZoneStatesRef.current.find(state => state.id === id);
+    return state || { isOver: false, canDrop: false };
+  }, []);
 
   const contextValue: DragDropContextType = {
     activeDrag,

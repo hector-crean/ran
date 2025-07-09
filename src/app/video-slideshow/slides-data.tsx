@@ -165,6 +165,40 @@ export const slides: Slide[] = [
     },
   },
   {
+    id: "scene_3_1_3",
+    title: "Scene 3.1.3",
+    firstFramePoster: "/assets/Scene_4.1_poster.png",
+    lastFramePoster: "/assets/Scene_4.1_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
+    slide_type: {
+      type: 'FreezeFrame',
+      data: {
+        poster: "/assets/Scene_4.1_poster.png",
+        children: <div className="text-white text-2xl">Question component</div>,
+      },
+    },
+  },
+  {
+    id: "scene_3_1_4",
+    title: "Scene 3.1.4",
+    firstFramePoster: "/assets/Scene_4.1_poster.png",
+    lastFramePoster: "/assets/Scene_4.1_poster.png",
+    onFinishAction: 'next_slide',
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
+    slide_type: {
+      type: 'DragDropGrid',
+      data: {
+        poster: "/assets/Scene_4.1_poster.png",
+        children: <div className="text-white text-2xl">Drag and drop the immune complex to deposit it in the glomeruli</div>,
+      },
+    },
+  },
+  {
     id: "scene_4_1",
     title: "Scene 4.1",
     firstFramePoster: "/assets/Scene_4.1_poster.png",

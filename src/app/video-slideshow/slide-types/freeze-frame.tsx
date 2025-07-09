@@ -18,7 +18,9 @@ const FreezeFrame = ({ poster, children }: FreezeFrameProps) => {
                     {renderNode(element.node)}
                 </div>
             ))} */}
-            {children}
+            <div className="absolute inset-0 flex items-center justify-center z-10">
+                {children}
+            </div>
         </div>
     );
 };

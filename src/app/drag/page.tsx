@@ -1,36 +1,35 @@
 "use client";
 
 import { Drag, HandlerArgs, raise } from "@/components/drag";
-import { DropEvent } from "@/components/drag/useDroppable";
-import { Droppable } from '@/components/drag/Droppable'
+import { createDragData, DragDropProvider, useDragDropContext } from '@/components/drag/DragDropContext';
+import { ResponsiveContainer } from "@/components/ui/responsive-container";
 import {
-  reduceGeojson,
-  renderGeometry,
   getCentroid,
   renderConvexHull,
+  renderGeometry
 } from "@/components/ui/svg/geometry/render";
-import { OutlineResponse } from "@/types/OutlineResponse";
-import { Geometry, Feature } from "geojson";
 import { MaskOutlineProperties } from "@/types/MaskOutlineProperties";
+import { OutlineResponse } from "@/types/OutlineResponse";
+import { Feature, Geometry } from "geojson";
 import { motion } from "motion/react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { outline } from "../processed";
-import { useState, useMemo, useCallback, useEffect } from "react";
-import { ResponsiveContainer } from "@/components/ui/responsive-container";
-import React from "react";
 
 const Page = () => {
   return (
-   <div className="w-full h-full bg-gray-900 p-12">
+    <div className="w-full h-full bg-gray-900 p-12">
       <ResponsiveContainer
-      width={1920}
-      height={1080}
-      scale={true}
-      containerClassname="w-full h-full bg-gray-900"
-      contentClassname="rounded-2xl overflow-hidden shadow-lg bg-white"
-    > 
-      <DragExample outline={outline} />
-     </ResponsiveContainer> 
-   </div>
+        width={1920}
+        height={1080}
+        scale={true}
+        containerClassname="w-full h-full bg-gray-900"
+        contentClassname="rounded-2xl overflow-hidden shadow-lg bg-white"
+      >
+        <DragDropProvider>
+          <DragExample outline={outline} />
+        </DragDropProvider>
+      </ResponsiveContainer>
+    </div>
   );
 };
 
@@ -48,15 +47,15 @@ const DragItem = React.memo(
     width,
     height,
     onReorder,
-    checkCollisions,
   }: {
     item: { geometry: Geometry; id: number; properties: MaskOutlineProperties };
     index: number;
     width: number;
     height: number;
     onReorder: (index: number) => void;
-    checkCollisions?: (dragData: any, dragBbox: any) => string[];
   }) => {
+    const dragDropContext = useDragDropContext();
+
     // Memoize expensive calculations
     const centroid = useMemo(() => getCentroid(item.geometry), [item.geometry]);
 
@@ -91,58 +90,50 @@ const DragItem = React.memo(
     );
 
     // Memoized drag start handler
-    const handleDragStart = useCallback(() => {
+    const handleDragStart = useCallback((args: HandlerArgs) => {
       onReorder(index);
-    }, [index, onReorder]);
 
-    // Create drag data for dropzones
-    const dragData = useMemo(() => ({
-      id: item.id,
-      properties: item.properties,
-      geometry: item.geometry,
-    }), [item]);
+      // Create drag data and start drag in context
+      const dragData = createDragData(
+        `item-${item.id}`,
+        {
+          id: item.id,
+          properties: item.properties,
+          geometry: item.geometry,
+        },
+        { x: args.x || 0, y: args.y || 0 }
+      );
+
+      dragDropContext.startDrag(dragData);
+    }, [index, onReorder, item, dragDropContext]);
 
     const onDragEnd = useCallback((args: HandlerArgs) => {
       console.log('Drag ended:', args);
-      
-      // Check for collisions on drag end
-      const dragBbox = transformBoundingBox(
-        getBoundingBox(item.geometry),
-        args.dx,
-        args.dy
-      );
-      
-      if (checkCollisions) {
-        const collidingZones = checkCollisions(dragData, dragBbox);
-        console.log('Colliding with zones:', collidingZones);
-        
-        if (collidingZones.length > 0) {
-          console.log(`Item ${item.id} dropped on zones:`, collidingZones);
-          // Here you would handle the drop logic
-        }
+
+      // Convert SVG coordinates to screen coordinates for proper drop detection
+      const svgElement = document.querySelector('svg');
+      if (svgElement) {
+        const rect = svgElement.getBoundingClientRect();
+        const screenX = rect.left + (args.x || 0) * (rect.width / width);
+        const screenY = rect.top + (args.y || 0) * (rect.height / height);
+
+        dragDropContext.endDrag({ x: screenX, y: screenY });
+      } else {
+        dragDropContext.endDrag();
       }
-      
-      console.log('Final drag position:', { dx: args.dx, dy: args.dy });
-      console.log('Transformed bounding box:', dragBbox);
-    }, [item.geometry, checkCollisions, dragData, item.id]);
+    }, [dragDropContext, width, height]);
 
     const onDragMove = useCallback((args: HandlerArgs) => {
-      // Check for collisions during drag movement
-      const dragBbox = transformBoundingBox(
-        getBoundingBox(item.geometry),
-        args.dx,
-        args.dy
-      );
+      // Convert SVG coordinates to screen coordinates for proper collision detection
+      const svgElement = document.querySelector('svg');
+      if (svgElement) {
+        const rect = svgElement.getBoundingClientRect();
+        const screenX = rect.left + (args.x || 0) * (rect.width / width);
+        const screenY = rect.top + (args.y || 0) * (rect.height / height);
 
-      
-      if (checkCollisions) {
-        const collidingZones = checkCollisions(dragData, dragBbox);
-        // Could use this for visual feedback, hover effects, etc.
-        if (collidingZones.length > 0) {
-          console.log(`Item ${item.id} hovering over:`, collidingZones);
-        }
+        dragDropContext.updateDragPosition({ x: screenX, y: screenY });
       }
-    }, [item.geometry, checkCollisions, dragData, item.id]);
+    }, [dragDropContext, width, height]);
 
     return (
       <Drag
@@ -160,11 +151,8 @@ const DragItem = React.memo(
             layoutId={`geometry-${item.id}`}
             layout
             animate={{
-              // x: dx,
-              // y: dy,
               scale: isDragging ? 1.05 : 1,
             }}
-            //   transition={springTransition}
             style={{
               cursor: isDragging ? "grabbing" : "grab",
               x: dx,
@@ -191,8 +179,6 @@ const DragItem = React.memo(
               onTouchStart={dragStart}
               onTouchMove={dragMove}
               onTouchEnd={dragEnd}
-              // TODO: Add collision detection here to communicate with drop zones
-              // You could track mouse position and check against drop zone bounds
             >
               {renderConvexHull(item.geometry, convexHullProps)}
             </motion.g>
@@ -203,135 +189,130 @@ const DragItem = React.memo(
   }
 );
 
-// Add these utility functions before the DragItem component
+// Context-aware drop zone component
+const ContextDropZone = React.memo(({
+  id,
+  x,
+  y,
+  width,
+  height,
+  onDrop,
+  accepts,
+  children,
+}: {
+  id: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  onDrop: (dragData: any, position: { x: number; y: number }) => void;
+  accepts: (dragData: any) => boolean;
+  children: (state: { isOver: boolean; canDrop: boolean }) => React.ReactNode;
+}) => {
+  const dragDropContext = useDragDropContext();
+  const dropZoneRef = useRef<SVGRectElement>(null);
 
-// Calculate bounding box for any geometry
-const getBoundingBox = (geometry: Geometry): { minX: number; minY: number; maxX: number; maxY: number } => {
-  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
-  
-  const processPoint = (coord: number[]) => {
-    const [x, y] = coord;
-    minX = Math.min(minX, x);
-    minY = Math.min(minY, y);
-    maxX = Math.max(maxX, x);
-    maxY = Math.max(maxY, y);
-  };
-  
-  switch (geometry.type) {
-    case "Point":
-      processPoint(geometry.coordinates);
-      break;
-    case "MultiPoint":
-      geometry.coordinates.forEach(processPoint);
-      break;
-    case "LineString":
-      geometry.coordinates.forEach(processPoint);
-      break;
-    case "MultiLineString":
-      geometry.coordinates.forEach(line => line.forEach(processPoint));
-      break;
-    case "Polygon":
-      geometry.coordinates.forEach(ring => ring.forEach(processPoint));
-      break;
-    case "MultiPolygon":
-      geometry.coordinates.forEach(polygon => 
-        polygon.forEach(ring => ring.forEach(processPoint))
-      );
-      break;
-    case "GeometryCollection":
-      geometry.geometries.forEach(geom => {
-        const bbox = getBoundingBox(geom);
-        minX = Math.min(minX, bbox.minX);
-        minY = Math.min(minY, bbox.minY);
-        maxX = Math.max(maxX, bbox.maxX);
-        maxY = Math.max(maxY, bbox.maxY);
-      });
-      break;
-  }
-  
-  return { minX, minY, maxX, maxY };
-};
+  // Use refs to store the latest function references to avoid re-registration
+  const onDropRef = useRef(onDrop);
+  const acceptsRef = useRef(accepts);
 
-// Transform bounding box by drag offset
-const transformBoundingBox = (
-  bbox: { minX: number; minY: number; maxX: number; maxY: number },
-  dx: number,
-  dy: number
-) => ({
-  minX: bbox.minX + dx,
-  minY: bbox.minY + dy,
-  maxX: bbox.maxX + dx,
-  maxY: bbox.maxY + dy,
-});
+  // Update refs when functions change
+  onDropRef.current = onDrop;
+  acceptsRef.current = accepts;
 
-// Check if two bounding boxes intersect
-const boundingBoxesIntersect = (
-  bbox1: { minX: number; minY: number; maxX: number; maxY: number },
-  bbox2: { minX: number; minY: number; maxX: number; maxY: number }
-): boolean => {
-  return !(
-    bbox1.maxX < bbox2.minX ||
-    bbox2.maxX < bbox1.minX ||
-    bbox1.maxY < bbox2.minY ||
-    bbox2.maxY < bbox1.minY
+  // Register drop zone with context
+  useEffect(() => {
+    if (!dropZoneRef.current) return;
+
+    const dropZone = {
+      id,
+      bounds: dropZoneRef.current.getBoundingClientRect(),
+      accepts: (dragData: any) => acceptsRef.current(dragData),
+      onDrop: (dragData: any, position: { x: number; y: number }) => onDropRef.current(dragData, position),
+      element: dropZoneRef.current,
+    };
+
+    const cleanup = dragDropContext.registerDropZone(dropZone);
+
+    // Update bounds when the component moves or resizes
+    const updateBounds = () => {
+      if (dropZoneRef.current) {
+        dragDropContext.updateDropZoneBounds(id, dropZoneRef.current.getBoundingClientRect());
+      }
+    };
+
+    const resizeObserver = new ResizeObserver(updateBounds);
+    resizeObserver.observe(dropZoneRef.current);
+
+    return () => {
+      cleanup();
+      resizeObserver.disconnect();
+    };
+  }, [id, dragDropContext]); // Removed onDrop and accepts from dependencies
+
+  // Get current drop zone state
+  const dropZoneState = dragDropContext.getDropZoneState(id);
+
+  return (
+    <g transform={`translate(${x}, ${y})`}>
+      {/* Background drop zone indicator */}
+      <motion.rect
+        ref={dropZoneRef}
+        width={width}
+        height={height}
+        rx={4}
+        initial={{ opacity: 0 }}
+        animate={{
+          opacity: dropZoneState.isOver ? 1 : 0.6,
+          scale: dropZoneState.isOver ? 1.02 : 1,
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 400,
+          damping: 30,
+        }}
+        fill={dropZoneState.isOver && dropZoneState.canDrop
+          ? "rgba(34, 197, 94, 0.2)"
+          : dropZoneState.isOver
+            ? "rgba(239, 68, 68, 0.2)"
+            : "rgba(59, 130, 246, 0.1)"
+        }
+        stroke={dropZoneState.isOver && dropZoneState.canDrop
+          ? "rgb(34, 197, 94)"
+          : dropZoneState.isOver
+            ? "rgb(239, 68, 68)"
+            : "rgba(59, 130, 246, 0.3)"
+        }
+        strokeWidth={dropZoneState.isOver ? 2 : 1}
+        strokeDasharray={dropZoneState.isOver ? "8,4" : "4,4"}
+      />
+
+      {/* Render children */}
+      {children(dropZoneState)}
+
+      {/* Drop zone label when active */}
+      {dropZoneState.isOver && (
+        <motion.text
+          x={width / 2}
+          y={height / 2}
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fontSize={12}
+          fontWeight="bold"
+          initial={{ opacity: 0, y: height / 2 + 10 }}
+          animate={{ opacity: 1, y: height / 2 }}
+          transition={{ duration: 0.2 }}
+          fill={dropZoneState.canDrop ? 'rgb(34, 197, 94)' : 'rgb(239, 68, 68)'}
+        >
+          {dropZoneState.canDrop ? 'Drop here' : 'Cannot drop'}
+        </motion.text>
+      )}
+    </g>
   );
-};
-
-// Drop zone manager implementation
-const createDropZoneManager = (): DropZoneManager => {
-  const dropZones = new Map<DropZoneId, DropZone>();
-  
-  return {
-    dropZones,
-    registerDropZone: (dropZone: DropZone) => {
-      dropZones.set(dropZone.id, dropZone);
-      return () => dropZones.delete(dropZone.id);
-    },
-    getDropZone: (id: DropZoneId) => dropZones.get(id),
-    getDropZoneIds: () => Array.from(dropZones.keys()),
-    getDropZoneCount: () => dropZones.size,
-    getDropZoneById: (id: DropZoneId) => dropZones.get(id),
-    getDropZoneByIndex: (index: number) => {
-      const ids = Array.from(dropZones.keys());
-      const id = ids[index];
-      return id ? dropZones.get(id) : undefined;
-    },
-    getDropZoneByDragItemId: (id: DragItemId) => {
-      // This would need to be implemented based on your logic
-      // For now, return undefined
-      return undefined;
-    },
-  };
-};
-
-type DropZoneId = string;
-type DragItemId = string;
-
-interface DropZone {
-    id: DropZoneId;
-    collisionFn: (dragData: any) => boolean;
-}
-
-interface DropZoneManager {
-    dropZones: Map<DropZoneId, DropZone>;
-    registerDropZone: (dropZone: DropZone) => () => void;
-    getDropZone: (id: DropZoneId) => DropZone | undefined;
-    getDropZoneIds: () => DropZoneId[];
-    getDropZoneCount: () => number;
-    getDropZoneById: (id: DropZoneId) => DropZone | undefined;
-    getDropZoneByIndex: (index: number) => DropZone | undefined;
-    getDropZoneByDragItemId: (id: DragItemId) => DropZone | undefined;
-}
-
-// On drag end of a drag item, we need to check if it collides with any drop zones
-// While dragging, we need to check if the drag item collides with any drop zones
-// We need to compare the two geometries and see if they intersect? 
+});
 
 const DragExample = ({ outline }: DragExampleProps) => {
   const { width, height } = outline.image_dimensions;
-
-  // Create drop zone manager
-  const dropZoneManager = useMemo(() => createDropZoneManager(), []);
 
   const [draggingItems, setDraggingItems] = useState(() => {
     if (outline.geojson.type === "FeatureCollection") {
@@ -346,57 +327,16 @@ const DragExample = ({ outline }: DragExampleProps) => {
     return [];
   });
 
-  // Create drop zones for other geometries (items can be dropped on other items)
-  const registerGeometryDropZones = useCallback(() => {
-    draggingItems.forEach((item) => {
-      const dropZone: DropZone = {
-        id: `geometry-${item.id}`,
-        collisionFn: (dragData: any) => {
-          if (dragData.id === item.id) return false; // Can't drop on self
-          
-          // Get bounding boxes
-          const dragBbox = getBoundingBox(dragData.geometry);
-          const dropBbox = getBoundingBox(item.geometry);
-          
-          // Transform drag bbox by current position (if we had access to it)
-          // For now, just check basic intersection
-          return boundingBoxesIntersect(dragBbox, dropBbox);
-        },
-      };
-      
-      dropZoneManager.registerDropZone(dropZone);
-    });
-  }, [draggingItems, dropZoneManager]);
-
-  // Register drop zones when items change
-  useEffect(() => {
-    registerGeometryDropZones();
-  }, [registerGeometryDropZones]);
-
   // Memoized reorder handler
   const handleReorder = useCallback((index: number) => {
     setDraggingItems((current) => raise(current, index));
   }, []);
 
   // Handle drop events
-  const handleDrop = useCallback((event: DropEvent) => {
-    console.log('Item dropped:', event);
+  const handleDrop = useCallback((dragData: any, position: { x: number; y: number }) => {
+    console.log('Item dropped:', { dragData, position });
     // Here you could move items between containers, validate drops, etc.
   }, []);
-
-  // Check collisions during drag
-  const checkCollisions = useCallback((dragData: any, dragBbox: any) => {
-    const collidingZones: string[] = [];
-    
-    dropZoneManager.getDropZoneIds().forEach(zoneId => {
-      const zone = dropZoneManager.getDropZone(zoneId);
-      if (zone && zone.collisionFn(dragData)) {
-        collidingZones.push(zoneId);
-      }
-    });
-    
-    return collidingZones;
-  }, [dropZoneManager]);
 
   return (
     <div
@@ -409,12 +349,12 @@ const DragExample = ({ outline }: DragExampleProps) => {
         preserveAspectRatio="none"
       >
         {/* Example Drop Zones */}
-        <Droppable
+        <ContextDropZone
           id="drop-zone-1"
-          width={150}
-          height={100}
           x={50}
           y={50}
+          width={150}
+          height={100}
           onDrop={handleDrop}
           accepts={(dragData) => dragData?.id !== undefined}
         >
@@ -429,17 +369,17 @@ const DragExample = ({ outline }: DragExampleProps) => {
               Drop Zone 1
             </text>
           )}
-        </Droppable>
+        </ContextDropZone>
 
-        <Droppable
+        <ContextDropZone
           id="drop-zone-2"
-          width={120}
-          height={80}
           x={width - 170}
           y={height - 130}
+          width={120}
+          height={80}
           onDrop={handleDrop}
           accepts={(dragData) => dragData?.id !== undefined}
-          
+
         >
           {({ isOver, canDrop }) => (
             <text
@@ -452,7 +392,7 @@ const DragExample = ({ outline }: DragExampleProps) => {
               Drop Zone 2
             </text>
           )}
-        </Droppable>
+        </ContextDropZone>
 
         {/* Draggable Items */}
         {draggingItems.map((item, index) => (
@@ -463,7 +403,6 @@ const DragExample = ({ outline }: DragExampleProps) => {
             width={width}
             height={height}
             onReorder={handleReorder}
-            checkCollisions={checkCollisions}
           />
         ))}
       </motion.svg>

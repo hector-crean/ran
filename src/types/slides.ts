@@ -6,6 +6,7 @@ import { RotationalSequenceSlideProps } from "@/app/video-slideshow/slide-types/
 import { TargetedLinearSequenceSlideProps } from "@/app/video-slideshow/slide-types/targeted-linear-sequence-slide";
 import { VideoSlideProps } from "@/app/video-slideshow/slide-types/video-slide";
 import { ClipPathComparatorProps } from "@/components/clip-path-comparator";
+import { DragDropGridProps } from "@/components/drag-drop";
 import { ReactNode } from "react";
 
 type SlideLike<T extends string,P> = { type: T, data: P};
@@ -45,6 +46,7 @@ type TargetedLinearSequenceSlide = SlideLike<"TargetedLinearSequence", TargetedL
 
 type GpuPickingVideoSlide = SlideLike<"GpuPickingVideo", GpuPickingVideoSlideProps>;
 
+type DragDropGridSlide = SlideLike<"DragDropGrid", DragDropGridProps>;
     
 export type SlideType =
     | RegularSlide
@@ -57,7 +59,8 @@ export type SlideType =
     | InteractiveVideoSlide
     | ClipPathComparatorSlide
     | TargetedLinearSequenceSlide
-    | GpuPickingVideoSlide;
+    | GpuPickingVideoSlide
+    | DragDropGridSlide
 
 export interface Slide {
   id: string;

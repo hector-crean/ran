@@ -1,8 +1,8 @@
 "use client";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
-import { motion } from "motion/react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface DemoCard {
   title: string;
@@ -37,6 +37,12 @@ const demos: DemoCard[] = [
     title: "Comparison Slide",
     description: "Side-by-side content comparison interface",
     href: "/comparison-slide",
+    category: "Video & Media",
+  },
+  {
+    title: "GPU Picking Video",
+    description: "GPU-based video picking and highlighting",
+    href: "/gpu-picking-video",
     category: "Video & Media",
   },
 
@@ -154,7 +160,7 @@ export default function Home() {
               Interactive Demos
             </h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              A collection of interactive components, animations, and visualizations 
+              A collection of interactive components, animations, and visualizations
               built with React, Framer Motion, and modern web technologies.
             </p>
           </motion.div>
@@ -172,13 +178,13 @@ export default function Home() {
             variants={containerVariants}
             className="mb-12"
           >
-            <motion.h2 
+            <motion.h2
               variants={cardVariants}
               className="text-2xl font-semibold text-foreground mb-6"
             >
               {category}
             </motion.h2>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {demos
                 .filter(demo => demo.category === category)
@@ -224,25 +230,25 @@ export default function Home() {
           <div className="text-center text-muted-foreground">
             <p className="mb-4 text-sm">Built with Next.js, Framer Motion, and Tailwind CSS</p>
             <div className="flex justify-center gap-6 text-sm">
-              <a 
-                href="https://nextjs.org" 
-                target="_blank" 
+              <a
+                href="https://nextjs.org"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-foreground transition-colors"
               >
                 Next.js
               </a>
-              <a 
-                href="https://motion.dev" 
-                target="_blank" 
+              <a
+                href="https://motion.dev"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-foreground transition-colors"
               >
                 Framer Motion
               </a>
-              <a 
-                href="https://tailwindcss.com" 
-                target="_blank" 
+              <a
+                href="https://tailwindcss.com"
+                target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-foreground transition-colors"
               >

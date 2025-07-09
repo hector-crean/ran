@@ -38,6 +38,7 @@ import {
 } from "@/components/ui/sheet";
 import { SettingsProvider } from "@/contexts/settings-dialog";
 import { FreezeFrame } from "./slide-types/freeze-frame";
+import { GpuPickingVideoSlide } from "./slide-types/gpu-picking-video-slide";
 import { InteractiveVideo } from "./slide-types/interactive-video";
 import { LinearSequenceSlide } from "./slide-types/linear-sequence-slide";
 import { RegularSlide } from "./slide-types/regular-slide";
@@ -61,18 +62,18 @@ const renderSlide = (slide: Slide) => {
     ))
     .with({ type: "Video" }, (slideType) => (
       <VideoSlide
-        url={slideType.data.url}
-        autoplay={true}
-        poster={slideType.data.poster}
+        {...slideType.data}
+      />
+    ))
+    .with({ type: "GpuPickingVideo" }, (slideType) => (
+      <GpuPickingVideoSlide
+        {...slideType.data}
       />
     ))
 
-
     .with({ type: "RotationalSequence" }, (slideType) => (
       <RotationalSequenceSlide
-        baseUrl={slideType.data.baseUrl}
-        frameCount={slideType.data.frameCount}
-        format={slideType.data.format}
+        {...slideType.data}
       />
     ))
     .with({ type: "FreezeFrame" }, (slideType) => (
@@ -80,18 +81,12 @@ const renderSlide = (slide: Slide) => {
     ))
     .with({ type: "InteractiveVideo" }, (slideType) => (
       <InteractiveVideo
-        baseSrc={slideType.data.baseSrc}
-        maskSrc={slideType.data.maskSrc}
-        objectMappings={slideType.data.objectMappings}
-        ar={slideType.data.ar}
+        {...slideType.data}
       />
     ))
     .with({ type: "LinearSequence" }, (slideType) => (
       <LinearSequenceSlide
-        baseUrl={slideType.data.baseUrl}
-        frameCount={slideType.data.frameCount}
-        format={slideType.data.format}
-        sliderText={slideType.data.sliderText}
+        {...slideType.data}
       />
     ))
     .with({ type: "TargetedLinearSequence" }, (slideType) => (
@@ -101,8 +96,7 @@ const renderSlide = (slide: Slide) => {
     ))
     .with({ type: "ClipPathComparator" }, (slideType) => (
       <ClipPathComparator
-        beforeContent={slideType.data.beforeContent}
-        afterContent={slideType.data.afterContent}
+        {...slideType.data}
       />
     ))
     .otherwise(() => <div>Unknown slide type</div>);
@@ -288,7 +282,7 @@ function Pagination({
 }) {
   return (
     <LayoutGroup id={id}>
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-50">
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-5">
         {pages.map((page) => (
           <Dot
             key={page}
@@ -297,7 +291,7 @@ function Pagination({
           />
         ))}
       </div>
-    </LayoutGroup>
+    </LayoutGroup >
   );
 }
 

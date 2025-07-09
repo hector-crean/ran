@@ -376,12 +376,10 @@ export const slides: Slide[] = [
     initialSheet: null,
     initialDialog: null,
     slide_type: {
-      type: 'InteractiveVideo',
+      type: 'GpuPickingVideo',
       data: {
-        baseSrc: "/assets/Scene_8.1.mp4",
+        videoSrc: "/assets/Scene_8.1.mp4",
         maskSrc: "/assets/Scene_8.1-masked.mp4",
-        objectMappings: [],
-        ar: 16 / 9,
       },
     },
   },

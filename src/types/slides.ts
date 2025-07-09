@@ -1,4 +1,5 @@
 import { FreezeFrameProps } from "@/app/video-slideshow/slide-types/freeze-frame";
+import { GpuPickingVideoSlideProps } from "@/app/video-slideshow/slide-types/gpu-picking-video-slide";
 import { InteractiveVideoProps } from "@/app/video-slideshow/slide-types/interactive-video";
 import { LinearSequenceSlideProps } from "@/app/video-slideshow/slide-types/linear-sequence-slide";
 import { RotationalSequenceSlideProps } from "@/app/video-slideshow/slide-types/rotational-sequence-slide";
@@ -42,6 +43,8 @@ type ClipPathComparatorSlide = SlideLike<"ClipPathComparator", ClipPathComparato
 
 type TargetedLinearSequenceSlide = SlideLike<"TargetedLinearSequence", TargetedLinearSequenceSlideProps>;
 
+type GpuPickingVideoSlide = SlideLike<"GpuPickingVideo", GpuPickingVideoSlideProps>;
+
     
 export type SlideType =
     | RegularSlide
@@ -53,7 +56,8 @@ export type SlideType =
     | FreezeFrameSlide
     | InteractiveVideoSlide
     | ClipPathComparatorSlide
-    | TargetedLinearSequenceSlide;
+    | TargetedLinearSequenceSlide
+    | GpuPickingVideoSlide;
 
 export interface Slide {
   id: string;

@@ -81,9 +81,15 @@ export function VideoSlide({ url, autoplay, poster }: VideoSlideProps) {
         setPlaybackSpeed(Math.abs(speed));
     };
 
-    const handlePlayPause = () => {
-        setIsPlaying(!isPlaying);
-    };
+    const togglePlayPause = useCallback(() => {
+        if (isPlaying) {
+            videoPlayerRef.current?.pause();
+            setIsPlaying(false)
+        } else {
+            videoPlayerRef.current?.play();
+            setIsPlaying(true)
+        }
+    }, [isPlaying]);
 
     const { setPage, currentPage } = useSlideshowContext();
 
@@ -118,7 +124,7 @@ export function VideoSlide({ url, autoplay, poster }: VideoSlideProps) {
                 playbackSpeed={playbackSpeed}
                 currentTime={currentTime}
                 duration={duration}
-                onPlayPause={handlePlayPause}
+                onPlayPause={togglePlayPause}
                 onVolumeChange={handleVolumeChange}
                 onSeek={handleSeek}
                 onMuteToggle={handleMuteToggle}

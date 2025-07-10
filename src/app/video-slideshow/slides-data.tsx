@@ -200,12 +200,21 @@ export const slides: Slide[] = [
     slide_type: {
       type: "DragDropGrid",
       data: {
-        poster: "/assets/Scene_4.1_poster.png",
-        children: (
-          <div className="text-2xl text-white">
-            Drag and drop the immune complex to deposit it in the glomeruli
-          </div>
-        ),
+        poster: "/assets/Scene_4.1.1_poster.png",
+        positionedElements: [
+          {
+            screenCoords: { x: 0.71, y: 0.45 },
+            node: (
+              <Hotspot
+                color="#bb67e4"
+                icon="/touch_long_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg"
+                size="lg"
+              />
+            ),
+          },
+        ],
+        instructions:
+          "Drag and drop the immune complex to deposit it in the glomeruli",
       },
     },
   },

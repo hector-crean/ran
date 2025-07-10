@@ -1,5 +1,5 @@
 "use client";
-import { AnimatePresence, motion, useAnimation } from "motion/react";
+import { AnimatePresence, motion, useAnimation, Variants } from "motion/react";
 import React, { useEffect, useState } from "react";
 
 interface RadialPulseProps {
@@ -156,7 +156,7 @@ export const AdvancedRadialPulse = ({
   const [isActive, setIsActive] = useState(true);
 
   // Complex animation sequence
-  const sequenceVariants = {
+  const sequenceVariants: Variants = {
     initial: {
       scale: 0,
       opacity: 0,

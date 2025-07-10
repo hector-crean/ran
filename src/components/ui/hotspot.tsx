@@ -34,7 +34,6 @@ const Hotspot = ({
       transition: {
         duration: 2,
         repeat: Infinity,
-        ease: "easeInOut",
       },
     },
     hover: {
@@ -43,7 +42,6 @@ const Hotspot = ({
       transition: {
         duration: 1.5,
         repeat: Infinity,
-        ease: "easeInOut",
       },
     },
   };
@@ -55,7 +53,6 @@ const Hotspot = ({
       transition: {
         duration: 3,
         repeat: Infinity,
-        ease: "easeInOut",
       },
     },
     hover: {
@@ -63,7 +60,6 @@ const Hotspot = ({
       scale: 1.2,
       transition: {
         duration: 0.3,
-        ease: "easeOut",
       },
     },
   };
@@ -75,7 +71,6 @@ const Hotspot = ({
       transition: {
         duration: 2,
         repeat: Infinity,
-        ease: "easeInOut",
       },
     },
     hover: {
@@ -83,7 +78,6 @@ const Hotspot = ({
       rotate: 720,
       transition: {
         duration: 1,
-        ease: "easeOut",
       },
     },
   };
@@ -95,7 +89,6 @@ const Hotspot = ({
       transition: {
         duration: 2,
         repeat: Infinity,
-        ease: "easeInOut",
         delay: 0.5,
       },
     },
@@ -104,7 +97,6 @@ const Hotspot = ({
       scale: 1.3,
       transition: {
         duration: 0.3,
-        ease: "easeOut",
       },
     },
   };
@@ -116,7 +108,6 @@ const Hotspot = ({
       transition: {
         duration: 1.5,
         repeat: Infinity,
-        ease: "easeOut",
       },
     },
     hover: {
@@ -125,7 +116,6 @@ const Hotspot = ({
       transition: {
         duration: 1,
         repeat: Infinity,
-        ease: "easeOut",
       },
     },
   };

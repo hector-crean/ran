@@ -130,7 +130,11 @@ function Handle({
 
   return (
     <animated.group position={animatedPosition}>
-      <animated.mesh key="handle-mesh" rotation={animatedRotation}>
+      <animated.mesh
+        key="handle-mesh"
+        // @ts-expect-error - TODO: fix this
+        rotation={animatedRotation}
+      >
         <RoundedBoxGeometry
           args={[0.5, 0.5, 1]}
           radius={0.2}

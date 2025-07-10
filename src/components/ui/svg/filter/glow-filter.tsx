@@ -1,5 +1,5 @@
 "use client";
-import { motion, useAnimation } from "motion/react";
+import { motion, useAnimation, Variants } from "motion/react";
 import React, { useEffect, useState } from "react";
 
 interface GlowFilterProps {
@@ -49,7 +49,7 @@ const GlowFilter = ({
   );
 
   // Animation variants for the glow effect
-  const glowVariants = {
+  const glowVariants: Variants = {
     initial: {
       opacity: 0,
       scale: 0.8,

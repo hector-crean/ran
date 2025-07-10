@@ -9,7 +9,8 @@ import { useState } from "react";
 
 interface HotspotProps {
   color?: string;
-  children: React.ReactNode;
+  children?: React.ReactNode;
+  icon?: string;
   size?: "sm" | "md" | "lg";
 }
 
@@ -17,6 +18,7 @@ const Hotspot = ({
   children,
   color = "#3b82f6",
   size = "md",
+  icon,
 }: HotspotProps) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -206,6 +208,7 @@ const Hotspot = ({
               variants={shimmerVariants}
               animate={isHovered ? "hover" : "idle"}
             />
+            {icon ? <img style={{ zIndex: 10 }} src={icon} /> : null}
           </Button>
         </motion.div>
       </PopoverTrigger>

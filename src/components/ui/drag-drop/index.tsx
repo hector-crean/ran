@@ -4,7 +4,6 @@ import { useRef, ReactNode } from "react";
 
 import * as motion from "motion/react-client";
 import { useDragControls } from "motion/react";
-/* import { motion, useDragControls } from "framer-motion"; */
 
 import { HollowButton } from "@/components/ui/hollow-button";
 

@@ -1,24 +1,29 @@
+import { ReactNode } from "react";
 
 
-
+type Vec2 = { x: number, y: number }
 
 interface FreezeFrameProps {
     poster: string;
-    // elements: Array<{ position: { x: number, y: number }, width: number, height: number, node: RenderableNode }>
+    positionedElements?: Array<{ screenCoords: Vec2, node: ReactNode }>
     children?: React.ReactNode;
 }
 
-const FreezeFrame = ({ poster, children }: FreezeFrameProps) => {
+const FreezeFrame = ({ poster, children, positionedElements }: FreezeFrameProps) => {
 
     return (
         <div className="w-full h-full relative isolate">
             <img src={poster} alt="Freeze Frame" className="w-full h-full object-cover -z-0" />
-            {/* {elements.map((element) => (
-                <div key={element.position.x + element.position.y} className="absolute object-contain" style={{ top: element.position.y, left: element.position.x, width: element.width, height: element.height }}>
-                    {renderNode(element.node)}
+            {positionedElements?.map(({ screenCoords, node }) => (
+                <div
+                    key={screenCoords.x + screenCoords.y}
+                    className="absolute object-contain"
+                    style={{ top: `${screenCoords.y * 100}%`, left: `${screenCoords.x * 100}%` }}
+                >
+                    {node}
                 </div>
-            ))} */}
-            <div className="absolute inset-0 flex items-center justify-center z-10">
+            ))}
+            <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
                 {children}
             </div>
         </div>

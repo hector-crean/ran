@@ -1,3 +1,4 @@
+import { Hotspot } from "@/components/ui/hotspot";
 import { InfiniteCanvasMap } from "@/components/ui/infinite-canvas/infinite-canvas-map";
 import type { Slide } from "@/types/slides";
 
@@ -235,32 +236,15 @@ export const slides: Slide[] = [
       data: {
         videoSrc: "/assets/Scene_4.1.2-looped.mp4",
         maskSrc: "/assets/Scene_4.1.2-mask-looped-2.mp4",
+        instructions: "Please choose the correct cell to activate in order to produce immunoglobulin",
       },
     },
   },
-  // {
-  //   id: "scene_4_1_3",
-  //   title: "Scene 4.1.3",
-  //   firstFramePoster: "/assets/Scene_4.1.3_poster.png",
-  //   lastFramePoster: "/assets/Scene_4.1.3_poster.png",
-  //   onFinishAction: "next_slide",
-  //   initialDrawer: null,
-  //   initialSheet: null,
-  //   initialDialog: null,
-  //   slide_type: {
-  //     type: "Video",
-  //     data: {
-  //       url: "/assets/Scene_4.1.3.mp4",
-  //       poster: "/assets/Scene_4.1.3_poster.png",
-  //       autoplay: true,
-  //     },
-  //   },
-  // },
   {
-    id: "scene_4_2",
-    title: "Scene 4.2",
-    firstFramePoster: "/assets/Scene_4.2_poster.png",
-    lastFramePoster: "/assets/Scene_4.2_poster.png",
+    id: "scene_4_1_3",
+    title: "Scene 4.1.3",
+    firstFramePoster: "/assets/Scene_4.1.3_poster.png",
+    lastFramePoster: "/assets/Scene_4.1.3_poster.png",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -268,12 +252,30 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_4.2-looped.mp4",
+        url: "/assets/Scene_4.2.mp4",
         poster: "/assets/Scene_4.2_poster.png",
         autoplay: true,
       },
     },
   },
+  // {
+  //   id: "scene_4_2",
+  //   title: "Scene 4.2",
+  //   firstFramePoster: "/assets/Scene_4.2_poster.png",
+  //   lastFramePoster: "/assets/Scene_4.2_poster.png",
+  //   onFinishAction: "next_slide",
+  //   initialDrawer: null,
+  //   initialSheet: null,
+  //   initialDialog: null,
+  //   slide_type: {
+  //     type: "Video",
+  //     data: {
+  //       url: "/assets/Scene_4.2-looped.mp4",
+  //       poster: "/assets/Scene_4.2_poster.png",
+  //       autoplay: true,
+  //     },
+  //   },
+  // },
   {
     id: "scene_4_3",
     title: "Scene 4.3",
@@ -311,8 +313,8 @@ export const slides: Slide[] = [
     },
   },
   {
-    id: "scene_5_1",
-    title: "Scene 5.1",
+    id: "scene_5_1_1",
+    title: "Scene 5.1.1",
     firstFramePoster: "/assets/Scene_5.1_poster.png",
     lastFramePoster: "/assets/Scene_5.1_poster.png",
     onFinishAction: "next_slide",
@@ -325,6 +327,41 @@ export const slides: Slide[] = [
         url: "/assets/Scene_5.1.mp4",
         poster: "/assets/Scene_5.1_poster.png",
         autoplay: true,
+      },
+    },
+  },
+  {
+    id: "scene_5_1_2",
+    title: "Scene 5.1.2",
+    firstFramePoster: "/assets/Scene_5.1.1_poster.png",
+    lastFramePoster: "/assets/Scene_5.1.1_poster.png",
+    onFinishAction: "next_slide",
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
+    slide_type: {
+      type: 'FreezeFrame',
+      data: {
+        poster: "/assets/Scene_5.2_poster.png",
+        // children: <div className="text-white text-2xl">Question component</div>,
+        positionedElements: [
+          {
+            screenCoords: { x: 0.30, y: 0.32 },
+            node: <Hotspot
+              color="#334e7d" size="lg"
+            >
+              TACI (transmembrane activator and calcium-modulating cyclophilin ligand interactor) is a receptor protein on B cells that plays a crucial role in their activation and differentiation, particularly in T cell-independent antibody responses. It belongs to the tumor necrosis factor receptor (TNFR) superfamily and is a receptor for the ligands APRIL and BAFF. TACI is important for B cell survival, antibody production, and class switching
+            </Hotspot>
+          },
+          {
+            screenCoords: { x: 0.71, y: 0.45 },
+            node: <Hotspot
+              color="#bb67e4" size="lg"
+            >
+              BCMA: B cell maturation antigen (BCMA) is a tumor necrosis family receptor (TNFR) member that is predominantly expressed on terminally differentiated B cells and, upon binding to its ligands B cell activator of the TNF family (BAFF) and a proliferation inducing ligand (APRIL), delivers pro-survival cell signals.
+            </Hotspot>
+          },
+        ],
       },
     },
   },

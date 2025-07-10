@@ -5,15 +5,18 @@
 import { GpuPickingVideo, GpuPickingVideoHandle } from '@/components/gpu-picking-video';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog';
+import { HollowButton } from '@/components/ui/hollow-button';
 import { useSlideshowContext } from '@/contexts/slideshow-context';
-import { useCallback, useRef, useState } from 'react';
+import { motion } from 'motion/react';
+import { ReactNode, useCallback, useRef, useState } from 'react';
 
 interface GpuPickingVideoSlideProps {
     videoSrc: string;
     maskSrc: string;
+    instructions: ReactNode
 }
 
-export const GpuPickingVideoSlide = ({ videoSrc, maskSrc }: GpuPickingVideoSlideProps) => {
+export const GpuPickingVideoSlide = ({ videoSrc, maskSrc, instructions }: GpuPickingVideoSlideProps) => {
     const videoRef = useRef<GpuPickingVideoHandle>(null);
 
 
@@ -22,11 +25,11 @@ export const GpuPickingVideoSlide = ({ videoSrc, maskSrc }: GpuPickingVideoSlide
 
     // Example outline settings
     const [outlineSettings, setOutlineSettings] = useState({
-        thickness: 2.0,
+        thickness: 8.0,
         edgeThreshold: 0.5,
-        innerColor: '#ff0000',
+        innerColor: '#dbc6ec',
         outerColor: '#A020F0',
-        maskOverlayColor: '#00ff00',
+        maskOverlayColor: '#A020F0',
         maskOverlayOpacity: 0.3
     });
 
@@ -83,6 +86,18 @@ export const GpuPickingVideoSlide = ({ videoSrc, maskSrc }: GpuPickingVideoSlide
                     />
                 </DialogContent>
             </Dialog>
+
+            <motion.div className="absolute bottom-16 left-0 right-0 z-10 w-full pointer-events-none flex items-center justify-center"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.5 }}
+            >
+                <HollowButton>
+                    {instructions}
+                </HollowButton>
+            </motion.div>
+
 
 
 

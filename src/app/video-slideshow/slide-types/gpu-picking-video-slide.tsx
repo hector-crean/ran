@@ -17,6 +17,15 @@ interface GpuPickingVideoSlideProps {
   instructions: ReactNode;
 }
 
+type OutlineSettings = {
+  thickness: number;
+  edgeThreshold: number;
+  innerColor: string;
+  outerColor: string;
+  maskOverlayColor: string;
+  maskOverlayOpacity: number;
+};
+
 export const GpuPickingVideoSlide = ({
   videoSrc,
   maskSrc,
@@ -30,7 +39,7 @@ export const GpuPickingVideoSlide = ({
   );
 
   // Example outline settings
-  const [outlineSettings, setOutlineSettings] = useState({
+  const [outlineSettings, setOutlineSettings] = useState<OutlineSettings>({
     thickness: 8.0,
     edgeThreshold: 0.5,
     innerColor: "#dbc6ec",
@@ -124,7 +133,7 @@ interface OutlineControlsProps {
     maskOverlayColor: string;
     maskOverlayOpacity: number;
   };
-  onSettingsChange: (settings: unknown) => void;
+  onSettingsChange: (settings: OutlineSettings) => void;
 }
 
 function OutlineControls({
@@ -343,4 +352,4 @@ function OutlineControls({
   );
 }
 
-export type { GpuPickingVideoSlideProps };
+export type { GpuPickingVideoSlideProps, OutlineSettings };

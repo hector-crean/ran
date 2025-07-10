@@ -1,6 +1,5 @@
 import { FreezeFrameProps } from "@/app/video-slideshow/slide-types/freeze-frame";
 import { GpuPickingVideoSlideProps } from "@/app/video-slideshow/slide-types/gpu-picking-video-slide";
-import { InteractiveVideoProps } from "@/app/video-slideshow/slide-types/interactive-video";
 import { LinearSequenceSlideProps } from "@/app/video-slideshow/slide-types/linear-sequence-slide";
 import { RotationalSequenceSlideProps } from "@/app/video-slideshow/slide-types/rotational-sequence-slide";
 import { TargetedLinearSequenceSlideProps } from "@/app/video-slideshow/slide-types/targeted-linear-sequence-slide";
@@ -50,11 +49,6 @@ type LinearSequenceSlide = SlideLike<
 
 type FreezeFrameSlide = SlideLike<"FreezeFrame", FreezeFrameProps>;
 
-type InteractiveVideoSlide = SlideLike<
-  "InteractiveVideo",
-  InteractiveVideoProps
->;
-
 type ClipPathComparatorSlide = SlideLike<
   "ClipPathComparator",
   ClipPathComparatorProps
@@ -80,7 +74,6 @@ export type SlideType =
   | RotationalSequenceSlide
   | LinearSequenceSlide
   | FreezeFrameSlide
-  | InteractiveVideoSlide
   | ClipPathComparatorSlide
   | TargetedLinearSequenceSlide
   | GpuPickingVideoSlide

@@ -1,32 +1,19 @@
 "use client";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { DemoCard, type DemoCardProps } from "@/components/ui/demo-card";
 import { motion } from "motion/react";
-import Image from "next/image";
-import Link from "next/link";
 
-interface DemoCard {
-  title: string;
-  description: string;
-  href: string;
-  category: string;
-  preview?: string;
-}
-
-const demos: DemoCard[] = [
+const demos: DemoCardProps[] = [
   // Video & Media
   {
-    title: "Video Slideshow",
-    description:
-      "Interactive video presentation with smooth crossfade transitions",
+    title: "NOV276",
+    description: "Interactive video presentation",
     href: "/video-slideshow/scene_1_1",
     category: "Video & Media",
-    preview: "/assets/Scene_1.1_poster.png",
+    preview: {
+      type: "video",
+      src: "/assets/Scene_4.1.1.mp4",
+      poster: "/assets/Scene_4.1.1_poster.png",
+    },
   },
 ];
 
@@ -65,12 +52,11 @@ export default function Home() {
             transition={{ duration: 0.6 }}
           >
             <h1 className="text-foreground mb-4 text-4xl font-bold md:text-6xl">
-              Interactive Demos
+              Interactive Slideshows
             </h1>
             <p className="text-muted-foreground mx-auto max-w-2xl text-lg">
-              A collection of interactive components, animations, and
-              visualizations built with React, Framer Motion, and modern web
-              technologies.
+              A collection of interactive slideshows with accompanying
+              components
             </p>
           </motion.div>
         </div>
@@ -98,36 +84,8 @@ export default function Home() {
               {demos
                 .filter(demo => demo.category === category)
                 .map(demo => (
-                  <motion.div
-                    key={demo.href}
-                    variants={cardVariants}
-                    whileHover={{ y: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <Link href={demo.href} className="block h-full">
-                      <Card className="h-full cursor-pointer transition-shadow duration-200 hover:shadow-md">
-                        {demo.preview && (
-                          <div className="relative h-32 overflow-hidden rounded-t-xl">
-                            <Image
-                              src={demo.preview}
-                              alt={demo.title}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        )}
-                        <CardHeader className={demo.preview ? "pb-2" : ""}>
-                          <CardTitle className="text-lg">
-                            {demo.title}
-                          </CardTitle>
-                        </CardHeader>
-                        <CardContent className="pt-0">
-                          <CardDescription className="text-sm">
-                            {demo.description}
-                          </CardDescription>
-                        </CardContent>
-                      </Card>
-                    </Link>
+                  <motion.div key={demo.href} variants={cardVariants}>
+                    <DemoCard {...demo} />
                   </motion.div>
                 ))}
             </div>

@@ -3,8 +3,6 @@ import { OutlineResponse } from "@/types/OutlineResponse";
 import { motion } from "motion/react";
 import { geojsonToPathString } from "./geometry/render";
 
-
-
 type Highlight = {
   type: "highlight";
   fill: string;
@@ -59,36 +57,28 @@ type EffectStyles =
 
 type EffectType = EffectStyles["type"];
 
-
-
 type OutlineOverlayProps = {
   src: string;
   outline: OutlineResponse;
 };
 
-const OutlineOverlay = ({
-  outline,
-  src,
-}: OutlineOverlayProps) => {
+const OutlineOverlay = ({ outline, src }: OutlineOverlayProps) => {
   const { width, height } = outline.image_dimensions;
   const maskId = `outline-mask-${Math.random().toString(36).substr(2, 9)}`;
-
-
 
   const bounds = { cx: width / 2, cy: height / 2 };
 
   const pathData = geojsonToPathString(outline.geojson);
 
-
   return (
     <div
-      className="relative w-full group cursor-pointer overflow-hidden"
+      className="group relative w-full cursor-pointer overflow-hidden"
       style={{ aspectRatio: `${width} / ${height}` }}
     >
       {/* <img src={src} alt="outline" className="absolute inset-0 w-full h-full" /> */}
 
       <motion.svg
-        className="absolute inset-0 w-full h-full pointer-events-none"
+        className="pointer-events-none absolute inset-0 h-full w-full"
         viewBox={`0 0 ${width} ${height}`}
         preserveAspectRatio="none"
       >

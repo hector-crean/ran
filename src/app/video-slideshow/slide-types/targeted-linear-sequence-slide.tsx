@@ -1,17 +1,21 @@
 "use client";
 
-import { animate, AnimatePresence, motion, useMotionValue, useTransform } from "motion/react";
+import {
+  animate,
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useTransform,
+} from "motion/react";
 import { useMemo, useRef, useState } from "react";
 
-import { Drag, HandlerArgs } from "@/components/drag";
-import { Sequence } from "@/components/sequence";
+import { Drag, HandlerArgs } from "@/components/ui/drag";
 import { HollowButton } from "@/components/ui/hollow-button";
+import { Sequence } from "@/components/ui/sequence";
 import { useImageSequence } from "@/hooks/use-image-sequence";
 import { clamp } from "@/lib/utils";
 
-
-
-type Vec2 = { x: number, y: number };
+type Vec2 = { x: number; y: number };
 
 interface TargetedLinearSequenceSlideProps {
   baseUrl: string;
@@ -26,9 +30,8 @@ export const TargetedLinearSequenceSlide = ({
   frameCount,
   format,
   sliderText,
-  normalisedDragDirection
+  normalisedDragDirection,
 }: TargetedLinearSequenceSlideProps) => {
-
   const paths = useMemo(() => {
     return Array.from(
       { length: frameCount },
@@ -39,7 +42,6 @@ export const TargetedLinearSequenceSlide = ({
   const slider = useRef<HTMLDivElement>(null);
 
   const progress = useMotionValue(0);
-
 
   const memoizedImagePaths = useMemo(() => paths, [paths]);
 
@@ -63,8 +65,14 @@ export const TargetedLinearSequenceSlide = ({
   const dragX = useTransform(progress, [0, 1], [0, width]);
 
   const handleDragMove = (args: HandlerArgs) => {
-    console.log(args.dx, args.dy)
-    const newProgress = clamp(DRAG_SCALE_FACTOR * (args.dx * normalisedDragDirection.x / width + args.dy * normalisedDragDirection.y / height), 0, 1);
+    console.log(args.dx, args.dy);
+    const newProgress = clamp(
+      DRAG_SCALE_FACTOR *
+        ((args.dx * normalisedDragDirection.x) / width +
+          (args.dy * normalisedDragDirection.y) / height),
+      0,
+      1
+    );
     progress.set(newProgress);
   };
 
@@ -84,14 +92,21 @@ export const TargetedLinearSequenceSlide = ({
   };
 
   return (
-    <div className="w-full h-full max-h-screen  relative flex items-center justify-center select-none" ref={slider}>
+    <div
+      className="relative flex h-full max-h-screen w-full items-center justify-center select-none"
+      ref={slider}
+    >
       <motion.div
         key="loading"
         className="absolute inset-0 flex items-center justify-center"
-      // initial={{ opacity: 1 }}
-      // exit={{ opacity: 0, transition: { duration: 0.5, delay: 0.5 } }}
+        // initial={{ opacity: 1 }}
+        // exit={{ opacity: 0, transition: { duration: 0.5, delay: 0.5 } }}
       >
-        <img src={paths[0]} alt="Sequence" className="w-full h-full object-contain aspect-[1920/1080]" />
+        <img
+          src={paths[0]}
+          alt="Sequence"
+          className="aspect-[1920/1080] h-full w-full object-contain"
+        />
       </motion.div>
       {loaded && (
         <AnimatePresence>
@@ -117,25 +132,23 @@ export const TargetedLinearSequenceSlide = ({
             radius={48}
           /> */}
 
-          <motion.div className="absolute bottom-16 left-0 right-0 z-10 w-full pointer-events-none flex items-center justify-center"
+          <motion.div
+            className="pointer-events-none absolute right-0 bottom-16 left-0 z-10 flex w-full items-center justify-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-
-            <HollowButton>
-              {sliderText}
-            </HollowButton>
+            <HollowButton>{sliderText}</HollowButton>
           </motion.div>
-          <motion.div className="absolute inset-0" initial={{ opacity: 0 }}
+          <motion.div
+            className="absolute inset-0"
+            initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-
           >
-            <svg className="w-full h-full" viewBox={`0 0 ${width} ${height}`}>
-
+            <svg className="h-full w-full" viewBox={`0 0 ${width} ${height}`}>
               <Drag
                 onDragStart={handleDragStart}
                 onDragMove={handleDragMove}
@@ -153,7 +166,7 @@ export const TargetedLinearSequenceSlide = ({
                     style={{
                       cursor: isDragging ? "grabbing" : "grab",
                       x: dragX,
-                      y: 0
+                      y: 0,
                     }}
                     onPointerDown={dragStart}
                     onPointerUp={dragEnd}
@@ -178,9 +191,4 @@ export const TargetedLinearSequenceSlide = ({
   );
 };
 
-
-
 export type { TargetedLinearSequenceSlideProps };
-
-
-

@@ -10,7 +10,14 @@ interface RadialPulseProps {
   duration: number;
   delay: number;
   intensity?: number;
-  easing?: "linear" | "easeIn" | "easeOut" | "easeInOut" | "circIn" | "circOut" | "backOut";
+  easing?:
+    | "linear"
+    | "easeIn"
+    | "easeOut"
+    | "easeInOut"
+    | "circIn"
+    | "circOut"
+    | "backOut";
   pulseCount?: number; // Number of concurrent pulses
   maxScale?: number;
   onComplete?: () => void;
@@ -27,7 +34,7 @@ const RadialPulse = ({
   easing = "easeOut",
   pulseCount = 1,
   maxScale = 12,
-  onComplete
+  onComplete,
 }: RadialPulseProps): React.ReactNode => {
   const controls = useAnimation();
   const [pulses, setPulses] = useState<number[]>([]);
@@ -58,8 +65,8 @@ const RadialPulse = ({
     exit: {
       scale: 0,
       opacity: 0,
-      transition: { duration: 0.3 }
-    }
+      transition: { duration: 0.3 },
+    },
   };
 
   // Staggered animation for multiple pulses
@@ -70,7 +77,7 @@ const RadialPulse = ({
       opacity: [0, intensity * 0.5, intensity, 0],
       transition: {
         duration,
-        delay: delay + (pulseIndex * duration / pulseCount),
+        delay: delay + (pulseIndex * duration) / pulseCount,
         ease: easing,
         repeat: Infinity,
         repeatDelay: duration * 0.5,
@@ -98,7 +105,7 @@ const RadialPulse = ({
 
       {/* Animated gradient definitions */}
       <AnimatePresence>
-        {pulses.map((pulseIndex) => (
+        {pulses.map(pulseIndex => (
           <motion.radialGradient
             key={`${id}-pulse-${pulseIndex}`}
             id={`${id}-pulse-${pulseIndex}`}
@@ -113,9 +120,17 @@ const RadialPulse = ({
             custom={pulseIndex}
           >
             <stop offset="0" stopColor={color} stopOpacity="0" />
-            <stop offset="0.25" stopColor={color} stopOpacity={intensity * 0.7} />
+            <stop
+              offset="0.25"
+              stopColor={color}
+              stopOpacity={intensity * 0.7}
+            />
             <stop offset="0.5" stopColor={color} stopOpacity="0" />
-            <stop offset="0.75" stopColor={color} stopOpacity={intensity * 0.7} />
+            <stop
+              offset="0.75"
+              stopColor={color}
+              stopOpacity={intensity * 0.7}
+            />
             <stop offset="1" stopColor={color} stopOpacity="0" />
           </motion.radialGradient>
         ))}
@@ -136,7 +151,7 @@ export const AdvancedRadialPulse = ({
   easing = "easeOut",
   pulseCount = 3,
   maxScale = 12,
-  onComplete
+  onComplete,
 }: RadialPulseProps) => {
   const [isActive, setIsActive] = useState(true);
 
@@ -251,8 +266,8 @@ export const InteractivePulse = ({
   cx,
   cy,
   duration = 2,
-  delay = 0
-}: Omit<RadialPulseProps, 'intensity' | 'easing'>) => {
+  delay = 0,
+}: Omit<RadialPulseProps, "intensity" | "easing">) => {
   const { isAnimating, handlers } = useRadialPulse({
     pulseOnHover: true,
     triggerOnMount: false,
@@ -299,7 +314,7 @@ export const BatchedRadialPulse = ({
           cx={pulse.cx}
           cy={pulse.cy}
           duration={pulse.duration ?? 2}
-          delay={globalDelay + (index * 0.2)} // Stagger each pulse
+          delay={globalDelay + index * 0.2} // Stagger each pulse
           intensity={0.6}
           easing="circOut"
           pulseCount={1}

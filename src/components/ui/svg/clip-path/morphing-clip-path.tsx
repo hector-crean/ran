@@ -1,42 +1,48 @@
 "use client";
-import { interpolate } from 'flubber';
-import { motion, animate, useMotionValue, useTransform, AnimatePresence } from "motion/react";
+import { interpolate } from "flubber";
+import {
+  motion,
+  animate,
+  useMotionValue,
+  useTransform,
+  AnimatePresence,
+} from "motion/react";
 import { useState, useEffect } from "react";
 
 // Utility function to calculate bounding box of an SVG path
 function getPathBounds(pathString: string): [number, number, number, number] {
   // Create a temporary SVG element to measure the path
-  if (typeof document === 'undefined') {
+  if (typeof document === "undefined") {
     // Fallback for SSR - return full bounds
     return [0, 0, 100, 100];
   }
-  
+
   try {
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-    path.setAttribute('d', pathString);
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", pathString);
     svg.appendChild(path);
-    svg.style.position = 'absolute';
-    svg.style.visibility = 'hidden';
-    svg.style.width = '100px';
-    svg.style.height = '100px';
-    svg.setAttribute('viewBox', '0 0 100 100');
+    svg.style.position = "absolute";
+    svg.style.visibility = "hidden";
+    svg.style.width = "100px";
+    svg.style.height = "100px";
+    svg.setAttribute("viewBox", "0 0 100 100");
     document.body.appendChild(svg);
-    
+
     const bbox = path.getBBox();
     document.body.removeChild(svg);
-    
+
     // Add padding (10% of the smaller dimension)
     const padding = Math.min(bbox.width, bbox.height) * 0.1;
-    
+
     return [
       Math.max(0, bbox.x - padding),
-      Math.max(0, bbox.y - padding), 
+      Math.max(0, bbox.y - padding),
       Math.min(100, bbox.width + padding * 2),
-      Math.min(100, bbox.height + padding * 2)
+      Math.min(100, bbox.height + padding * 2),
     ];
   } catch (error) {
-    console.warn('Failed to calculate path bounds:', error);
+    console.warn("Failed to calculate path bounds:", error);
     return [0, 0, 100, 100];
   }
 }
@@ -74,7 +80,7 @@ interface MorphingClipPathProps {
   /** Whether to apply clipping (useful for comparisons) */
   clipContent?: boolean;
   /** Mask effect type: 'solid' | 'gradient' | 'pattern' | 'feathered' | 'glow' */
-  maskEffect?: 'solid' | 'gradient' | 'pattern' | 'feathered' | 'glow';
+  maskEffect?: "solid" | "gradient" | "pattern" | "feathered" | "glow";
   /** Opacity of the masked (hidden) areas (0-1). Default is 0 (fully hidden) */
   maskedOpacity?: number;
   /** Blur amount for feathered effect (px) */
@@ -95,19 +101,21 @@ const MorphingClipPath: React.FC<MorphingClipPathProps> = ({
   background,
   initialIndex = 0,
   clipContent = true,
-  maskEffect = 'solid',
+  maskEffect = "solid",
   maskedOpacity = 0,
-  featherAmount = 10
+  featherAmount = 10,
 }) => {
   const [pathIndex, setPathIndex] = useState(initialIndex);
-  const [clipPathId] = useState(() => `morphingClipper-${Math.random().toString(36).substr(2, 9)}`);
-  
+  const [clipPathId] = useState(
+    () => `morphingClipper-${Math.random().toString(36).substr(2, 9)}`
+  );
+
   // Flubber-based morphing setup
   const progress = useMotionValue(pathIndex);
   const arrayOfIndex = clipPaths.map((_, i) => i);
-  
+
   const morphingPath = useTransform(progress, arrayOfIndex, clipPaths, {
-    mixer: (a, b) => interpolate(a, b, { maxSegmentLength: 1 })
+    mixer: (a, b) => interpolate(a, b, { maxSegmentLength: 1 }),
   });
 
   const viewBox = `0 0 ${width} ${height}`;
@@ -120,33 +128,28 @@ const MorphingClipPath: React.FC<MorphingClipPathProps> = ({
     } else {
       // Calculate automatically based on clip path bounds
       const bounds = getPathBounds(clipPaths[index]);
-      return `${bounds[0] * width / 100} ${bounds[1] * height / 100} ${bounds[2] * width / 100} ${bounds[3] * height / 100}`;
+      return `${(bounds[0] * width) / 100} ${(bounds[1] * height) / 100} ${(bounds[2] * width) / 100} ${(bounds[3] * height) / 100}`;
     }
   });
-  
+
   const hasFocusViewBoxes = true; // Always enabled now with automatic calculation
-  
-  const morphingViewBox = useTransform(
-    progress, 
-    arrayOfIndex, 
-    focusViewBoxes,
-    {
-      mixer: (a, b) => {
-        // Parse viewBox strings (format: "x y width height")
-        const parseViewBox = (vb: string) => vb.split(' ').map(Number);
-        const aValues = parseViewBox(a);
-        const bValues = parseViewBox(b);
-        
-        // Interpolate each value
-        return (t: number) => {
-          const interpolated = aValues.map((aVal, i) => 
-            aVal + (bValues[i] - aVal) * t
-          );
-          return interpolated.join(' ');
-        };
-      }
-    }
-  );
+
+  const morphingViewBox = useTransform(progress, arrayOfIndex, focusViewBoxes, {
+    mixer: (a, b) => {
+      // Parse viewBox strings (format: "x y width height")
+      const parseViewBox = (vb: string) => vb.split(" ").map(Number);
+      const aValues = parseViewBox(a);
+      const bValues = parseViewBox(b);
+
+      // Interpolate each value
+      return (t: number) => {
+        const interpolated = aValues.map(
+          (aVal, i) => aVal + (bValues[i] - aVal) * t
+        );
+        return interpolated.join(" ");
+      };
+    },
+  });
 
   // Animation logic
   useEffect(() => {
@@ -155,36 +158,49 @@ const MorphingClipPath: React.FC<MorphingClipPathProps> = ({
       ease: "easeInOut",
       delay: 0.3,
     });
-    return () => { animation.stop(); };
+    return () => {
+      animation.stop();
+    };
   }, [pathIndex, progress, morphDuration]);
 
   // Auto-cycle through shapes
   useEffect(() => {
     if (!autoCycle) return;
-    
+
     const interval = setInterval(() => {
-      setPathIndex((prev) => (prev + 1) % clipPaths.length);
+      setPathIndex(prev => (prev + 1) % clipPaths.length);
     }, cycleInterval);
-    
+
     return () => clearInterval(interval);
   }, [clipPaths.length, autoCycle, cycleInterval]);
 
   const defaultBackground = (
     <>
       <defs>
-        <pattern id="morphingBackgroundPattern" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+        <pattern
+          id="morphingBackgroundPattern"
+          x="0"
+          y="0"
+          width="10"
+          height="10"
+          patternUnits="userSpaceOnUse"
+        >
           <rect width="10" height="10" fill="#f8f9fa" />
           <circle cx="5" cy="5" r="1" fill="#e9ecef" />
         </pattern>
       </defs>
-      <rect width={width} height={height} fill="url(#morphingBackgroundPattern)" />
+      <rect
+        width={width}
+        height={height}
+        fill="url(#morphingBackgroundPattern)"
+      />
     </>
   );
 
   return (
     <div className="flex flex-col items-center gap-4">
-      <motion.svg 
-        viewBox={hasFocusViewBoxes ? morphingViewBox : viewBox} 
+      <motion.svg
+        viewBox={hasFocusViewBoxes ? morphingViewBox : viewBox}
         className={className}
         // style={{ aspectRatio: `${width} / ${height}` }}
         width={width}
@@ -192,19 +208,27 @@ const MorphingClipPath: React.FC<MorphingClipPathProps> = ({
       >
         {/* Background */}
         {background || defaultBackground}
-        
+
         {/* Filters for effects */}
         <defs>
           <filter id={`${clipPathId}-blur`}>
             <feGaussianBlur stdDeviation={featherAmount} />
           </filter>
 
-          <linearGradient id={`${clipPathId}-gradient`} gradientTransform="rotate(45)">
+          <linearGradient
+            id={`${clipPathId}-gradient`}
+            gradientTransform="rotate(45)"
+          >
             <stop offset="0%" stopColor="white" />
             <stop offset="100%" stopColor="black" />
           </linearGradient>
 
-          <pattern id={`${clipPathId}-pattern`} patternUnits="userSpaceOnUse" width="20" height="20">
+          <pattern
+            id={`${clipPathId}-pattern`}
+            patternUnits="userSpaceOnUse"
+            width="20"
+            height="20"
+          >
             <circle cx="10" cy="10" r="8" fill="white" />
             <circle cx="10" cy="10" r="4" fill="black" />
           </pattern>
@@ -219,38 +243,44 @@ const MorphingClipPath: React.FC<MorphingClipPathProps> = ({
         <defs>
           <mask id={clipPathId}>
             {/* Background with base opacity */}
-            <rect 
-              x="0" 
-              y="0" 
-              width={width} 
-              height={height} 
-              fill={`rgb(${maskedOpacity * 255}, ${maskedOpacity * 255}, ${maskedOpacity * 255})`} 
+            <rect
+              x="0"
+              y="0"
+              width={width}
+              height={height}
+              fill={`rgb(${maskedOpacity * 255}, ${maskedOpacity * 255}, ${maskedOpacity * 255})`}
             />
-            
+
             {/* Effect-specific path rendering */}
-            {maskEffect === 'solid' && (
+            {maskEffect === "solid" && (
               <motion.path d={morphingPath} fill="white" />
             )}
-            
-            {maskEffect === 'gradient' && (
-              <motion.path d={morphingPath} fill={`url(#${clipPathId}-gradient)`} />
+
+            {maskEffect === "gradient" && (
+              <motion.path
+                d={morphingPath}
+                fill={`url(#${clipPathId}-gradient)`}
+              />
             )}
-            
-            {maskEffect === 'pattern' && (
-              <motion.path d={morphingPath} fill={`url(#${clipPathId}-pattern)`} />
+
+            {maskEffect === "pattern" && (
+              <motion.path
+                d={morphingPath}
+                fill={`url(#${clipPathId}-pattern)`}
+              />
             )}
-            
-            {maskEffect === 'feathered' && (
-              <motion.path 
-                d={morphingPath} 
+
+            {maskEffect === "feathered" && (
+              <motion.path
+                d={morphingPath}
                 fill="white"
                 filter={`url(#${clipPathId}-blur)`}
               />
             )}
-            
-            {maskEffect === 'glow' && (
-              <motion.path 
-                d={morphingPath} 
+
+            {maskEffect === "glow" && (
+              <motion.path
+                d={morphingPath}
                 fill="white"
                 filter={`url(#${clipPathId}-glow)`}
               />
@@ -261,7 +291,13 @@ const MorphingClipPath: React.FC<MorphingClipPathProps> = ({
         {/* Content that gets masked */}
         <g mask={`url(#${clipPathId})`}>
           <AnimatePresence mode="wait">
-            <image href="https://placehold.co/100x100" x="0" y="0" width={width} height={height} />
+            <image
+              href="https://placehold.co/100x100"
+              x="0"
+              y="0"
+              width={width}
+              height={height}
+            />
             <motion.g
               key={pathIndex}
               initial={{ opacity: 0, scale: 0.8 }}
@@ -289,12 +325,12 @@ const MorphingClipPath: React.FC<MorphingClipPathProps> = ({
 
       {/* Manual controls */}
       {showControls && (
-        <div className="flex gap-2 flex-wrap">
+        <div className="flex flex-wrap gap-2">
           {contentGroups.map((group, index) => (
             <button
               key={index}
               onClick={() => setPathIndex(index)}
-              className={`px-3 py-1 rounded text-sm transition-colors ${
+              className={`rounded px-3 py-1 text-sm transition-colors ${
                 pathIndex === index
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"

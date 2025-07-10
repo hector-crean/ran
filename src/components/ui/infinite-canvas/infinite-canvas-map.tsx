@@ -1,6 +1,13 @@
 "use client";
 
-import { Australia, BaseCountries, EastAsia, Europe, SouthAfrica, SouthAmerica } from "@/app/infinite-canvas/map/base-countries";
+import {
+  Australia,
+  BaseCountries,
+  EastAsia,
+  Europe,
+  SouthAfrica,
+  SouthAmerica,
+} from "@/components/ui/infinite-canvas/base-countries";
 import {
   Table,
   TableBody,
@@ -14,32 +21,33 @@ import { useSlideshowContext } from "@/contexts/slideshow-context";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Head from "next/head";
 import React, { useEffect, useRef, useState } from "react";
-import InfiniteCanvas, {
-  CanvasItem,
-  InfiniteCanvasAPI,
-} from ".";
+import InfiniteCanvas, { CanvasItem, InfiniteCanvasAPI } from ".";
 import { Button } from "../button";
 import { Sheet, SheetContent } from "../sheet";
 
-type CountryInfo = {
-  country: string
-  value: number
-} | {
-  country: string
-  range: [number, number]
-}
+type CountryInfo =
+  | {
+      country: string;
+      value: number;
+    }
+  | {
+      country: string;
+      range: [number, number];
+    };
 
 interface CountryInfoBoxProps {
-  grouping: string
-  data: CountryInfo[]
+  grouping: string;
+  data: CountryInfo[];
 }
 
 const CountryInfoBox = ({ grouping, data }: CountryInfoBoxProps) => {
   return (
-    <div className="w-full h-full bg-transparent rounded-lg p-2 flex flex-col gap-2 border-1 border-white">
-      <div className="w-full h-full bg-white rounded-lg p-2">
+    <div className="flex h-full w-full flex-col gap-2 rounded-lg border-1 border-white bg-transparent p-2">
+      <div className="h-full w-full rounded-lg bg-white p-2">
         <Table>
-          <TableCaption >{grouping} - Incidence rates per 100,000 people</TableCaption>
+          <TableCaption>
+            {grouping} - Incidence rates per 100,000 people
+          </TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="w-[100px]">Country</TableHead>
@@ -47,10 +55,14 @@ const CountryInfoBox = ({ grouping, data }: CountryInfoBoxProps) => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.map((item) => (
+            {data.map(item => (
               <TableRow key={item.country}>
                 <TableCell>{item.country}</TableCell>
-                <TableCell>{'value' in item ? item.value : `${item.range[0]}-${item.range[1]}`}</TableCell>
+                <TableCell>
+                  {"value" in item
+                    ? item.value
+                    : `${item.range[0]}-${item.range[1]}`}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -59,7 +71,6 @@ const CountryInfoBox = ({ grouping, data }: CountryInfoBoxProps) => {
     </div>
   );
 };
-
 
 const InfiniteCanvasMap = ({ onFinish }: { onFinish: () => void }) => {
   const api = useRef<InfiniteCanvasAPI>(null);
@@ -85,9 +96,8 @@ const InfiniteCanvasMap = ({ onFinish }: { onFinish: () => void }) => {
   }, []);
 
   const [items, setItems] = useState<CanvasItem[]>([
-
     {
-      type: 'SVG',
+      type: "SVG",
       interaction: {
         selectable: true,
         draggable: false,
@@ -105,15 +115,15 @@ const InfiniteCanvasMap = ({ onFinish }: { onFinish: () => void }) => {
         width: 228.01,
         height: 200.95,
         render: ({ selected, parent, viewport }) => (
-          <CountryInfoBox grouping="Southern Africa" data={[
-            { country: "South Africa", value: 0.06 },
-
-          ]} />
+          <CountryInfoBox
+            grouping="Southern Africa"
+            data={[{ country: "South Africa", value: 0.06 }]}
+          />
         ),
-      }
+      },
     },
     {
-      type: 'SVG',
+      type: "SVG",
       interaction: {
         selectable: true,
         draggable: false,
@@ -131,16 +141,18 @@ const InfiniteCanvasMap = ({ onFinish }: { onFinish: () => void }) => {
         width: 228.01,
         height: 200.95,
         render: ({ selected, parent, viewport }) => (
-          <CountryInfoBox grouping="South America" data={[
-            { country: "Peru", value: 1.7 },
-            { country: "Brazil", value: 0.33 },
-
-          ]} />
+          <CountryInfoBox
+            grouping="South America"
+            data={[
+              { country: "Peru", value: 1.7 },
+              { country: "Brazil", value: 0.33 },
+            ]}
+          />
         ),
-      }
+      },
     },
     {
-      type: 'SVG',
+      type: "SVG",
       interaction: {
         selectable: true,
         draggable: false,
@@ -158,23 +170,23 @@ const InfiniteCanvasMap = ({ onFinish }: { onFinish: () => void }) => {
         width: 228.01,
         height: 200.95,
         render: ({ selected, parent, viewport }) => (
-          <CountryInfoBox grouping="Australasia" data={[
-            { country: "Australia", range: [1.41, 10.5] },
-
-          ]} />
+          <CountryInfoBox
+            grouping="Australasia"
+            data={[{ country: "Australia", range: [1.41, 10.5] }]}
+          />
         ),
-      }
+      },
     },
     {
-      type: 'SVG',
+      type: "SVG",
       interaction: {
         selectable: true,
         draggable: false,
         hoverable: true,
       },
       id: "4",
-      x: 1641.67,//1653
-      y: 322.95,//313
+      x: 1641.67, //1653
+      y: 322.95, //313
       width: 1634.17,
       height: 1500,
       render: ({ selected, viewport }) => <Europe />,
@@ -184,27 +196,29 @@ const InfiniteCanvasMap = ({ onFinish }: { onFinish: () => void }) => {
         width: 320,
         height: 600,
         render: ({ selected, parent, viewport }) => (
-          <CountryInfoBox grouping="Europe" data={[
-            { country: "The Netherlands", value: 1.9 },
-            { country: "Italy", value: 0.84 },
-            { country: "Czechia", value: 1.16 },
-            { country: "Norway", value: 0.85 },
-            { country: "Estonia", value: 1.4 },
-            { country: "Denmark", value: 1.08 },
-            { country: "Poland", value: 0.62 },
-            { country: "Spain", value: 0.34 },
-            { country: "Germany", value: 1.72 },
-            { country: "Lithiania", value: 1.93 },
-            { country: "United Kingdom", value: 0.99 },
-            { country: 'France', range: [2.5, 3.1] }
-
-          ]} />
+          <CountryInfoBox
+            grouping="Europe"
+            data={[
+              { country: "The Netherlands", value: 1.9 },
+              { country: "Italy", value: 0.84 },
+              { country: "Czechia", value: 1.16 },
+              { country: "Norway", value: 0.85 },
+              { country: "Estonia", value: 1.4 },
+              { country: "Denmark", value: 1.08 },
+              { country: "Poland", value: 0.62 },
+              { country: "Spain", value: 0.34 },
+              { country: "Germany", value: 1.72 },
+              { country: "Lithiania", value: 1.93 },
+              { country: "United Kingdom", value: 0.99 },
+              { country: "France", range: [2.5, 3.1] },
+            ]}
+          />
         ),
-      }
+      },
     },
 
     {
-      type: 'SVG',
+      type: "SVG",
       interaction: {
         selectable: true,
         draggable: false,
@@ -222,14 +236,16 @@ const InfiniteCanvasMap = ({ onFinish }: { onFinish: () => void }) => {
         width: 228.01,
         height: 250,
         render: ({ selected, parent, viewport }) => (
-          <CountryInfoBox grouping="East Asia" data={[
-            { country: "Japan", value: 4.2 },
-            { country: "Taiwan", value: 1.8 },
-            { country: "Singapore", value: 0.55 },
-
-          ]} />
+          <CountryInfoBox
+            grouping="East Asia"
+            data={[
+              { country: "Japan", value: 4.2 },
+              { country: "Taiwan", value: 1.8 },
+              { country: "Singapore", value: 0.55 },
+            ]}
+          />
         ),
-      }
+      },
     },
   ]);
 
@@ -294,19 +310,16 @@ const InfiniteCanvasMap = ({ onFinish }: { onFinish: () => void }) => {
         />
         <title>Infinite Canvas Demo</title>
       </Head>
-      <div className="h-full w-full  grid grid-cols-1 grid-rows-[30px_1fr_80px] bg-transparent pointer-events-auto">
-        <div className="row-start-2 row-span-1 overflow-clip  flex flex-col items-center justify-center rounded-bl-lg rounded-tl-lg border-1 border-white p-1.5">
-          <div className="text-2xl rounded-tl-lg p-2 bg-white text-dark-blue w-full">
-            Please select the locations below to reveal location specific information
+      <div className="pointer-events-auto grid h-full w-full grid-cols-1 grid-rows-[30px_1fr_80px] bg-transparent">
+        <div className="row-span-1 row-start-2 flex flex-col items-center justify-center overflow-clip rounded-tl-lg rounded-bl-lg border-1 border-white p-1.5">
+          <div className="text-dark-blue w-full rounded-tl-lg bg-white p-2 text-2xl">
+            Please select the locations below to reveal location specific
+            information
           </div>
 
-
-
-
-          <div className="w-full flex-1 bg-light-blue rounded-bl-lg relative aspect-[16/9]">
+          <div className="bg-light-blue relative aspect-[16/9] w-full flex-1 rounded-bl-lg">
             {/* Presentation Controls */}
-            <div className="absolute bottom-4 right-4 z-10 bg-white rounded-lg shadow-lg p-4">
-
+            <div className="absolute right-4 bottom-4 z-10 rounded-lg bg-white p-4 shadow-lg">
               <div className="flex flex-col gap-2">
                 <Button
                   onClick={startPresentation}
@@ -314,20 +327,19 @@ const InfiniteCanvasMap = ({ onFinish }: { onFinish: () => void }) => {
                 >
                   Restart
                 </Button>
-                <div className="flex gap-2 items-center justify-center">
-                  <Button
-                    onClick={prevSlide}
-                    disabled={currentSlide === 0}
-                  >
+                <div className="flex items-center justify-center gap-2">
+                  <Button onClick={prevSlide} disabled={currentSlide === 0}>
                     <ArrowLeft />
                   </Button>
-                  <Button
-                    onClick={nextSlide}
-                  >
-                    {currentSlide === items.length - 1 ? 'Finish' : <ArrowRight />}
+                  <Button onClick={nextSlide}>
+                    {currentSlide === items.length - 1 ? (
+                      "Finish"
+                    ) : (
+                      <ArrowRight />
+                    )}
                   </Button>
                 </div>
-                <div className="text-xs text-gray-600 text-center">
+                <div className="text-center text-xs text-gray-600">
                   Slide {currentSlide + 1} of {items.length}
                 </div>
               </div>
@@ -367,24 +379,21 @@ const InfiniteCanvasMap = ({ onFinish }: { onFinish: () => void }) => {
               maxZoom={3}
               zoomSensitivity={0.03}
               initialViewport={{
-                "x": 53.68550200572031,
-                "y": 56.051491651119875,
-                "scale": 0.24883199999999994
-              }}>
-              < BaseCountries />
+                x: 53.68550200572031,
+                y: 56.051491651119875,
+                scale: 0.24883199999999994,
+              }}
+            >
+              <BaseCountries />
             </InfiniteCanvas>
           </div>
         </div>
-      </div >
+      </div>
     </>
   );
 };
 
-
-
-
 const InfiniteCanvasMapInSheet = () => {
-
   const api = useSlideshowContext();
   const [open, setOpen] = useState(true);
 
@@ -394,8 +403,7 @@ const InfiniteCanvasMapInSheet = () => {
 
   const handleOpenChange = (open: boolean) => {
     setOpen(open);
-
-  }
+  };
 
   useEffect(() => {
     if (open == false) {
@@ -407,14 +415,14 @@ const InfiniteCanvasMapInSheet = () => {
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetContent side='right' className="w-[60vw] sm:max-w-[80vw] bg-transparent border-none">
+      <SheetContent
+        side="right"
+        className="w-[60vw] border-none bg-transparent sm:max-w-[80vw]"
+      >
         <InfiniteCanvasMap onFinish={handleFinish} />
       </SheetContent>
     </Sheet>
   );
 };
 
-
-
 export { InfiniteCanvasMapInSheet as InfiniteCanvasMap };
-

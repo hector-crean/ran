@@ -9,7 +9,14 @@ interface GlowFilterProps {
   animated?: boolean;
   duration?: number;
   delay?: number;
-  easing?: "linear" | "easeIn" | "easeOut" | "easeInOut" | "circIn" | "circOut" | "backOut";
+  easing?:
+    | "linear"
+    | "easeIn"
+    | "easeOut"
+    | "easeInOut"
+    | "circIn"
+    | "circOut"
+    | "backOut";
   glowLayers?: number;
   maxIntensity?: number;
   pulsing?: boolean;
@@ -36,8 +43,9 @@ const GlowFilter = ({
   const [currentIntensity, setCurrentIntensity] = useState(intensity);
 
   // Generate glow layers dynamically
-  const glowSizes = Array.from({ length: glowLayers }, (_, i) =>
-    (i + 1) * 2 * currentIntensity
+  const glowSizes = Array.from(
+    { length: glowLayers },
+    (_, i) => (i + 1) * 2 * currentIntensity
   );
 
   // Animation variants for the glow effect
@@ -98,11 +106,7 @@ const GlowFilter = ({
       variants={glowVariants}
       initial={animated ? "initial" : undefined}
       animate={
-        animated
-          ? isHovering && interactive
-            ? "hover"
-            : "animate"
-          : undefined
+        animated ? (isHovering && interactive ? "hover" : "animate") : undefined
       }
       {...(interactive && {
         onHoverStart: () => handleHover(true),
@@ -117,16 +121,16 @@ const GlowFilter = ({
           dy="0"
           stdDeviation={size}
           floodColor={color}
-          floodOpacity={1 - (index * 0.2)} // Reduce opacity for outer layers
+          floodOpacity={1 - index * 0.2} // Reduce opacity for outer layers
           animate={{
             stdDeviation: animated ? [size * 0.8, size * 1.2, size] : size,
             floodOpacity: animated
-              ? [0.8 - (index * 0.2), 1 - (index * 0.15), 0.9 - (index * 0.2)]
-              : 1 - (index * 0.2),
+              ? [0.8 - index * 0.2, 1 - index * 0.15, 0.9 - index * 0.2]
+              : 1 - index * 0.2,
           }}
           transition={{
-            duration: duration + (index * 0.1), // Stagger layer animations
-            delay: delay + (index * 0.05),
+            duration: duration + index * 0.1, // Stagger layer animations
+            delay: delay + index * 0.05,
             ease: easing,
             repeat: pulsing ? Infinity : 0,
             repeatType: "reverse",
@@ -141,10 +145,18 @@ const GlowFilter = ({
         stdDeviation={currentIntensity * 0.5}
         floodColor={color}
         floodOpacity="0.9"
-        animate={animated ? {
-          stdDeviation: [currentIntensity * 0.3, currentIntensity * 0.8, currentIntensity * 0.5],
-          floodOpacity: [0.6, 1, 0.8],
-        } : undefined}
+        animate={
+          animated
+            ? {
+                stdDeviation: [
+                  currentIntensity * 0.3,
+                  currentIntensity * 0.8,
+                  currentIntensity * 0.5,
+                ],
+                floodOpacity: [0.6, 1, 0.8],
+              }
+            : undefined
+        }
         transition={{
           duration: duration * 0.8,
           delay,
@@ -164,7 +176,7 @@ export const AnimatedGlowFilter = ({
   intensity = 1.5,
   duration = 3,
   ...props
-}: Omit<GlowFilterProps, 'color'> & {
+}: Omit<GlowFilterProps, "color"> & {
   colors?: string[];
 }) => {
   const [currentColorIndex, setCurrentColorIndex] = useState(0);
@@ -173,7 +185,7 @@ export const AnimatedGlowFilter = ({
   // Cycle through colors
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentColorIndex((prev) => (prev + 1) % colors.length);
+      setCurrentColorIndex(prev => (prev + 1) % colors.length);
     }, duration * 1000);
 
     return () => clearInterval(interval);
@@ -286,4 +298,3 @@ export const useGlowFilter = (config: {
 };
 
 export default GlowFilter;
-

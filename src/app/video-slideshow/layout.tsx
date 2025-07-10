@@ -11,16 +11,16 @@ import { useCallback, useEffect, useState } from "react";
 import { match } from "ts-pattern";
 import { slides } from "./slides-data";
 
-import ClipPathComparator from "@/components/clip-path-comparator";
-import { DragDropGrid } from "@/components/drag-drop/index";
 import { Button } from "@/components/ui/button";
+import ClipPathComparator from "@/components/ui/clip-path-comparator";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
 } from "@/components/ui/dialog";
+import { DragDropGrid } from "@/components/ui/drag-drop/index";
 import {
   Drawer,
   DrawerClose,
@@ -28,79 +28,57 @@ import {
   DrawerDescription,
   DrawerFooter,
   DrawerHeader,
-  DrawerTitle
+  DrawerTitle,
 } from "@/components/ui/drawer";
 import { InfiniteCanvasMap } from "@/components/ui/infinite-canvas/infinite-canvas-map";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
-  SheetHeader
+  SheetHeader,
 } from "@/components/ui/sheet";
 import { SettingsProvider } from "@/contexts/settings-dialog";
 import { FreezeFrame } from "./slide-types/freeze-frame";
 import { GpuPickingVideoSlide } from "./slide-types/gpu-picking-video-slide";
-import { InteractiveVideo } from "./slide-types/interactive-video";
 import { LinearSequenceSlide } from "./slide-types/linear-sequence-slide";
 import { RegularSlide } from "./slide-types/regular-slide";
 import { RotationalSequenceSlide } from "./slide-types/rotational-sequence-slide";
 import { TargetedLinearSequenceSlide } from "./slide-types/targeted-linear-sequence-slide";
 import { VideoSlide } from "./slide-types/video-slide";
 
-
-
 export const renderNode = (node: RenderableNode) => {
-  return match(node).with({ type: "InfiniteCanvasMap" }, (node) => (
-    <InfiniteCanvasMap />
-  )).exhaustive();
-}
-
+  return match(node)
+    .with({ type: "InfiniteCanvasMap" }, node => <InfiniteCanvasMap />)
+    .exhaustive();
+};
 
 const renderSlide = (slide: Slide) => {
   const slideInner = match(slide.slide_type)
-    .with({ type: "Regular" }, (slideType) => (
+    .with({ type: "Regular" }, slideType => (
       <RegularSlide slide={slide} content={slideType.data.content} />
     ))
-    .with({ type: "Video" }, (slideType) => (
-      <VideoSlide
-        {...slideType.data}
-      />
-    ))
-    .with({ type: "GpuPickingVideo" }, (slideType) => (
-      <GpuPickingVideoSlide
-        {...slideType.data}
-      />
+    .with({ type: "Video" }, slideType => <VideoSlide {...slideType.data} />)
+    .with({ type: "GpuPickingVideo" }, slideType => (
+      <GpuPickingVideoSlide {...slideType.data} />
     ))
 
-    .with({ type: "RotationalSequence" }, (slideType) => (
-      <RotationalSequenceSlide
-        {...slideType.data}
-      />
+    .with({ type: "RotationalSequence" }, slideType => (
+      <RotationalSequenceSlide {...slideType.data} />
     ))
-    .with({ type: "FreezeFrame" }, (slideType) => (
+    .with({ type: "FreezeFrame" }, slideType => (
       <FreezeFrame {...slideType.data} />
     ))
-    .with({ type: "InteractiveVideo" }, (slideType) => (
-      <InteractiveVideo
-        {...slideType.data}
-      />
+
+    .with({ type: "LinearSequence" }, slideType => (
+      <LinearSequenceSlide {...slideType.data} />
     ))
-    .with({ type: "LinearSequence" }, (slideType) => (
-      <LinearSequenceSlide
-        {...slideType.data}
-      />
+    .with({ type: "TargetedLinearSequence" }, slideType => (
+      <TargetedLinearSequenceSlide {...slideType.data} />
     ))
-    .with({ type: "TargetedLinearSequence" }, (slideType) => (
-      <TargetedLinearSequenceSlide
-        {...slideType.data}
-      />
+    .with({ type: "ClipPathComparator" }, slideType => (
+      <ClipPathComparator {...slideType.data} />
     ))
-    .with({ type: "ClipPathComparator" }, (slideType) => (
-      <ClipPathComparator
-        {...slideType.data}
-      />
-    ))
-    .with({ type: 'DragDropGrid' }, (slideType) => (
+    .with({ type: "DragDropGrid" }, slideType => (
       <DragDropGrid {...slideType.data} />
     ))
     .otherwise(() => <div>Unknown slide type</div>);
@@ -114,11 +92,6 @@ const renderSlide = (slide: Slide) => {
     </>
   );
 };
-
-
-
-
-
 
 // Asset preloader utility
 const preloadAsset = (
@@ -197,7 +170,7 @@ const preloadSequence = async (
 
     // Add a small delay to avoid overwhelming the browser
     if (priority === "low") {
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
   }
 
@@ -222,7 +195,7 @@ const CriticalAssetPreloader = ({
     const existingLinks = document.querySelectorAll(
       "link[data-slideshow-preload]"
     );
-    existingLinks.forEach((link) => link.remove());
+    existingLinks.forEach(link => link.remove());
 
     // Add new preload links
     const addPreloadLink = (
@@ -272,7 +245,6 @@ const CriticalAssetPreloader = ({
   return null;
 };
 
-
 function Pagination({
   id,
   currentPage,
@@ -286,8 +258,8 @@ function Pagination({
 }) {
   return (
     <LayoutGroup id={id}>
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2 z-5">
-        {pages.map((page) => (
+      <div className="absolute bottom-4 left-1/2 z-5 flex -translate-x-1/2 transform gap-2">
+        {pages.map(page => (
           <Dot
             key={page}
             onClick={() => setPage(page)}
@@ -295,7 +267,7 @@ function Pagination({
           />
         ))}
       </div>
-    </LayoutGroup >
+    </LayoutGroup>
   );
 }
 
@@ -308,12 +280,12 @@ function Dot({
 }) {
   return (
     <div
-      className="w-3 h-3 rounded-full bg-gray-500 cursor-pointer relative overflow-hidden"
+      className="relative h-3 w-3 cursor-pointer overflow-hidden rounded-full bg-gray-500"
       onClick={onClick}
     >
       {isSelected && (
         <motion.div
-          className="absolute inset-0 bg-white rounded-full"
+          className="absolute inset-0 rounded-full bg-white"
           layoutId="highlight"
         />
       )}
@@ -434,21 +406,21 @@ function PersistentUI() {
         setPage={goToSlide}
         pages={slides.map((slide, index) => index)}
       />
-      <div className="absolute bottom-4 left-4 flex gap-2 z-50">
+      <div className="absolute bottom-4 left-4 z-50 flex gap-2">
         <button
           onClick={() => paginate(-1)}
-          className="px-4 py-2 bg-gray-700 rounded"
+          className="rounded bg-gray-700 px-4 py-2"
         >
           {"<"}
         </button>
         <button
           onClick={() => paginate(1)}
-          className="px-4 py-2 bg-gray-700 rounded"
+          className="rounded bg-gray-700 px-4 py-2"
         >
           {">"}
         </button>
       </div>
-      <div className="absolute bottom-4 right-4 text-sm z-50">
+      <div className="absolute right-4 bottom-4 z-50 text-sm">
         {currentPage + 1} / {slides.length}
       </div>
     </>
@@ -470,23 +442,22 @@ export default function VideoSlideshowLayout({
           containerClassname="w-[calc(100vw-1rem)] h-[calc(100vh-1rem)]"
           contentClassname="rounded-md overflow-hidden"
         > */}
-        <div className="p-4 w-[calc(100vw-1rem)] h-[calc(100vh-1rem)]  overflow-hidden flex items-center justify-center ">
-          <div className="aspect-video w-full max-h-[1080px] max-w-[1920px] rounded-lg overflow-clip relative">
+        <div className="flex h-[calc(100vh-1rem)] w-[calc(100vw-1rem)] items-center justify-center overflow-hidden p-4">
+          <div className="relative aspect-video max-h-[1080px] w-full max-w-[1920px] overflow-clip rounded-lg">
             {children}
             <PersistentUI />
           </div>
         </div>
         {/* </ResponsiveContainer> */}
-
-      </SlideshowProvider >
-    </SettingsProvider >
+      </SlideshowProvider>
+    </SettingsProvider>
   );
 }
 
 const SlideDrawer = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = useState(true);
   return (
-    <Drawer open={open} onOpenChange={(open) => setOpen(open)}>
+    <Drawer open={open} onOpenChange={open => setOpen(open)}>
       {/* <DrawerTrigger>Open</DrawerTrigger> */}
       <DrawerContent>
         <DrawerHeader>
@@ -509,8 +480,8 @@ const SlideSheet = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = useState(true);
 
   return (
-    <Sheet open={open} onOpenChange={(open) => setOpen(open)}>
-      <SheetContent side='right' className="w-[50vw] sm:max-w-[80vw]">
+    <Sheet open={open} onOpenChange={open => setOpen(open)}>
+      <SheetContent side="right" className="w-[50vw] sm:max-w-[80vw]">
         <SheetHeader>
           {/* <SheetTitle></SheetTitle> */}
           <SheetDescription>
@@ -527,7 +498,7 @@ const SlideSheet = ({ children }: { children: React.ReactNode }) => {
 const SlideDialog = ({ children }: { children: React.ReactNode }) => {
   const [open, setOpen] = useState(true);
   return (
-    <Dialog open={open} onOpenChange={(open) => setOpen(open)}>
+    <Dialog open={open} onOpenChange={open => setOpen(open)}>
       {/* <DialogTrigger>Open</DialogTrigger> */}
       <DialogContent>
         <DialogHeader>

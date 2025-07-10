@@ -1,3 +1,3 @@
-import SlidePage from "@/app/video-slideshow/slide-page"
+import SlidePage from "@/app/video-slideshow/slide-page";
 
-export default SlidePage
+export default SlidePage;

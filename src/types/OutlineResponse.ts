@@ -6,4 +6,8 @@ import type { JsonValue } from "./serde_json/JsonValue";
 /**
  * Response containing outline extraction results
  */
-export type OutlineResponse = { shapes_count: number, image_dimensions: ImageDimensions, geojson: MaskGeoJson, };
+export type OutlineResponse = {
+  shapes_count: number;
+  image_dimensions: ImageDimensions;
+  geojson: MaskGeoJson;
+};

@@ -11,8 +11,8 @@ const useViewTransitionsSupport = () => {
   const [isSupported, setIsSupported] = useState(false);
 
   useEffect(() => {
-    if (typeof document !== 'undefined') {
-      setIsSupported('startViewTransition' in document);
+    if (typeof document !== "undefined") {
+      setIsSupported("startViewTransition" in document);
     }
   }, []);
 
@@ -74,13 +74,14 @@ const previewVariants: Variants = {
 const MainSlide = ({
   slide,
   renderSlide,
-  useViewTransitions
+  useViewTransitions,
 }: {
   slide: Slide;
   renderSlide: (slide: Slide) => React.ReactNode;
   useViewTransitions: boolean;
 }) => {
-  const baseClassName = "absolute inset-0 z-30 flex items-center justify-center slide-content-transition";
+  const baseClassName =
+    "absolute inset-0 z-30 flex items-center justify-center slide-content-transition";
   const baseStyle = {
     backfaceVisibility: "hidden" as const,
     willChange: "transform, opacity, filter",
@@ -89,11 +90,7 @@ const MainSlide = ({
   if (useViewTransitions) {
     // Use simple div when View Transitions API is supported
     return (
-      <div
-        key={slide.id}
-        className={baseClassName}
-        style={baseStyle}
-      >
+      <div key={slide.id} className={baseClassName} style={baseStyle}>
         {renderSlide(slide)}
       </div>
     );
@@ -122,28 +119,28 @@ const BackgroundPoster = ({
   alt,
   layoutId,
   useViewTransitions,
-  posterType = 'prev'
+  posterType = "prev",
 }: {
   posterUrl: string;
   alt: string;
   layoutId: string;
   useViewTransitions: boolean;
-  posterType?: 'prev' | 'next';
+  posterType?: "prev" | "next";
 }) => {
-  const transitionClass = posterType === 'prev' ? 'slide-poster-prev-transition' : 'slide-poster-next-transition';
-  const baseClassName = `absolute inset-0 z-10 pointer-events-none flex items-center justify-center ${useViewTransitions ? transitionClass : ''}`;
+  const transitionClass =
+    posterType === "prev"
+      ? "slide-poster-prev-transition"
+      : "slide-poster-next-transition";
+  const baseClassName = `absolute inset-0 z-10 pointer-events-none flex items-center justify-center ${useViewTransitions ? transitionClass : ""}`;
 
   if (useViewTransitions) {
     // Use simple div when View Transitions API is supported
     return (
-      <div
-        key={layoutId}
-        className={baseClassName}
-      >
+      <div key={layoutId} className={baseClassName}>
         <img
           src={posterUrl}
           alt={alt}
-          className="w-full object-contain max-h-full"
+          className="max-h-full w-full object-contain"
         />
       </div>
     );
@@ -163,7 +160,7 @@ const BackgroundPoster = ({
       <img
         src={posterUrl}
         alt={alt}
-        className="w-full object-contain max-h-full"
+        className="max-h-full w-full object-contain"
       />
     </motion.div>
   );
@@ -175,19 +172,27 @@ const Page = () => {
   const supportsViewTransitions = useViewTransitionsSupport();
 
   const previousSlide = currentPage - 1 >= 0 ? slides[currentPage - 1] : null;
-  const currentSlide = currentPage >= 0 && currentPage < slides.length ? slides[currentPage] : null;
-  const nextSlide = currentPage + 1 < slides.length ? slides[currentPage + 1] : null;
+  const currentSlide =
+    currentPage >= 0 && currentPage < slides.length
+      ? slides[currentPage]
+      : null;
+  const nextSlide =
+    currentPage + 1 < slides.length ? slides[currentPage + 1] : null;
 
-  const AnimationWrapper = supportsViewTransitions ?
-    ({ children }: { children: React.ReactNode }) => <>{children}</> :
-    ({ children }: { children: React.ReactNode }) => <AnimatePresence mode="wait">{children}</AnimatePresence>;
+  const AnimationWrapper = supportsViewTransitions
+    ? ({ children }: { children: React.ReactNode }) => <>{children}</>
+    : ({ children }: { children: React.ReactNode }) => (
+        <AnimatePresence mode="wait">{children}</AnimatePresence>
+      );
 
-  const BackgroundWrapper = supportsViewTransitions ?
-    ({ children }: { children: React.ReactNode }) => <>{children}</> :
-    ({ children }: { children: React.ReactNode }) => <AnimatePresence mode="sync">{children}</AnimatePresence>;
+  const BackgroundWrapper = supportsViewTransitions
+    ? ({ children }: { children: React.ReactNode }) => <>{children}</>
+    : ({ children }: { children: React.ReactNode }) => (
+        <AnimatePresence mode="sync">{children}</AnimatePresence>
+      );
 
   return (
-    <div className="relative w-full h-full overflow-hidden bg-black">
+    <div className="relative h-full w-full overflow-hidden bg-black">
       {/* Layer 1: Previous slide background (z-10) */}
       <BackgroundWrapper>
         {previousSlide && !supportsViewTransitions && (
@@ -197,7 +202,7 @@ const Page = () => {
             alt={`${previousSlide.title} ending`}
             layoutId="preview-previous"
             useViewTransitions={supportsViewTransitions}
-            posterType='prev'
+            posterType="prev"
           />
         )}
       </BackgroundWrapper>
@@ -211,7 +216,7 @@ const Page = () => {
             alt={`${nextSlide.title} beginning`}
             layoutId="preview-next"
             useViewTransitions={supportsViewTransitions}
-            posterType='next'
+            posterType="next"
           />
         )}
       </BackgroundWrapper>
@@ -235,11 +240,11 @@ const Page = () => {
           animate={{ opacity: 1 }}
           className="absolute inset-0 z-40 flex items-center justify-center"
         >
-          <div className="text-white text-center">
+          <div className="text-center text-white">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="w-8 h-8 border-2 border-white border-t-transparent rounded-full mx-auto mb-4"
+              className="mx-auto mb-4 h-8 w-8 rounded-full border-2 border-white border-t-transparent"
             />
             <p className="text-lg">Loading slide...</p>
           </div>

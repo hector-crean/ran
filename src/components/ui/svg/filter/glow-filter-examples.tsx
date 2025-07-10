@@ -1,28 +1,18 @@
 "use client";
 import React from "react";
-import GlowFilter, { 
-  AnimatedGlowFilter, 
-  MultiGlowFilter, 
-  useGlowFilter 
+import GlowFilter, {
+  AnimatedGlowFilter,
+  MultiGlowFilter,
+  useGlowFilter,
 } from "./glow-filter";
 
 // Example 1: Basic Static Glow
 export const BasicGlowExample = () => (
   <svg width="200" height="200" viewBox="0 0 200 200">
     <defs>
-      <GlowFilter
-        id="basic-glow"
-        color="#4f46e5"
-        intensity={1.5}
-      />
+      <GlowFilter id="basic-glow" color="#4f46e5" intensity={1.5} />
     </defs>
-    <circle
-      cx="100"
-      cy="100"
-      r="40"
-      fill="#4f46e5"
-      filter="url(#basic-glow)"
-    />
+    <circle cx="100" cy="100" r="40" fill="#4f46e5" filter="url(#basic-glow)" />
   </svg>
 );
 
@@ -66,14 +56,14 @@ export const InteractiveGlowExample = () => (
         maxIntensity={3}
         duration={1}
         easing="backOut"
-        onHover={(isHovering) => console.log('Glow hovering:', isHovering)}
+        onHover={isHovering => console.log("Glow hovering:", isHovering)}
       />
     </defs>
     <polygon
       points="100,20 140,80 100,140 60,80"
       fill="#f59e0b"
       filter="url(#interactive-glow)"
-      style={{ cursor: 'pointer' }}
+      style={{ cursor: "pointer" }}
     />
   </svg>
 );
@@ -151,7 +141,7 @@ export const HookControlledGlowExample = () => {
           d="M100,20 L140,60 L180,100 L140,140 L100,180 L60,140 L20,100 L60,60 Z"
           fill={isGlowing ? "#dc2626" : "#6b7280"}
           filter="url(#hook-controlled-glow)"
-          style={{ cursor: 'pointer' }}
+          style={{ cursor: "pointer" }}
           {...handlers}
         />
       </svg>
@@ -194,25 +184,25 @@ export const DynamicTextGlowExample = () => {
           Dynamic Glow Effect
         </text>
       </svg>
-      
-      <div className="flex gap-4 items-center">
+
+      <div className="flex items-center gap-4">
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium">Color:</label>
           <div className="flex gap-2">
-            {["#8b5cf6", "#ef4444", "#10b981", "#f59e0b"].map((color) => (
+            {["#8b5cf6", "#ef4444", "#10b981", "#f59e0b"].map(color => (
               <button
                 key={color}
                 onClick={() => setGlowColor(color)}
-                className="w-6 h-6 rounded border-2"
-                style={{ 
+                className="h-6 w-6 rounded border-2"
+                style={{
                   backgroundColor: color,
-                  borderColor: glowColor === color ? "#000" : "transparent"
+                  borderColor: glowColor === color ? "#000" : "transparent",
                 }}
               />
             ))}
           </div>
         </div>
-        
+
         <div className="flex flex-col gap-2">
           <label className="text-sm font-medium">Intensity:</label>
           <input
@@ -221,10 +211,10 @@ export const DynamicTextGlowExample = () => {
             max="4"
             step="0.5"
             value={glowIntensity}
-            onChange={(e) => setGlowIntensity(Number(e.target.value))}
+            onChange={e => setGlowIntensity(Number(e.target.value))}
             className="w-24"
           />
-          <span className="text-xs text-center">{glowIntensity}</span>
+          <span className="text-center text-xs">{glowIntensity}</span>
         </div>
       </div>
     </div>
@@ -233,43 +223,47 @@ export const DynamicTextGlowExample = () => {
 
 // Complete showcase component
 export const GlowFilterShowcase = () => (
-  <div className="p-8 space-y-8 bg-gray-900 min-h-screen">
-    <h1 className="text-3xl font-bold text-white text-center mb-8">
+  <div className="min-h-screen space-y-8 bg-gray-900 p-8">
+    <h1 className="mb-8 text-center text-3xl font-bold text-white">
       Enhanced Glow Filter Examples
     </h1>
-    
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
       {/* <div className="bg-gray-800 p-4 rounded-lg">
         <h3 className="text-white text-lg font-semibold mb-4">Basic Glow</h3>
         <BasicGlowExample />
       </div> */}
-      
-       <div className="bg-gray-800 p-4 rounded-lg">
-        <h3 className="text-white text-lg font-semibold mb-4">Animated Pulse</h3>
+
+      <div className="rounded-lg bg-gray-800 p-4">
+        <h3 className="mb-4 text-lg font-semibold text-white">
+          Animated Pulse
+        </h3>
         <AnimatedGlowExample />
       </div>
-      
+
       {/* <div className="bg-gray-800 p-4 rounded-lg">
         <h3 className="text-white text-lg font-semibold mb-4">Interactive Hover</h3>
         <InteractiveGlowExample />
       </div> */}
-     
+
       {/* <div className="bg-gray-800 p-4 rounded-lg">
         <h3 className="text-white text-lg font-semibold mb-4">Color Cycling</h3>
         <ColorCyclingGlowExample />
       </div> */}
-      
+
       {/* <div className="bg-gray-800 p-4 rounded-lg">
         <h3 className="text-white text-lg font-semibold mb-4">Multi-Glow</h3>
         <MultiGlowExample />
       </div> */}
-      
-      <div className="bg-gray-800 p-4 rounded-lg">
-        <h3 className="text-white text-lg font-semibold mb-4">Hook Controlled</h3>
+
+      <div className="rounded-lg bg-gray-800 p-4">
+        <h3 className="mb-4 text-lg font-semibold text-white">
+          Hook Controlled
+        </h3>
         <HookControlledGlowExample />
-      </div> 
+      </div>
     </div>
-    
+
     {/* <div className="bg-gray-800 p-6 rounded-lg">
       <h3 className="text-white text-lg font-semibold mb-4">Dynamic Controls</h3>
       <DynamicTextGlowExample />
@@ -277,4 +271,4 @@ export const GlowFilterShowcase = () => (
   </div>
 );
 
-export default GlowFilterShowcase; 
+export default GlowFilterShowcase;

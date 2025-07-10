@@ -54,7 +54,7 @@ const FocusAreaMask = () => {
       ),
     },
     {
-      label: "Star", 
+      label: "Star",
       content: (
         <>
           {/* Star content - triangular elements */}
@@ -164,7 +164,7 @@ const FocusAreaMask = () => {
     <MorphingClipPath
       clipPaths={clipPaths}
       contentGroups={contentGroups}
-      className="w-full h-96 border rounded-lg bg-gray-50"
+      className="h-96 w-full rounded-lg border bg-gray-50"
       width={100}
       height={100}
       showControls={true}

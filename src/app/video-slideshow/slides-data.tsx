@@ -161,7 +161,7 @@ export const slides: Slide[] = [
       data: {
         beforeContent: <img src="/assets/Scene_4.1.1_poster.png" />,
         afterContent: (
-          <img src="/assets/Scene_4.1.1_poster.png" className="filter invert" />
+          <img src="/assets/Scene_4.1.1_poster.png" className="invert filter" />
         ),
       },
     },
@@ -179,7 +179,7 @@ export const slides: Slide[] = [
       type: "FreezeFrame",
       data: {
         poster: "/assets/Scene_4.1.1_poster.png",
-        children: <div className="text-white text-2xl">Question component</div>,
+        children: <div className="text-2xl text-white">Question component</div>,
       },
     },
   },
@@ -197,7 +197,7 @@ export const slides: Slide[] = [
       data: {
         poster: "/assets/Scene_4.1_poster.png",
         children: (
-          <div className="text-white text-2xl">
+          <div className="text-2xl text-white">
             Drag and drop the immune complex to deposit it in the glomeruli
           </div>
         ),
@@ -236,7 +236,8 @@ export const slides: Slide[] = [
       data: {
         videoSrc: "/assets/Scene_4.1.2-looped.mp4",
         maskSrc: "/assets/Scene_4.1.2-mask-looped-2.mp4",
-        instructions: "Please choose the correct cell to activate in order to produce immunoglobulin",
+        instructions:
+          "Please choose the correct cell to activate in order to produce immunoglobulin",
       },
     },
   },
@@ -340,26 +341,38 @@ export const slides: Slide[] = [
     initialSheet: null,
     initialDialog: null,
     slide_type: {
-      type: 'FreezeFrame',
+      type: "FreezeFrame",
       data: {
         poster: "/assets/Scene_5.2_poster.png",
         // children: <div className="text-white text-2xl">Question component</div>,
         positionedElements: [
           {
-            screenCoords: { x: 0.30, y: 0.32 },
-            node: <Hotspot
-              color="#334e7d" size="lg"
-            >
-              TACI (transmembrane activator and calcium-modulating cyclophilin ligand interactor) is a receptor protein on B cells that plays a crucial role in their activation and differentiation, particularly in T cell-independent antibody responses. It belongs to the tumor necrosis factor receptor (TNFR) superfamily and is a receptor for the ligands APRIL and BAFF. TACI is important for B cell survival, antibody production, and class switching
-            </Hotspot>
+            screenCoords: { x: 0.3, y: 0.32 },
+            node: (
+              <Hotspot color="#334e7d" size="lg">
+                TACI (transmembrane activator and calcium-modulating cyclophilin
+                ligand interactor) is a receptor protein on B cells that plays a
+                crucial role in their activation and differentiation,
+                particularly in T cell-independent antibody responses. It
+                belongs to the tumor necrosis factor receptor (TNFR) superfamily
+                and is a receptor for the ligands APRIL and BAFF. TACI is
+                important for B cell survival, antibody production, and class
+                switching
+              </Hotspot>
+            ),
           },
           {
             screenCoords: { x: 0.71, y: 0.45 },
-            node: <Hotspot
-              color="#bb67e4" size="lg"
-            >
-              BCMA: B cell maturation antigen (BCMA) is a tumor necrosis family receptor (TNFR) member that is predominantly expressed on terminally differentiated B cells and, upon binding to its ligands B cell activator of the TNF family (BAFF) and a proliferation inducing ligand (APRIL), delivers pro-survival cell signals.
-            </Hotspot>
+            node: (
+              <Hotspot color="#bb67e4" size="lg">
+                BCMA: B cell maturation antigen (BCMA) is a tumor necrosis
+                family receptor (TNFR) member that is predominantly expressed on
+                terminally differentiated B cells and, upon binding to its
+                ligands B cell activator of the TNF family (BAFF) and a
+                proliferation inducing ligand (APRIL), delivers pro-survival
+                cell signals.
+              </Hotspot>
+            ),
           },
         ],
       },

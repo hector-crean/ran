@@ -79,9 +79,8 @@ const MorphingMask: React.FC<MorphingMaskProps> = ({
   const transitionProgress = useMotionValue(1);
 
   // Find mask objects by id
-  const prevMask = masks.find((m) => m.id === prevId) || masks[0];
-  const currentMask = masks.find((m) => m.id === currentId) || masks[0];
-
+  const prevMask = masks.find(m => m.id === prevId) || masks[0];
+  const currentMask = masks.find(m => m.id === currentId) || masks[0];
 
   const morphingPath = useTransform(
     transitionProgress,
@@ -92,15 +91,21 @@ const MorphingMask: React.FC<MorphingMaskProps> = ({
     }
   );
 
+  const viewbox = useMotionValue<[number, number, number, number]>([
+    0,
+    0,
+    width,
+    height,
+  ]);
+  const viewboxStr = useTransform(
+    viewbox,
+    v => `${v[0]} ${v[1]} ${v[2]} ${v[3]}`
+  );
 
-  const viewbox = useMotionValue<[number, number, number, number]>([0, 0, width, height])
-  const viewboxStr = useTransform(viewbox, (v) => `${v[0]} ${v[1]} ${v[2]} ${v[3]}`)
-  
   // const PADDING = 100;
 
   // const currentViewBox = padViewBox(prevMask?.viewbox, PADDING, width, height);
   // const nextViewBox = padViewBox(currentMask?.viewbox, PADDING, width, height);
-
 
   // const morphingViewBox = useTransform(
   //   transitionProgress,
@@ -137,7 +142,7 @@ const MorphingMask: React.FC<MorphingMaskProps> = ({
   // Auto-cycle through shapes
   useEffect(() => {
     if (!autoCycle) return;
-    const ids = masks.map((m) => m.id);
+    const ids = masks.map(m => m.id);
     const interval = setInterval(() => {
       const currentIdx = ids.indexOf(currentId);
       const nextIdx = (currentIdx + 1) % ids.length;
@@ -171,18 +176,18 @@ const MorphingMask: React.FC<MorphingMaskProps> = ({
 
   const dragControls = useDragControls();
 
-  const transform3d = useTransform(viewbox, (v) => `translate(0,0)`)
+  const transform3d = useTransform(viewbox, v => `translate(0,0)`);
   return (
     <motion.div
       className="flex flex-col items-center gap-4"
       style={{ touchAction: "none" }}
-      onPointerDown={(event) => dragControls.start(event)}
+      onPointerDown={event => dragControls.start(event)}
     >
       <motion.div
         drag
         dragListener={false}
-        className="w-full h-full cursor-grab active:cursor-grabbing border rounded-lg bg-gray-50 items-center justify-center"
-        style={{ transform: transform3d}}
+        className="h-full w-full cursor-grab items-center justify-center rounded-lg border bg-gray-50 active:cursor-grabbing"
+        style={{ transform: transform3d }}
         dragControls={dragControls}
         onDrag={(e, info) => {
           viewbox.set([
@@ -190,164 +195,164 @@ const MorphingMask: React.FC<MorphingMaskProps> = ({
             viewbox.get()[1] - info.delta.y,
             viewbox.get()[2],
             viewbox.get()[3],
-          ])
+          ]);
         }}
       >
-      <motion.svg
-        viewBox={viewboxStr}
-        // viewBox={viewBox}
-        className={className}
-        // style={{ aspectRatio: `${width} / ${height}` }}
-        width={width}
-        height={height}
-      >
-        {/* Background */}
-        {background || defaultBackground}
+        <motion.svg
+          viewBox={viewboxStr}
+          // viewBox={viewBox}
+          className={className}
+          // style={{ aspectRatio: `${width} / ${height}` }}
+          width={width}
+          height={height}
+        >
+          {/* Background */}
+          {background || defaultBackground}
 
-        {/* Filters for effects */}
-        <defs>
-          <filter id={`${clipPathId}-blur`}>
-            <feGaussianBlur stdDeviation={featherAmount} />
-          </filter>
+          {/* Filters for effects */}
+          <defs>
+            <filter id={`${clipPathId}-blur`}>
+              <feGaussianBlur stdDeviation={featherAmount} />
+            </filter>
 
-          <linearGradient
-            id={`${clipPathId}-gradient`}
-            gradientTransform="rotate(45)"
-          >
-            <stop offset="0%" stopColor="white" />
-            <stop offset="100%" stopColor="black" />
-          </linearGradient>
+            <linearGradient
+              id={`${clipPathId}-gradient`}
+              gradientTransform="rotate(45)"
+            >
+              <stop offset="0%" stopColor="white" />
+              <stop offset="100%" stopColor="black" />
+            </linearGradient>
 
-          <pattern
-            id={`${clipPathId}-pattern`}
-            patternUnits="userSpaceOnUse"
-            width="20"
-            height="20"
-          >
-            <circle cx="10" cy="10" r="8" fill="white" />
-            <circle cx="10" cy="10" r="4" fill="black" />
-          </pattern>
+            <pattern
+              id={`${clipPathId}-pattern`}
+              patternUnits="userSpaceOnUse"
+              width="20"
+              height="20"
+            >
+              <circle cx="10" cy="10" r="8" fill="white" />
+              <circle cx="10" cy="10" r="4" fill="black" />
+            </pattern>
 
-          <filter id={`${clipPathId}-glow`}>
-            <feGaussianBlur stdDeviation="2" />
-            <feComposite operator="over" in="SourceGraphic" />
-          </filter>
-        </defs>
+            <filter id={`${clipPathId}-glow`}>
+              <feGaussianBlur stdDeviation="2" />
+              <feComposite operator="over" in="SourceGraphic" />
+            </filter>
+          </defs>
 
-        {/* Mask definition */}
-        <defs>
-          <mask id={clipPathId}>
-            {/* Background with base opacity */}
-            <rect
+          {/* Mask definition */}
+          <defs>
+            <mask id={clipPathId}>
+              {/* Background with base opacity */}
+              <rect
+                x="0"
+                y="0"
+                width={width}
+                height={height}
+                fill={`rgb(${maskedOpacity * 255}, ${maskedOpacity * 255}, ${
+                  maskedOpacity * 255
+                })`}
+              />
+
+              {/* Effect-specific path rendering */}
+              {maskEffect === "solid" && (
+                <motion.path d={morphingPath} fill="white" />
+              )}
+
+              {maskEffect === "gradient" && (
+                <motion.path
+                  d={morphingPath}
+                  fill={`url(#${clipPathId}-gradient)`}
+                />
+              )}
+
+              {maskEffect === "pattern" && (
+                <motion.path
+                  d={morphingPath}
+                  fill={`url(#${clipPathId}-pattern)`}
+                />
+              )}
+
+              {maskEffect === "feathered" && (
+                <motion.path
+                  d={morphingPath}
+                  fill="white"
+                  filter={`url(#${clipPathId}-blur)`}
+                />
+              )}
+
+              {maskEffect === "glow" && (
+                <motion.path
+                  d={morphingPath}
+                  fill="white"
+                  filter={`url(#${clipPathId}-glow)`}
+                />
+              )}
+            </mask>
+          </defs>
+
+          {/* Content that gets masked */}
+          <g mask={`url(#${clipPathId})`}>
+            <image
+              href="/world-image.png"
               x="0"
               y="0"
               width={width}
               height={height}
-              fill={`rgb(${maskedOpacity * 255}, ${maskedOpacity * 255}, ${
-                maskedOpacity * 255
-              })`}
             />
+            <AnimatePresence mode="wait">
+              <motion.g
+                key={currentId}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.5 }}
+              >
+                {currentMask?.content}
+              </motion.g>
+            </AnimatePresence>
+          </g>
 
-            {/* Effect-specific path rendering */}
-            {maskEffect === "solid" && (
-              <motion.path d={morphingPath} fill="white" />
-            )}
+          <motion.g>
+            {masks.map(mask => (
+              <g key={mask.id} onPointerDown={() => setCurrentId(mask.id)}>
+                <motion.path
+                  whileHover={{
+                    fill: "rgba(1,0,0,0.8)",
+                    transition: { duration: 0.2 },
+                  }}
+                  d={mask.path}
+                  fill="rgba(0,0,0,0)"
+                  stroke="#666"
+                  strokeWidth="0.5"
+                  opacity={0.3}
+                  style={{ pointerEvents: "auto", cursor: "pointer" }}
+                />
+              </g>
+            ))}
+          </motion.g>
 
-            {maskEffect === "gradient" && (
-              <motion.path
-                d={morphingPath}
-                fill={`url(#${clipPathId}-gradient)`}
-              />
-            )}
-
-            {maskEffect === "pattern" && (
-              <motion.path
-                d={morphingPath}
-                fill={`url(#${clipPathId}-pattern)`}
-              />
-            )}
-
-            {maskEffect === "feathered" && (
-              <motion.path
-                d={morphingPath}
-                fill="white"
-                filter={`url(#${clipPathId}-blur)`}
-              />
-            )}
-
-            {maskEffect === "glow" && (
-              <motion.path
-                d={morphingPath}
-                fill="white"
-                filter={`url(#${clipPathId}-glow)`}
-              />
-            )}
-          </mask>
-        </defs>
-
-        {/* Content that gets masked */}
-        <g mask={`url(#${clipPathId})`}>
-          <image
-            href="/world-image.png"
-            x="0"
-            y="0"
-            width={width}
-            height={height}
-          />
-          <AnimatePresence mode="wait">
-            <motion.g
-              key={currentId}
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.5 }}
-            >
-              {currentMask?.content}
-            </motion.g>
-          </AnimatePresence>
-        </g>
-
-        <motion.g>
-          {masks.map((mask) => (
-            <g key={mask.id} onPointerDown={() => setCurrentId(mask.id)}>
-              <motion.path
-                whileHover={{
-                  fill: "rgba(1,0,0,0.8)",
-                  transition: { duration: 0.2 },
-                }}
-                d={mask.path}
-                fill="rgba(0,0,0,0)"
-                stroke="#666"
-                strokeWidth="0.5"
-                opacity={0.3}
-                style={{ pointerEvents: "auto", cursor: "pointer" }}
-              />
-            </g>
-          ))}
-        </motion.g>
-
-        {/* Optional: Show the morphing mask outline */}
-        {showOutline && (
-          <motion.path
-            d={morphingPath}
-            fill="none"
-            stroke="#666"
-            strokeWidth="0.5"
-            strokeDasharray="2,2"
-            opacity={0.3}
-          />
-        )}
-      </motion.svg>
+          {/* Optional: Show the morphing mask outline */}
+          {showOutline && (
+            <motion.path
+              d={morphingPath}
+              fill="none"
+              stroke="#666"
+              strokeWidth="0.5"
+              strokeDasharray="2,2"
+              opacity={0.3}
+            />
+          )}
+        </motion.svg>
       </motion.div>
 
       {/* Manual controls */}
       {showControls && (
-        <div className="flex gap-2 flex-wrap">
-          {masks.map((group) => (
+        <div className="flex flex-wrap gap-2">
+          {masks.map(group => (
             <button
               key={group.id}
               onClick={() => setCurrentId(group.id)}
-              className={`px-3 py-1 rounded text-sm transition-colors ${
+              className={`rounded px-3 py-1 text-sm transition-colors ${
                 currentId === group.id
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"

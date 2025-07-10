@@ -25,23 +25,23 @@ const CustomSlider = ({
   return (
     <motion.div
       className={cn(
-        "relative w-full h-1 bg-white/20 rounded-full cursor-pointer group py-2",
+        "group relative h-1 w-full cursor-pointer rounded-full bg-white/20 py-2",
         className
       )}
-      onClick={(e) => {
+      onClick={e => {
         const rect = e.currentTarget.getBoundingClientRect();
         const x = e.clientX - rect.left;
         const percentage = (x / rect.width) * 100;
         onChange(Math.min(Math.max(percentage, 0), 100));
       }}
     >
-      <div className="relative h-1 w-full bg-white/20 rounded-full">
+      <div className="relative h-1 w-full rounded-full bg-white/20">
         <motion.div
-          className="absolute top-0 left-0 h-full bg-white rounded-full"
+          className="absolute top-0 left-0 h-full rounded-full bg-white"
           style={{ width: `${value}%` }}
         />
         <motion.div
-          className="absolute w-3 h-3 bg-white rounded-full -top-1 opacity-0 group-hover:opacity-100 transition-opacity"
+          className="absolute -top-1 h-3 w-3 rounded-full bg-white opacity-0 transition-opacity group-hover:opacity-100"
           style={{ left: `calc(${value}% - 6px)` }}
         />
       </div>
@@ -84,23 +84,19 @@ const VideoControls: React.FC<VideoControlsProps> = ({
 }) => {
   return (
     <motion.div
-      className="absolute bottom-0 mx-auto max-w-xl left-0 right-0 p-4 m-2 bg-[#11111198] backdrop-blur-md rounded-2xl z-30"
+      className="absolute right-0 bottom-0 left-0 z-30 m-2 mx-auto max-w-xl rounded-2xl bg-[#11111198] p-4 backdrop-blur-md"
       initial={{ y: 20, opacity: 0, filter: "blur(10px)" }}
       animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
       exit={{ y: 20, opacity: 0, filter: "blur(10px)" }}
       transition={{ duration: 0.6, ease: "circInOut", type: "spring" }}
-      onClick={(e) => e.stopPropagation()} // Prevent click from bubbling up to the viewer div
+      onClick={e => e.stopPropagation()} // Prevent click from bubbling up to the viewer div
     >
-      <div className="flex items-center gap-2 mb-2">
-        <span className="text-white text-sm w-12 text-center">
+      <div className="mb-2 flex items-center gap-2">
+        <span className="w-12 text-center text-sm text-white">
           {formatTime(currentTime)}
         </span>
-        <CustomSlider
-          value={progress}
-          onChange={onSeek}
-          className="flex-1"
-        />
-        <span className="text-white text-sm w-12 text-center">
+        <CustomSlider value={progress} onChange={onSeek} className="flex-1" />
+        <span className="w-12 text-center text-sm text-white">
           {formatTime(duration)}
         </span>
       </div>
@@ -151,8 +147,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-
-          {[0.5, 1, 1.5, 2].map((speed) => (
+          {[0.5, 1, 1.5, 2].map(speed => (
             <motion.div
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
@@ -163,7 +158,7 @@ const VideoControls: React.FC<VideoControlsProps> = ({
                 variant="ghost"
                 size="icon"
                 className={cn(
-                  "text-white hover:bg-[#111111d1] hover:text-white text-xs h-8 w-8",
+                  "h-8 w-8 text-xs text-white hover:bg-[#111111d1] hover:text-white",
                   playbackSpeed === speed && "bg-[#111111d1]"
                 )}
               >
@@ -178,4 +173,3 @@ const VideoControls: React.FC<VideoControlsProps> = ({
 };
 
 export { VideoControls };
-

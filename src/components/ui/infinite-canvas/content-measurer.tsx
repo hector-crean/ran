@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from "react";
 
 // Types for content measurement
 export interface ContentDimensions {
@@ -37,9 +37,9 @@ export const useContentMeasurement = (
   });
 
   const measureContent = useCallback(async () => {
-    return new Promise<ContentDimensions>((resolve) => {
+    return new Promise<ContentDimensions>(resolve => {
       // Create a temporary measurement container
-      const measurementDiv = document.createElement('div');
+      const measurementDiv = document.createElement("div");
       measurementDiv.style.cssText = `
         position: absolute;
         top: -9999px;
@@ -59,7 +59,7 @@ export const useContentMeasurement = (
       document.body.appendChild(measurementDiv);
 
       // Render the content into the measurement container
-      import('react-dom/client').then(({ createRoot }) => {
+      import("react-dom/client").then(({ createRoot }) => {
         const root = createRoot(measurementDiv);
         root.render(content as React.ReactElement);
 
@@ -94,24 +94,24 @@ export const useContentMeasurement = (
 // Text measurement utilities
 export const measureText = (
   text: string,
-  font: string = '14px Inter, sans-serif',
+  font: string = "14px Inter, sans-serif",
   maxWidth?: number
 ): { width: number; height: number } => {
   // Create a canvas for text measurement
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext('2d')!;
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d")!;
   context.font = font;
 
   if (maxWidth) {
     // For multi-line text, estimate height based on line breaks
-    const words = text.split(' ');
+    const words = text.split(" ");
     const lines: string[] = [];
-    let currentLine = '';
+    let currentLine = "";
 
     words.forEach(word => {
       const testLine = currentLine ? `${currentLine} ${word}` : word;
       const metrics = context.measureText(testLine);
-      
+
       if (metrics.width > maxWidth && currentLine) {
         lines.push(currentLine);
         currentLine = word;
@@ -119,12 +119,15 @@ export const measureText = (
         currentLine = testLine;
       }
     });
-    
+
     if (currentLine) lines.push(currentLine);
 
     const lineHeight = parseInt(font) * 1.2; // Approximate line height
     return {
-      width: Math.min(maxWidth, Math.max(...lines.map(line => context.measureText(line).width))),
+      width: Math.min(
+        maxWidth,
+        Math.max(...lines.map(line => context.measureText(line).width))
+      ),
       height: lines.length * lineHeight,
     };
   }
@@ -132,7 +135,7 @@ export const measureText = (
   // Single line measurement
   const metrics = context.measureText(text);
   const lineHeight = parseInt(font) * 1.2;
-  
+
   return {
     width: metrics.width,
     height: lineHeight,
@@ -153,7 +156,7 @@ export const AutoSizingContent: React.FC<AutoSizingContentProps> = ({
   onSizeChange,
   maxWidth = 400,
   maxHeight = 300,
-  className = '',
+  className = "",
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState<ContentDimensions>({
@@ -166,7 +169,7 @@ export const AutoSizingContent: React.FC<AutoSizingContentProps> = ({
     const container = containerRef.current;
     if (!container) return;
 
-    const resizeObserver = new ResizeObserver((entries) => {
+    const resizeObserver = new ResizeObserver(entries => {
       for (const entry of entries) {
         const { width, height } = entry.contentRect;
         const newDimensions = {
@@ -174,7 +177,7 @@ export const AutoSizingContent: React.FC<AutoSizingContentProps> = ({
           height: Math.min(height, maxHeight),
           measured: true,
         };
-        
+
         setDimensions(newDimensions);
         onSizeChange?.(newDimensions);
       }
@@ -190,7 +193,7 @@ export const AutoSizingContent: React.FC<AutoSizingContentProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`w-fit h-fit ${className}`}
+      className={`h-fit w-fit ${className}`}
       style={{
         maxWidth: `${maxWidth}px`,
         maxHeight: `${maxHeight}px`,
@@ -213,7 +216,7 @@ export const createTextContent = (
 ) => {
   const {
     fontSize = 14,
-    fontFamily = 'Inter, sans-serif',
+    fontFamily = "Inter, sans-serif",
     maxWidth = 300,
     padding = 16,
   } = options;
@@ -223,10 +226,7 @@ export const createTextContent = (
 
   return {
     content: (
-      <div 
-        className="p-4 text-gray-800"
-        style={{ fontSize, fontFamily }}
-      >
+      <div className="p-4 text-gray-800" style={{ fontSize, fontFamily }}>
         {text}
       </div>
     ),
@@ -245,16 +245,25 @@ export const createCardContent = (
 ) => {
   const { maxWidth = 250, padding = 16 } = options;
 
-  const titleDimensions = measureText(title, 'bold 16px Inter, sans-serif', maxWidth - padding * 2);
-  const descDimensions = measureText(description, '14px Inter, sans-serif', maxWidth - padding * 2);
+  const titleDimensions = measureText(
+    title,
+    "bold 16px Inter, sans-serif",
+    maxWidth - padding * 2
+  );
+  const descDimensions = measureText(
+    description,
+    "14px Inter, sans-serif",
+    maxWidth - padding * 2
+  );
 
-  const totalHeight = titleDimensions.height + descDimensions.height + padding * 3; // Extra padding between elements
+  const totalHeight =
+    titleDimensions.height + descDimensions.height + padding * 3; // Extra padding between elements
 
   return {
     content: (
-      <div className="p-4 bg-white rounded-lg shadow-sm border">
-        <h3 className="font-bold text-gray-800 mb-2">{title}</h3>
-        <p className="text-gray-600 text-sm">{description}</p>
+      <div className="rounded-lg border bg-white p-4 shadow-sm">
+        <h3 className="mb-2 font-bold text-gray-800">{title}</h3>
+        <p className="text-sm text-gray-600">{description}</p>
       </div>
     ),
     width: maxWidth,
@@ -264,11 +273,15 @@ export const createCardContent = (
 
 // Batch measurement utility
 export const measureMultipleContents = async (
-  contents: Array<{ id: string; content: React.ReactNode; options?: MeasurementOptions }>
+  contents: Array<{
+    id: string;
+    content: React.ReactNode;
+    options?: MeasurementOptions;
+  }>
 ): Promise<Array<{ id: string; dimensions: ContentDimensions }>> => {
   const results = await Promise.all(
     contents.map(async ({ id, content, options = {} }) => {
-      const measurementDiv = document.createElement('div');
+      const measurementDiv = document.createElement("div");
       measurementDiv.style.cssText = `
         position: absolute;
         top: -9999px;
@@ -284,28 +297,30 @@ export const measureMultipleContents = async (
 
       document.body.appendChild(measurementDiv);
 
-      return new Promise<{ id: string; dimensions: ContentDimensions }>((resolve) => {
-        import('react-dom/client').then(({ createRoot }) => {
-          const root = createRoot(measurementDiv);
-          root.render(content as React.ReactElement);
+      return new Promise<{ id: string; dimensions: ContentDimensions }>(
+        resolve => {
+          import("react-dom/client").then(({ createRoot }) => {
+            const root = createRoot(measurementDiv);
+            root.render(content as React.ReactElement);
 
-          requestAnimationFrame(() => {
-            const rect = measurementDiv.getBoundingClientRect();
-            const dimensions = {
-              width: Math.max(rect.width, options.defaultWidth || 200),
-              height: Math.max(rect.height, options.defaultHeight || 100),
-              measured: true,
-            };
+            requestAnimationFrame(() => {
+              const rect = measurementDiv.getBoundingClientRect();
+              const dimensions = {
+                width: Math.max(rect.width, options.defaultWidth || 200),
+                height: Math.max(rect.height, options.defaultHeight || 100),
+                measured: true,
+              };
 
-            root.unmount();
-            document.body.removeChild(measurementDiv);
+              root.unmount();
+              document.body.removeChild(measurementDiv);
 
-            resolve({ id, dimensions });
+              resolve({ id, dimensions });
+            });
           });
-        });
-      });
+        }
+      );
     })
   );
 
   return results;
-}; 
+};

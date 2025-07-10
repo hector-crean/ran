@@ -1,7 +1,7 @@
 "use client";
-import { useState } from 'react';
-import ClipPathComparator from '@/components/clip-path-comparator';
-import MorphingClipPath from './morphing-clip-path';
+import ClipPathComparator from "@/components/ui/clip-path-comparator";
+import { useState } from "react";
+import MorphingClipPath from "./morphing-clip-path";
 
 interface MorphingClipPathDemoProps {
   /** Array of SVG path strings to morph between */
@@ -38,7 +38,7 @@ const MorphingClipPathDemo: React.FC<MorphingClipPathDemoProps> = ({
   background,
   initialIndex = 0,
   beforeLabel = "Without Clipping",
-  afterLabel = "With Morphing Clip"
+  afterLabel = "With Morphing Clip",
 }) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
 
@@ -80,14 +80,14 @@ const MorphingClipPathDemo: React.FC<MorphingClipPathDemoProps> = ({
         beforeLabel={beforeLabel}
         afterLabel={afterLabel}
       />
-      
+
       {/* Manual controls for both sides */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex flex-wrap gap-2">
         {contentGroups.map((group, index) => (
           <button
             key={index}
             onClick={() => setCurrentIndex(index)}
-            className={`px-3 py-1 rounded text-sm transition-colors ${
+            className={`rounded px-3 py-1 text-sm transition-colors ${
               index === currentIndex
                 ? "bg-blue-500 text-white"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
@@ -101,4 +101,4 @@ const MorphingClipPathDemo: React.FC<MorphingClipPathDemoProps> = ({
   );
 };
 
-export default MorphingClipPathDemo; 
+export default MorphingClipPathDemo;

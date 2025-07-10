@@ -3,6 +3,10 @@
 /**
  * Properties for mask outline features
  */
-export type MaskOutlineProperties = { id: number, area: number, has_holes: boolean, hole_count: number, perimeter: number, };
-
-
+export type MaskOutlineProperties = {
+  id: number;
+  area: number;
+  has_holes: boolean;
+  hole_count: number;
+  perimeter: number;
+};

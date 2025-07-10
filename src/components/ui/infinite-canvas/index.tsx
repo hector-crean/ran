@@ -7,9 +7,9 @@ import React, {
   useEffect,
   useImperativeHandle,
   useRef,
-  useState
+  useState,
 } from "react";
-import { Point } from "../../drag/point";
+import { Point } from "../drag/point";
 
 // Types for the infinite canvas
 export interface ViewportState {
@@ -25,7 +25,7 @@ export interface InteractionModes {
 }
 
 export type CanvasItemBase = {
-  type: 'HTML' | 'SVG'
+  type: "HTML" | "SVG";
   x: number;
   y: number;
   width: number;
@@ -152,7 +152,7 @@ const getTouchDistance = (event: TouchEvent): number => {
   const touch2 = event.touches[1];
   return Math.sqrt(
     Math.pow(touch2.clientX - touch1.clientX, 2) +
-    Math.pow(touch2.clientY - touch1.clientY, 2)
+      Math.pow(touch2.clientY - touch1.clientY, 2)
   );
 };
 
@@ -174,7 +174,7 @@ const easeInOutCubic = (t: number): number => {
 
 // Calculate bounding box for a set of items
 const getItemsBounds = (items: CanvasItem[], itemIds: string[]) => {
-  const targetItems = items.filter((item) => itemIds.includes(item.id));
+  const targetItems = items.filter(item => itemIds.includes(item.id));
   if (targetItems.length === 0) return null;
 
   let minX = Infinity,
@@ -182,7 +182,7 @@ const getItemsBounds = (items: CanvasItem[], itemIds: string[]) => {
     maxX = -Infinity,
     maxY = -Infinity;
 
-  targetItems.forEach((item) => {
+  targetItems.forEach(item => {
     minX = Math.min(minX, item.x);
     minY = Math.min(minY, item.y);
     maxX = Math.max(maxX, item.x + item.width);
@@ -226,11 +226,13 @@ export const InfiniteCanvas = forwardRef<
     const containerRef = useRef<HTMLDivElement>(null);
 
     // Viewport state
-    const [viewport, setViewport] = useState<ViewportState>(initialViewport ?? {
-      x: 0,
-      y: 0,
-      scale: 1,
-    });
+    const [viewport, setViewport] = useState<ViewportState>(
+      initialViewport ?? {
+        x: 0,
+        y: 0,
+        scale: 1,
+      }
+    );
 
     // Interaction state
     const [isPanning, setIsPanning] = useState(false);
@@ -275,7 +277,7 @@ export const InfiniteCanvas = forwardRef<
         if (event.ctrlKey) {
           const scaleFactor = 1 - event.deltaY * zoomSensitivity;
 
-          setViewport((prev) => {
+          setViewport(prev => {
             const newScale = Math.max(
               minZoom,
               Math.min(maxZoom, prev.scale * scaleFactor)
@@ -290,7 +292,7 @@ export const InfiniteCanvas = forwardRef<
           });
         } else {
           // Regular scroll for panning
-          setViewport((prev) => ({
+          setViewport(prev => ({
             ...prev,
             x: prev.x - event.deltaX,
             y: prev.y - event.deltaY,
@@ -315,7 +317,7 @@ export const InfiniteCanvas = forwardRef<
 
         // Check if clicking on an item
         const clickedItem = items.find(
-          (item) =>
+          item =>
             canvasPoint.x >= item.x &&
             canvasPoint.x <= item.x + item.width &&
             canvasPoint.y >= item.y &&
@@ -327,7 +329,7 @@ export const InfiniteCanvas = forwardRef<
           if (clickedItem.interaction.selectable) {
             if (!selectedItems.has(clickedItem.id)) {
               if (event.metaKey || event.ctrlKey) {
-                setSelectedItems((prev) => new Set([...prev, clickedItem.id]));
+                setSelectedItems(prev => new Set([...prev, clickedItem.id]));
               } else {
                 setSelectedItems(new Set([clickedItem.id]));
                 fitToItemsAndSelect([clickedItem.id]);
@@ -378,7 +380,7 @@ export const InfiniteCanvas = forwardRef<
           const deltaX = canvasPoint.x - itemDragStart.x;
           const deltaY = canvasPoint.y - itemDragStart.y;
 
-          const updatedItems = items.map((item) => {
+          const updatedItems = items.map(item => {
             // Only move items that are selected AND draggable
             if (selectedItems.has(item.id) && item.interaction.draggable) {
               return {
@@ -592,7 +594,7 @@ export const InfiniteCanvas = forwardRef<
     useEffect(() => {
       const handleGlobalMouseMove = (event: MouseEvent) => {
         if (isPanning || isDraggingItem) {
-          handleMouseMove(event as any);
+          handleMouseMove(event as unknown as React.MouseEvent);
         }
       };
 
@@ -748,7 +750,7 @@ export const InfiniteCanvas = forwardRef<
       (
         options: { padding?: number; animate?: boolean; duration?: number } = {}
       ) => {
-        const allItemIds = items.map((item) => item.id);
+        const allItemIds = items.map(item => item.id);
         fitToItems(allItemIds, options);
       },
       [items, fitToItems]
@@ -840,17 +842,15 @@ export const InfiniteCanvas = forwardRef<
     // Calculate transform string
     const transform = `translate(${viewport.x}, ${viewport.y}) scale(${viewport.scale})`;
 
-
     console.log(viewport);
     return (
       <div
         ref={containerRef}
-        className={`relative w-full h-full overflow-hidden cursor-grab active:cursor-grabbing ${className}`}
+        className={`relative h-full w-full cursor-grab overflow-hidden active:cursor-grabbing ${className}`}
         style={
           {
             touchAction: "none",
             overscrollBehavior: "none",
-            // @ts-ignore - WebKit prefixes for Safari/iOS support
             WebkitOverscrollBehavior: "none",
             WebkitUserZoom: "none",
             WebkitTouchCallout: "none",
@@ -862,7 +862,7 @@ export const InfiniteCanvas = forwardRef<
       >
         <svg
           ref={svgRef}
-          className="w-full h-full"
+          className="h-full w-full"
           onMouseDown={handleMouseDown}
         >
           {/* Background pattern for visual reference */}
@@ -888,8 +888,18 @@ export const InfiniteCanvas = forwardRef<
             </filter>
 
             {/* Animated pulsing filter for selected elements */}
-            <filter id="selectedPulse" x="-50%" y="-50%" width="200%" height="200%">
-              <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur" />
+            <filter
+              id="selectedPulse"
+              x="-50%"
+              y="-50%"
+              width="200%"
+              height="200%"
+            >
+              <feGaussianBlur
+                in="SourceGraphic"
+                stdDeviation="3"
+                result="blur"
+              />
               <feColorMatrix
                 in="blur"
                 type="matrix"
@@ -915,7 +925,13 @@ export const InfiniteCanvas = forwardRef<
             </filter>
 
             {/* Alternative subtle glow filter */}
-            <filter id="selectedGlow" x="-20%" y="-20%" width="140%" height="140%">
+            <filter
+              id="selectedGlow"
+              x="-20%"
+              y="-20%"
+              width="140%"
+              height="140%"
+            >
               <feDropShadow
                 dx="0"
                 dy="0"
@@ -947,7 +963,7 @@ export const InfiniteCanvas = forwardRef<
             {children}
 
             {/* Render items */}
-            {items.map((item) => (
+            {items.map(item => (
               <g key={item.id}>
                 {/* Selection indicator - only for selectable items */}
                 {selectedItems.has(item.id) && item.interaction.selectable && (
@@ -959,24 +975,26 @@ export const InfiniteCanvas = forwardRef<
                     fill="none"
                     stroke="#007AFF"
                     strokeWidth={2 / viewport.scale}
-                    strokeDasharray={`${4 / viewport.scale} ${2 / viewport.scale
-                      }`}
+                    strokeDasharray={`${4 / viewport.scale} ${
+                      2 / viewport.scale
+                    }`}
                   />
                 )}
 
                 {/* Non-interactive indicator */}
-                {!item.interaction.selectable && !item.interaction.draggable && (
-                  <rect
-                    x={item.x - 1}
-                    y={item.y - 1}
-                    width={item.width + 2}
-                    height={item.height + 2}
-                    fill="none"
-                    stroke="rgba(0,0,0,0.2)"
-                    strokeWidth={1 / viewport.scale}
-                    strokeDasharray={`${2 / viewport.scale} ${2 / viewport.scale}`}
-                  />
-                )}
+                {!item.interaction.selectable &&
+                  !item.interaction.draggable && (
+                    <rect
+                      x={item.x - 1}
+                      y={item.y - 1}
+                      width={item.width + 2}
+                      height={item.height + 2}
+                      fill="none"
+                      stroke="rgba(0,0,0,0.2)"
+                      strokeWidth={1 / viewport.scale}
+                      strokeDasharray={`${2 / viewport.scale} ${2 / viewport.scale}`}
+                    />
+                  )}
 
                 {/* Draggable-only indicator */}
                 {!item.interaction.selectable && item.interaction.draggable && (
@@ -1012,20 +1030,23 @@ export const InfiniteCanvas = forwardRef<
                   width={item.width}
                   height={item.height}
                   style={{
-                    pointerEvents: 'all',
+                    pointerEvents: "all",
                     cursor: item.interaction.draggable
-                      ? 'grab'
+                      ? "grab"
                       : item.interaction.selectable
-                        ? 'pointer'
-                        : 'default'
+                        ? "pointer"
+                        : "default",
                   }}
                 >
-                  <div className={`w-full h-full p-2 text-sm ${item.interaction.selectable || item.interaction.draggable
-                    ? item.interaction.draggable
-                      ? 'cursor-grab'
-                      : 'cursor-pointer'
-                    : 'cursor-default opacity-75'
-                    }`} >
+                  <div
+                    className={`h-full w-full p-2 text-sm ${
+                      item.interaction.selectable || item.interaction.draggable
+                        ? item.interaction.draggable
+                          ? "cursor-grab"
+                          : "cursor-pointer"
+                        : "cursor-default opacity-75"
+                    }`}
+                  >
                     {item.render({
                       selected: selectedItems.has(item.id),
                       viewport,
@@ -1036,8 +1057,6 @@ export const InfiniteCanvas = forwardRef<
                     })}
                   </div>
                 </foreignObject>
-
-
 
                 {/** Item reveal on select content */}
                 <AnimatePresence>
@@ -1050,7 +1069,7 @@ export const InfiniteCanvas = forwardRef<
                       transform={`translate(${item.x + item.expansion!.dx}, ${item.y + item.expansion!.dy}) scale(${1 / viewport.scale}) translate(${-(item.x + item.expansion!.dx)}, ${-(item.y + item.expansion!.dy)})`}
                     >
                       <motion.div
-                        className="w-full h-full"
+                        className="h-full w-full"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{
@@ -1073,8 +1092,6 @@ export const InfiniteCanvas = forwardRef<
                 </AnimatePresence>
               </g>
             ))}
-
-
           </g>
         </svg>
 
@@ -1082,36 +1099,36 @@ export const InfiniteCanvas = forwardRef<
         <div className="absolute top-4 right-4 flex flex-col gap-2">
           <button
             onClick={() =>
-              setViewport((prev) => ({
+              setViewport(prev => ({
                 ...prev,
                 scale: Math.min(maxZoom, prev.scale * 1.2),
               }))
             }
-            className="p-2 bg-white rounded shadow hover:bg-gray-50"
+            className="rounded bg-white p-2 shadow hover:bg-gray-50"
           >
             +
           </button>
           <button
             onClick={() =>
-              setViewport((prev) => ({
+              setViewport(prev => ({
                 ...prev,
                 scale: Math.max(minZoom, prev.scale / 1.2),
               }))
             }
-            className="p-2 bg-white rounded shadow hover:bg-gray-50"
+            className="rounded bg-white p-2 shadow hover:bg-gray-50"
           >
             −
           </button>
           <button
             onClick={() => setViewport({ x: 0, y: 0, scale: 1 })}
-            className="p-2 bg-white rounded shadow hover:bg-gray-50 text-xs"
+            className="rounded bg-white p-2 text-xs shadow hover:bg-gray-50"
           >
             ⌂
           </button>
         </div>
 
         {/* Zoom indicator */}
-        <div className="absolute bottom-4 right-4 bg-white rounded px-2 py-1 text-xs shadow">
+        <div className="absolute right-4 bottom-4 rounded bg-white px-2 py-1 text-xs shadow">
           {Math.round(viewport.scale * 100)}%
         </div>
       </div>

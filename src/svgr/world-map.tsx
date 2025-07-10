@@ -1,5 +1,5 @@
-import * as React from "react"
-import { SVGProps, Ref, forwardRef } from "react"
+import * as React from "react";
+import { SVGProps, Ref, forwardRef } from "react";
 const SvgComponent = (
   props: SVGProps<SVGSVGElement>,
   ref: Ref<SVGSVGElement>
@@ -121,6 +121,6 @@ const SvgComponent = (
       d="M561.664 484.079v1.013l1.25-.047.192.192.865-.098.673.484.48.047.481.581.864.048 1.25.437.096.29.673-.05-.385.677.481 1.067.096.828-.289.681.193 1.756-.385.195.096.687-.576.147v.539l.48.096-.096 1.771.577.295-.096.69-.865 1.432-.577.348.096.842-.384.498.192.495-2.979 3.198-1.249-.352-1.442.15-1.345-.599-1.153.149-.673-.348-.096-.702-1.153-.498-1.73-.249-.289-.749-.576-.595.096-1.685-1.153-.052v-.74l-.289-.443-.672-.151-1.346-.837-.768-.638-.385-1.425-.576-1.029-.673-.634-.769-1.317.096-.39 1.153.047.673.536.673-.339 1.345.536.865-.343.961-1.071.481-.243.384-.825 1.057-.436v-.533h.769l.769-.437.096.34.769-.58-.673-.195.288-.387v-1.015l1.442-.865 1.249-.242 1.441.047Z"
     />
   </svg>
-)
-const ForwardRef = forwardRef(SvgComponent)
-export default ForwardRef
+);
+const ForwardRef = forwardRef(SvgComponent);
+export default ForwardRef;

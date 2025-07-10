@@ -1,17 +1,19 @@
 "use client";
 
-import { animate, AnimatePresence, motion, useMotionValue, useTransform } from "motion/react";
+import {
+  animate,
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useTransform,
+} from "motion/react";
 import { useMemo, useRef, useState } from "react";
 
-import { Drag, HandlerArgs } from "@/components/drag";
-import { Sequence } from "@/components/sequence";
+import { Drag, HandlerArgs } from "@/components/ui/drag";
 import { LinearIndicator } from "@/components/ui/linear-indicator";
+import { Sequence } from "@/components/ui/sequence";
 import { useImageSequence } from "@/hooks/use-image-sequence";
 import { clamp } from "@/lib/utils";
-
-
-
-
 
 interface LinearSequenceSlideProps {
   baseUrl: string;
@@ -24,10 +26,9 @@ export const LinearSequenceSlide = ({
   baseUrl,
   frameCount,
   format,
-  sliderText
+  sliderText,
 }: LinearSequenceSlideProps) => {
-
-  console.log(sliderText)
+  console.log(sliderText);
   const paths = useMemo(() => {
     return Array.from(
       { length: frameCount },
@@ -63,7 +64,7 @@ export const LinearSequenceSlide = ({
   const dragX = useTransform(progress, [0, 1], [0, width]);
 
   const handleDragMove = (args: HandlerArgs) => {
-    const newProgress = clamp(DRAG_SCALE_FACTOR * args.dx / width, 0, 1);
+    const newProgress = clamp((DRAG_SCALE_FACTOR * args.dx) / width, 0, 1);
     progress.set(newProgress);
   };
 
@@ -81,18 +82,24 @@ export const LinearSequenceSlide = ({
 
   const handleDragStart = () => {
     setDragging(true);
-
   };
 
   return (
-    <div className="w-full h-full max-h-screen  relative flex items-center justify-center select-none" ref={slider}>
+    <div
+      className="relative flex h-full max-h-screen w-full items-center justify-center select-none"
+      ref={slider}
+    >
       <motion.div
         key="loading-frame"
         className="absolute inset-0 flex items-center justify-center"
-      // initial={{ opacity: 1 }}
-      // exit={{ opacity: 0, transition: { duration: 0.5, delay: 0.5 } }}
+        // initial={{ opacity: 1 }}
+        // exit={{ opacity: 0, transition: { duration: 0.5, delay: 0.5 } }}
       >
-        <img src={paths[0]} alt="Sequence" className="w-full h-full object-contain aspect-[1920/1080]" />
+        <img
+          src={paths[0]}
+          alt="Sequence"
+          className="aspect-[1920/1080] h-full w-full object-contain"
+        />
       </motion.div>
       {loaded && (
         <AnimatePresence mode="wait">
@@ -120,7 +127,7 @@ export const LinearSequenceSlide = ({
 
           <motion.div
             key="linear-indicator"
-            className="absolute bottom-16 left-0 right-0 z-10 w-full pointer-events-none flex items-center justify-center"
+            className="pointer-events-none absolute right-0 bottom-16 left-0 z-10 flex w-full items-center justify-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -141,7 +148,7 @@ export const LinearSequenceSlide = ({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <svg className="w-full h-full" viewBox={`0 0 ${width} ${height}`}>
+            <svg className="h-full w-full" viewBox={`0 0 ${width} ${height}`}>
               <Drag
                 onDragStart={handleDragStart}
                 onDragMove={handleDragMove}
@@ -160,7 +167,7 @@ export const LinearSequenceSlide = ({
                     style={{
                       cursor: isDragging ? "grabbing" : "grab",
                       x: dragX,
-                      y: 0
+                      y: 0,
                     }}
                     onPointerDown={dragStart}
                     onPointerUp={dragEnd}
@@ -186,7 +193,4 @@ export const LinearSequenceSlide = ({
   );
 };
 
-
-
 export type { LinearSequenceSlideProps };
-

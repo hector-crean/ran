@@ -1,17 +1,19 @@
 "use client";
 
-import { animate, AnimatePresence, motion, useMotionValue, useTransform } from "motion/react";
+import {
+  animate,
+  AnimatePresence,
+  motion,
+  useMotionValue,
+  useTransform,
+} from "motion/react";
 import { useMemo, useRef, useState } from "react";
 
-import { Drag, HandlerArgs } from "@/components/drag";
-import { Sequence } from "@/components/sequence";
+import { Drag, HandlerArgs } from "@/components/ui/drag";
 import { RotationIndicator } from "@/components/ui/rotation-indicator";
+import { Sequence } from "@/components/ui/sequence";
 import { useImageSequence } from "@/hooks/use-image-sequence";
 import { clamp } from "@/lib/utils";
-
-
-
-
 
 interface RotationalSequenceSlideProps {
   baseUrl: string;
@@ -38,7 +40,7 @@ export const RotationalSequenceSlide = ({
 
   const progress = useMotionValue(0);
 
-  const dragAngle = useTransform(progress, [0, 0.6], [0, 360 * 3 / 4]);
+  const dragAngle = useTransform(progress, [0, 0.6], [0, (360 * 3) / 4]);
 
   const memoizedImagePaths = useMemo(() => paths, [paths]);
 
@@ -81,24 +83,32 @@ export const RotationalSequenceSlide = ({
   };
 
   return (
-    <div className="w-full h-full  relative flex items-center justify-center select-none" ref={slider}>
+    <div
+      className="relative flex h-full w-full items-center justify-center select-none"
+      ref={slider}
+    >
       <motion.div
         key="loading"
         className="absolute inset-0 flex items-center justify-center"
-      // initial={{ opacity: 1 }}
-      // exit={{ opacity: 0, transition: { duration: 0.5, delay: 0.5 } }}
+        // initial={{ opacity: 1 }}
+        // exit={{ opacity: 0, transition: { duration: 0.5, delay: 0.5 } }}
       >
-        <img src={paths[0]} alt="Sequence" className="w-full h-full object-contain aspect-[1920/1080]" />
+        <img
+          src={paths[0]}
+          alt="Sequence"
+          className="aspect-[1920/1080] h-full w-full object-contain"
+        />
       </motion.div>
       {loaded && (
         <AnimatePresence>
-          <motion.div className="absolute inset-0 z-30" initial={{ opacity: 0 }}
+          <motion.div
+            className="absolute inset-0 z-30"
+            initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
-
           >
-            <svg className="w-full h-full" viewBox={`0 0 ${width} ${height}`}>
+            <svg className="h-full w-full" viewBox={`0 0 ${width} ${height}`}>
               {/* <path
                 ref={pathRef}
                 d={`M 50 ${height / 2} H ${width - 50}`}
@@ -131,7 +141,7 @@ export const RotationalSequenceSlide = ({
                     style={{
                       cursor: isDragging ? "grabbing" : "grab",
                       x: dragX,
-                      y: 0
+                      y: 0,
                     }}
                     onPointerDown={dragStart}
                     onPointerUp={dragEnd}
@@ -170,15 +180,10 @@ export const RotationalSequenceSlide = ({
               className={"aspect-[1920/1080] w-full"}
             />
           </motion.div>
-
-
         </AnimatePresence>
       )}
     </div>
   );
 };
 
-
-
 export type { RotationalSequenceSlideProps };
-

@@ -64,6 +64,7 @@ export const GpuPickingVideoSlide = ({ videoSrc, maskSrc }: GpuPickingVideoSlide
                 onEnded={handleVideoEnded}
                 outlineSettings={outlineSettings}
                 className="w-full h-full"
+                loop={true}
             />
 
 

@@ -18,6 +18,7 @@ class VideoShaderMaterial extends THREE.ShaderMaterial {
                 uTime: { value: 0 },
                 uResolution: { value: new THREE.Vector2(1, 1) },
                 uVideoResolution: { value: new THREE.Vector2(1, 1) },
+                uMaskResolution: { value: new THREE.Vector2(1, 1) },
                 uOutlineThickness: { value: 2.0 },
                 uEdgeThreshold: { value: 0.5 },
                 uLineInnerColor: { value: new THREE.Color(0xff0000) },
@@ -41,6 +42,7 @@ class VideoShaderMaterial extends THREE.ShaderMaterial {
         uniform float uTime;
         uniform vec2 uResolution;
         uniform vec2 uVideoResolution;
+        uniform vec2 uMaskResolution;
         uniform float uOutlineThickness;
         uniform float uEdgeThreshold;
         uniform vec3 uLineInnerColor;
@@ -60,8 +62,8 @@ class VideoShaderMaterial extends THREE.ShaderMaterial {
           // Sample the mask texture at current position
           vec4 centerMaskColor = texture2D(uMaskTexture, vUv);
           
-          // Calculate texel size based on video resolution
-          vec2 texelSize = 1.0 / uVideoResolution;
+          // Calculate texel size based on MASK resolution (for edge detection)
+          vec2 maskTexelSize = 1.0 / uMaskResolution;
           
           // Edge detection using Sobel filter
           float gx = 0.0; // Horizontal gradient
@@ -70,7 +72,7 @@ class VideoShaderMaterial extends THREE.ShaderMaterial {
           // 3x3 convolution with Sobel kernels
           for (int y = -1; y <= 1; y++) {
             for (int x = -1; x <= 1; x++) {
-              vec2 offset = vec2(float(x), float(y)) * texelSize * uOutlineThickness;
+              vec2 offset = vec2(float(x), float(y)) * maskTexelSize * uOutlineThickness;
               vec2 sampleUv = vUv + offset;
               vec4 sampleColor = texture2D(uMaskTexture, sampleUv);
               
@@ -100,27 +102,29 @@ class VideoShaderMaterial extends THREE.ShaderMaterial {
           
           // Check if current pixel matches hovered or selected object
           vec3 currentColor = centerMaskColor.rgb;
-          bool isHovered = uHoveredObject.x >= 0.0 && distance(currentColor, uHoveredObject) < 0.01;
-          bool isSelected = uSelectedObject.x >= 0.0 && distance(currentColor, uSelectedObject) < 0.01;
+          bool isHovered = uHoveredObject.x >= 0.0 && distance(currentColor, uHoveredObject) < 0.05;
+          bool isSelected = uSelectedObject.x >= 0.0 && distance(currentColor, uSelectedObject) < 0.05;
           
           // Only show outline for hovered or selected objects
           bool showOutline = isHovered || isSelected;
           
           // Calculate outline strength (how much outline to show)
-          float outlineStrength = smoothstep(0.0, uEdgeThreshold, edgeScore);
+        //   float outlineStrength = smoothstep(0.0, uEdgeThreshold, edgeScore);
           
           // Use simple single color for outline (inner color for now)
-          vec3 outlineColor = uLineInnerColor;
+        //   vec3 outlineColor = uLineInnerColor;
           
           // Calculate outline opacity based on edge strength and whether object should show outline
-          float outlineOpacity = showOutline ? outlineStrength : 0.0;
+        //   float outlineOpacity = showOutline ? outlineStrength : 0.0;
 
           // Mix video color with outline color
-          vec3 finalColor = mix(videoColor.rgb, outlineColor, outlineOpacity);
+        //   vec3 finalColor = mix(videoColor.rgb, outlineColor, outlineOpacity);
+
+          vec3 finalColor = videoColor.rgb;
           
           // Apply mask overlay to non-black mask areas
           float maskPresence = length(centerMaskColor.rgb);
-          if (maskPresence > 0.01) {
+          if (maskPresence > 0. && isSelected) {
             finalColor = mix(finalColor, uMaskOverlayColor, uMaskOverlayOpacity);
           }
           
@@ -200,25 +204,90 @@ const VideoMesh = React.memo(React.forwardRef<VideoMeshHandle, VideoMeshProps>(f
     // Create textures when video elements are available
     useEffect(() => {
         if (mainVideoElement) {
-            const texture = new THREE.VideoTexture(mainVideoElement);
-            texture.minFilter = THREE.LinearFilter;
-            texture.magFilter = THREE.LinearFilter;
-            texture.format = THREE.RGBFormat;
-            setVideoTexture(texture);
+            console.log('Main video properties:', {
+                width: mainVideoElement.videoWidth,
+                height: mainVideoElement.videoHeight,
+                aspectRatio: mainVideoElement.videoWidth / mainVideoElement.videoHeight,
+                duration: mainVideoElement.duration,
+                readyState: mainVideoElement.readyState,
+                currentSrc: mainVideoElement.currentSrc,
+                networkState: mainVideoElement.networkState,
+                error: mainVideoElement.error
+            });
+            
+            try {
+                const texture = new THREE.VideoTexture(mainVideoElement);
+                texture.minFilter = THREE.LinearFilter;
+                texture.magFilter = THREE.LinearFilter;
+                texture.format = THREE.RGBFormat;
+                texture.wrapS = THREE.ClampToEdgeWrapping;
+                texture.wrapT = THREE.ClampToEdgeWrapping;
+                
+                // Force texture update
+                texture.needsUpdate = true;
+                
+                setVideoTexture(texture);
+                console.log('✅ Main video texture created successfully');
+            } catch (error) {
+                console.error('❌ Failed to create main video texture:', error);
+            }
         }
     }, [mainVideoElement]);
 
     useEffect(() => {
         if (maskVideoElement) {
-            const texture = new THREE.VideoTexture(maskVideoElement);
-            texture.minFilter = THREE.LinearFilter;
-            texture.magFilter = THREE.LinearFilter;
-            texture.format = THREE.RGBFormat;
-            setMaskTexture(texture);
+            console.log('Mask video properties:', {
+                width: maskVideoElement.videoWidth,
+                height: maskVideoElement.videoHeight,
+                aspectRatio: maskVideoElement.videoWidth / maskVideoElement.videoHeight,
+                duration: maskVideoElement.duration,
+                readyState: maskVideoElement.readyState,
+                currentSrc: maskVideoElement.currentSrc,
+                networkState: maskVideoElement.networkState,
+                error: maskVideoElement.error
+            });
+            
+            // Check if resolutions match
+            if (mainVideoElement && maskVideoElement) {
+                const mainAspect = mainVideoElement.videoWidth / mainVideoElement.videoHeight;
+                const maskAspect = maskVideoElement.videoWidth / maskVideoElement.videoHeight;
+                const aspectDiff = Math.abs(mainAspect - maskAspect);
+                
+                console.log('Video comparison:', {
+                    mainResolution: `${mainVideoElement.videoWidth}x${mainVideoElement.videoHeight}`,
+                    maskResolution: `${maskVideoElement.videoWidth}x${maskVideoElement.videoHeight}`,
+                    mainAspect,
+                    maskAspect,
+                    aspectDiff,
+                    resolutionMatch: aspectDiff < 0.01
+                });
+                
+                if (aspectDiff > 0.01) {
+                    console.warn('⚠️ Video aspect ratios don\'t match! This may cause alignment issues.');
+                }
+            }
+            
+            try {
+                const texture = new THREE.VideoTexture(maskVideoElement);
+                // Use NearestFilter to preserve EXACT colors for mask picking
+                texture.minFilter = THREE.NearestFilter;
+                texture.magFilter = THREE.NearestFilter;
+                texture.format = THREE.RGBFormat;
+                texture.wrapS = THREE.ClampToEdgeWrapping;
+                texture.wrapT = THREE.ClampToEdgeWrapping;
+                
+                // Force texture update
+                texture.needsUpdate = true;
+                
+                setMaskTexture(texture);
+                console.log('✅ Mask video texture created successfully with NearestFilter for exact colors');
+            } catch (error) {
+                console.error('❌ Failed to create mask video texture:', error);
+            }
         }
-    }, [maskVideoElement]);
+    }, [maskVideoElement, mainVideoElement]);
 
-    // GPU picking setup
+    // GPU picking setup - NearestFilter for exact color preservation
     const pickingFBO = useFBO(size.width, size.height, {
         format: THREE.RGBAFormat,
         type: THREE.UnsignedByteType,
@@ -283,7 +352,7 @@ const VideoMesh = React.memo(React.forwardRef<VideoMeshHandle, VideoMeshProps>(f
                 uniforms: {
                     uMaskTexture: { value: null },
                     uResolution: { value: new THREE.Vector2(1, 1) },
-                    uVideoResolution: { value: new THREE.Vector2(1, 1) }
+                    uMaskResolution: { value: new THREE.Vector2(1, 1) }
                 },
                 vertexShader: /*glsl*/`
                     varying vec2 vUv;
@@ -295,7 +364,7 @@ const VideoMesh = React.memo(React.forwardRef<VideoMeshHandle, VideoMeshProps>(f
                 fragmentShader: /*glsl*/`
                     uniform sampler2D uMaskTexture;
                     uniform vec2 uResolution;
-                    uniform vec2 uVideoResolution;
+                    uniform vec2 uMaskResolution;
                     
                     varying vec2 vUv;
                     
@@ -325,7 +394,7 @@ const VideoMesh = React.memo(React.forwardRef<VideoMeshHandle, VideoMeshProps>(f
         if (pickingMaterial.uniforms) {
             pickingMaterial.uniforms.uMaskTexture.value = maskTexture;
             pickingMaterial.uniforms.uResolution.value.set(size.width, size.height);
-            pickingMaterial.uniforms.uVideoResolution.value.set(
+            pickingMaterial.uniforms.uMaskResolution.value.set(
                 maskVideoElement?.videoWidth || 1920,
                 maskVideoElement?.videoHeight || 1080
             );
@@ -362,6 +431,13 @@ const VideoMesh = React.memo(React.forwardRef<VideoMeshHandle, VideoMeshProps>(f
             hex: `#${pixelBuffer[0].toString(16).padStart(2, '0')}${pixelBuffer[1].toString(16).padStart(2, '0')}${pixelBuffer[2].toString(16).padStart(2, '0')}`,
             objectId: (pixelBuffer[0] << 16) | (pixelBuffer[1] << 8) | pixelBuffer[2]
         };
+
+        console.log('GPU Picking - Exact color detected:', {
+            position: { x, y: flippedY },
+            exact_rgb: [pixelBuffer[0], pixelBuffer[1], pixelBuffer[2]],
+            exact_hex: colorInfo.hex,
+            exact_objectId: colorInfo.objectId
+        });
 
         return colorInfo;
     }, [gl, camera, maskTexture, size.width, size.height, pickingFBO, maskVideoElement]);
@@ -417,8 +493,15 @@ const VideoMesh = React.memo(React.forwardRef<VideoMeshHandle, VideoMeshProps>(f
                     mainVideoElement.videoHeight || 1080
                 );
             }
+            
+            if (maskVideoElement) {
+                materialRef.current.uniforms.uMaskResolution.value.set(
+                    maskVideoElement.videoWidth || 1920,
+                    maskVideoElement.videoHeight || 1080
+                );
+            }
         }
-    }, [videoTexture, maskTexture, mainVideoElement]);
+    }, [videoTexture, maskTexture, mainVideoElement, maskVideoElement]);
 
     // Update outline parameters
     useEffect(() => {
@@ -436,6 +519,12 @@ const VideoMesh = React.memo(React.forwardRef<VideoMeshHandle, VideoMeshProps>(f
                 const g = ((hoveredObject >> 8) & 0xFF) / 255.0;
                 const b = (hoveredObject & 0xFF) / 255.0;
                 materialRef.current.uniforms.uHoveredObject.value = new THREE.Vector3(r, g, b);
+                console.log('Setting hovered object color:', {
+                    objectId: hoveredObject,
+                    exact_rgb: [((hoveredObject >> 16) & 0xFF), ((hoveredObject >> 8) & 0xFF), (hoveredObject & 0xFF)],
+                    normalized_rgb: [r, g, b],
+                    hex: `#${((hoveredObject >> 16) & 0xFF).toString(16).padStart(2, '0')}${((hoveredObject >> 8) & 0xFF).toString(16).padStart(2, '0')}${(hoveredObject & 0xFF).toString(16).padStart(2, '0')}`
+                });
             } else {
                 materialRef.current.uniforms.uHoveredObject.value = new THREE.Vector3(-1, -1, -1);
             }
@@ -445,6 +534,12 @@ const VideoMesh = React.memo(React.forwardRef<VideoMeshHandle, VideoMeshProps>(f
                 const g = ((selectedObject >> 8) & 0xFF) / 255.0;
                 const b = (selectedObject & 0xFF) / 255.0;
                 materialRef.current.uniforms.uSelectedObject.value = new THREE.Vector3(r, g, b);
+                console.log('Setting selected object color:', {
+                    objectId: selectedObject,
+                    exact_rgb: [((selectedObject >> 16) & 0xFF), ((selectedObject >> 8) & 0xFF), (selectedObject & 0xFF)],
+                    normalized_rgb: [r, g, b],
+                    hex: `#${((selectedObject >> 16) & 0xFF).toString(16).padStart(2, '0')}${((selectedObject >> 8) & 0xFF).toString(16).padStart(2, '0')}${(selectedObject & 0xFF).toString(16).padStart(2, '0')}`
+                });
             } else {
                 materialRef.current.uniforms.uSelectedObject.value = new THREE.Vector3(-1, -1, -1);
             }
@@ -490,6 +585,7 @@ interface GpuPickingVideoProps {
     onMaskClick?: (colorInfo: ColorInfo, x: number, y: number) => void;
     outlineSettings?: Partial<OutlineSettings>;
     onEnded?: () => void;
+    loop?: boolean;
 }
 
 export const GpuPickingVideo = React.forwardRef<GpuPickingVideoHandle, GpuPickingVideoProps>(
@@ -500,7 +596,8 @@ export const GpuPickingVideo = React.forwardRef<GpuPickingVideoHandle, GpuPickin
         onMaskHover,
         onMaskClick,
         outlineSettings: outlineSettingsProp = {},
-        onEnded
+        onEnded,
+        loop = true
     }, ref) {
         const mainVideoRef = useRef<VideoPlayerHandle>(null);
         const maskVideoRef = useRef<VideoPlayerHandle>(null);
@@ -733,6 +830,17 @@ export const GpuPickingVideo = React.forwardRef<GpuPickingVideoHandle, GpuPickin
             getMaskVideoElement: () => maskVideoElement
         }), [play, pause, seek, getCurrentTime, getDuration, mainVideoElement, maskVideoElement]);
 
+
+
+        const handleOnEnded = useCallback(() => {
+            if (loop) {
+               seek(0);
+               play();
+            } else {
+                onEnded?.();
+            }
+        }, [loop]);
+
         return (
             <div className={`relative w-full h-full isolate ${className} `}>
                 {/* Hidden video players */}
@@ -745,7 +853,7 @@ export const GpuPickingVideo = React.forwardRef<GpuPickingVideoHandle, GpuPickin
                     muted
                     playsInline
                     className="hidden"
-                    onEnded={onEnded}
+                    onEnded={handleOnEnded}
 
                 />
                 <VideoPlayer
@@ -856,6 +964,42 @@ export const GpuPickingVideo = React.forwardRef<GpuPickingVideoHandle, GpuPickin
                     <div>Status: {isPlaying ? 'Playing' : 'Paused'}</div>
                     <div>Ready: {isVideoLoaded && isMaskVideoLoaded ? 'Yes' : 'No'}</div>
                     <div>GPU Picking: {isVideoLoaded && isMaskVideoLoaded ? 'Active' : 'Inactive'}</div>
+                    
+                    {/* Video Properties */}
+                    {mainVideoElement && (
+                        <div className="mt-2 pt-2 border-t border-gray-600">
+                            <div className="text-yellow-400">Main Video:</div>
+                            <div>Resolution: {mainVideoElement.videoWidth}x{mainVideoElement.videoHeight}</div>
+                            <div>Aspect: {(mainVideoElement.videoWidth / mainVideoElement.videoHeight).toFixed(3)}</div>
+                            <div>Duration: {mainVideoElement.duration?.toFixed(2)}s</div>
+                        </div>
+                    )}
+                    
+                    {maskVideoElement && (
+                        <div className="mt-2 pt-2 border-t border-gray-600">
+                            <div className="text-blue-400">Mask Video:</div>
+                            <div>Resolution: {maskVideoElement.videoWidth}x{maskVideoElement.videoHeight}</div>
+                            <div>Aspect: {(maskVideoElement.videoWidth / maskVideoElement.videoHeight).toFixed(3)}</div>
+                            <div>Duration: {maskVideoElement.duration?.toFixed(2)}s</div>
+                            
+                            {/* Show resolution match warning */}
+                            {mainVideoElement && maskVideoElement && (
+                                <div className={`text-xs mt-1 px-2 py-1 rounded ${
+                                    Math.abs((mainVideoElement.videoWidth / mainVideoElement.videoHeight) - 
+                                            (maskVideoElement.videoWidth / maskVideoElement.videoHeight)) < 0.01
+                                        ? 'bg-green-600/50 text-green-200'
+                                        : 'bg-red-600/50 text-red-200'
+                                }`}>
+                                    {Math.abs((mainVideoElement.videoWidth / mainVideoElement.videoHeight) - 
+                                            (maskVideoElement.videoWidth / maskVideoElement.videoHeight)) < 0.01
+                                        ? '✅ Aspect ratios match'
+                                        : '⚠️ Aspect ratios differ'
+                                    }
+                                </div>
+                            )}
+                        </div>
+                    )}
+                    
                     <div className="mt-2 pt-2 border-t border-gray-600">
                         <div>Hovered: {hoveredObject !== null ? `#${hoveredObject.toString(16).padStart(6, '0')}` : 'None'}</div>
                         <div>Selected: {selectedObject !== null ? `#${selectedObject.toString(16).padStart(6, '0')}` : 'None'}</div>

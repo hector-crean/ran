@@ -9,9 +9,10 @@ interface VideoSlideProps {
     url: string;
     poster: string;
     autoplay: boolean;
+    loop: boolean;
 }
 
-export function VideoSlide({ url, autoplay, poster }: VideoSlideProps) {
+export function VideoSlide({ url, autoplay, poster, loop }: VideoSlideProps) {
 
     const videoPlayerRef = useRef<VideoPlayerHandle>(null);
 
@@ -94,7 +95,12 @@ export function VideoSlide({ url, autoplay, poster }: VideoSlideProps) {
     const { setPage, currentPage } = useSlideshowContext();
 
     const handleVideoEnded = () => {
-        setPage(currentPage + 1);
+        if (loop) {
+            // videoPlayerRef.current?.seek(0);
+            // videoPlayerRef.current?.play();
+        } else {
+            setPage(currentPage + 1);
+        }
     };
 
     return (
@@ -115,6 +121,7 @@ export function VideoSlide({ url, autoplay, poster }: VideoSlideProps) {
                 preload="metadata"
                 crossOrigin="anonymous"
                 playsInline={true}
+                loop={loop}
             />
             <VideoControls
                 isPlaying={isPlaying}

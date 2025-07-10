@@ -99,89 +99,77 @@ export const RotationalSequenceSlide = ({
           className="aspect-[1920/1080] h-full w-full object-contain"
         />
       </motion.div>
-      {loaded && (
-        <AnimatePresence>
-          <motion.div
-            className="absolute inset-0 z-30"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-          >
-            <svg className="h-full w-full" viewBox={`0 0 ${width} ${height}`}>
-              {/* <path
-                ref={pathRef}
-                d={`M 50 ${height / 2} H ${width - 50}`}
-                stroke="rgba(255,255,255,0.2)"
-                strokeWidth="2"
-                strokeDasharray="5 5"
+      <AnimatePresence>
+        {loaded && (
+          <>
+            <motion.div
+              key="drag-overlay"
+              className="absolute inset-0 z-30"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <svg className="h-full w-full" viewBox={`0 0 ${width} ${height}`}>
+                <Drag
+                  onDragStart={handleDragStart}
+                  onDragMove={handleDragMove}
+                  onDragEnd={handleDragEnd}
+                  x={0}
+                  y={height / 2}
+                  width={width}
+                  height={height}
+                  // restrictToPath={pathRef.current ?? undefined}
+                  resetOnStart
+                >
+                  {({ dragStart, dragEnd, dragMove, isDragging }) => (
+                    <motion.g
+                      ref={dragKnobRef}
+                      style={{
+                        cursor: isDragging ? "grabbing" : "grab",
+                        x: dragX,
+                        y: 0,
+                      }}
+                      onPointerDown={dragStart}
+                      onPointerUp={dragEnd}
+                      onPointerMove={dragMove}
+                      animate={{ scale: isDragging || dragging ? 1.2 : 1 }}
+                    >
+                      {/* <motion.circle r="20" fill="white" /> */}
+                      <motion.rect
+                        width={width}
+                        height={height}
+                        fill="rgba(255,255,255,0.0)"
+                        style={{ pointerEvents: dragging ? "none" : "auto" }}
+                      />
+                    </motion.g>
+                  )}
+                </Drag>
+              </svg>
+            </motion.div>
+            <RotationIndicator
+              dragAngle={dragAngle}
+              dragging={dragging}
+              radius={48}
+            ></RotationIndicator>
+
+            <motion.div
+              key="sequence-display"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+              className="absolute inset-0 flex items-center justify-center"
+            >
+              <Sequence
+                frames={images}
+                value={progress}
+                className={"aspect-[1920/1080] w-full"}
               />
-              <rect
-                x={width - 100}
-                y={height / 2 - 50}
-                width="100"
-                height="100"
-                fill="rgba(255,255,255,0.1)"
-              /> */}
-
-              <Drag
-                onDragStart={handleDragStart}
-                onDragMove={handleDragMove}
-                onDragEnd={handleDragEnd}
-                x={0}
-                y={height / 2}
-                width={width}
-                height={height}
-                // restrictToPath={pathRef.current ?? undefined}
-                resetOnStart
-              >
-                {({ dragStart, dragEnd, dragMove, isDragging }) => (
-                  <motion.g
-                    ref={dragKnobRef}
-                    style={{
-                      cursor: isDragging ? "grabbing" : "grab",
-                      x: dragX,
-                      y: 0,
-                    }}
-                    onPointerDown={dragStart}
-                    onPointerUp={dragEnd}
-                    onPointerMove={dragMove}
-                    animate={{ scale: isDragging || dragging ? 1.2 : 1 }}
-                  >
-                    {/* <motion.circle r="20" fill="white" /> */}
-                    <motion.rect
-                      width={width}
-                      height={height}
-                      fill="rgba(255,255,255,0.0)"
-                      style={{ pointerEvents: dragging ? "none" : "auto" }}
-                    />
-                  </motion.g>
-                )}
-              </Drag>
-            </svg>
-          </motion.div>
-          <RotationIndicator
-            dragAngle={dragAngle}
-            dragging={dragging}
-            radius={48}
-          />
-
-          <motion.div
-            key="sequence"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="absolute inset-0 flex items-center justify-center"
-          >
-            <Sequence
-              frames={images}
-              value={progress}
-              className={"aspect-[1920/1080] w-full"}
-            />
-          </motion.div>
-        </AnimatePresence>
-      )}
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

@@ -452,7 +452,7 @@ export const slides: Slide[] = [
     slide_type: {
       type: "GpuPickingVideo",
       data: {
-        videoSrc: "/assets/Scene_8.1.mp4",
+        videoSrc: "/assets/Scene_8.1_cut.mp4",
         maskSrc: "/assets/Scene_8.1-masked.mp4",
       },
     },

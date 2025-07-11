@@ -30,10 +30,10 @@ interface LockSliderContextValue {
   onUnlock?: () => void;
   onReset?: () => void;
   dragControls: ReturnType<typeof useDragControls>;
-  startDrag: (event: React.PointerEvent<HTMLDivElement>) => void;
+  startDrag: (event: React.PointerEvent<HTMLElement>) => void;
 }
 
-interface LockSliderProps {
+interface LockSliderRootProps {
   children: React.ReactNode;
   width?: number;
   handleSize?: number;
@@ -41,6 +41,12 @@ interface LockSliderProps {
   disabled?: boolean;
   onUnlock?: () => void;
   onReset?: () => void;
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+interface LockSliderContainerProps {
+  children: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -70,10 +76,10 @@ interface LockSliderTextProps {
 }
 
 interface LockSliderDragAreaProps {
+  children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;
   fullScreen?: boolean;
-  children?: React.ReactNode;
 }
 
 // Context
@@ -82,13 +88,15 @@ const LockSliderContext = createContext<LockSliderContextValue | null>(null);
 const useLockSlider = () => {
   const context = useContext(LockSliderContext);
   if (!context) {
-    throw new Error("LockSlider components must be used within a LockSlider");
+    throw new Error(
+      "LockSlider components must be used within a LockSlider.Root"
+    );
   }
   return context;
 };
 
-// Main Component
-const LockSlider = forwardRef<HTMLDivElement, LockSliderProps>(
+// Root Component (Context Provider Only)
+const LockSliderRoot = forwardRef<HTMLDivElement, LockSliderRootProps>(
   (
     {
       children,
@@ -137,7 +145,7 @@ const LockSlider = forwardRef<HTMLDivElement, LockSliderProps>(
       }
     };
 
-    const startDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const startDrag = (event: React.PointerEvent<HTMLElement>) => {
       if (!completed && !isUnlocked && !disabled) {
         setIsDragging(true);
         dragControls.start(event);
@@ -176,12 +184,7 @@ const LockSlider = forwardRef<HTMLDivElement, LockSliderProps>(
         <div
           ref={ref}
           className={cn("relative", className)}
-          style={{
-            width,
-            height: handleSize,
-            ...style,
-          }}
-          onPointerDown={startDrag}
+          style={style}
           {...props}
         >
           {children}
@@ -190,6 +193,29 @@ const LockSlider = forwardRef<HTMLDivElement, LockSliderProps>(
     );
   }
 );
+
+// Container Component (Visual Slider Elements)
+const LockSliderContainer = forwardRef<
+  HTMLDivElement,
+  LockSliderContainerProps
+>(({ children, className, style, ...props }, ref) => {
+  const { sliderWidth, handleSize } = useLockSlider();
+
+  return (
+    <div
+      ref={ref}
+      className={cn("relative", className)}
+      style={{
+        width: sliderWidth,
+        height: handleSize,
+        ...style,
+      }}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+});
 
 // Track Component
 const LockSliderTrack = forwardRef<HTMLDivElement, LockSliderTrackProps>(
@@ -308,17 +334,17 @@ const LockSliderText = forwardRef<HTMLDivElement, LockSliderTextProps>(
   }
 );
 
-// Drag Area Component (creates invisible drag overlay)
+// Drag Area Component (Completely Decoupled)
 const LockSliderDragArea = forwardRef<HTMLDivElement, LockSliderDragAreaProps>(
-  ({ className, style, fullScreen = false, children, ...props }, ref) => {
-    const { startDrag, isDragging } = useLockSliderDrag();
+  ({ children, className, style, fullScreen = false, ...props }, ref) => {
+    const { startDrag, isDragging } = useLockSlider();
 
     return (
       <div
         ref={ref}
         className={cn(
-          "absolute inset-0 z-10 cursor-grab active:cursor-grabbing",
-          fullScreen && "fixed h-screen w-screen",
+          "cursor-grab active:cursor-grabbing",
+          fullScreen ? "fixed inset-0 h-screen w-screen" : "absolute inset-0",
           isDragging && "cursor-grabbing",
           className
         )}
@@ -335,31 +361,35 @@ const LockSliderDragArea = forwardRef<HTMLDivElement, LockSliderDragAreaProps>(
   }
 );
 
-// Compound component
-LockSlider.displayName = "LockSlider";
-LockSliderTrack.displayName = "LockSliderTrack";
-LockSliderHandle.displayName = "LockSliderHandle";
-LockSliderProgress.displayName = "LockSliderProgress";
-LockSliderText.displayName = "LockSliderText";
-LockSliderDragArea.displayName = "LockSliderDragArea";
+// Compound component setup
+const LockSlider = Object.assign(LockSliderRoot, {
+  Root: LockSliderRoot,
+  Container: LockSliderContainer,
+  Track: LockSliderTrack,
+  Handle: LockSliderHandle,
+  Progress: LockSliderProgress,
+  Text: LockSliderText,
+  DragArea: LockSliderDragArea,
+});
 
-export {
-  LockSlider,
-  LockSliderTrack,
-  LockSliderHandle,
-  LockSliderProgress,
-  LockSliderText,
-  LockSliderDragArea,
-  useLockSlider,
-};
+// Display names
+LockSliderRoot.displayName = "LockSlider.Root";
+LockSliderContainer.displayName = "LockSlider.Container";
+LockSliderTrack.displayName = "LockSlider.Track";
+LockSliderHandle.displayName = "LockSlider.Handle";
+LockSliderProgress.displayName = "LockSlider.Progress";
+LockSliderText.displayName = "LockSlider.Text";
+LockSliderDragArea.displayName = "LockSlider.DragArea";
 
-// Convenience hook for getting slider state
+export default LockSlider;
+export { useLockSlider };
+
+// Convenience hooks
 export const useLockSliderState = () => {
   const { completed, isUnlocked, isDragging, progress } = useLockSlider();
   return { completed, isUnlocked, isDragging, progress: progress.get() };
 };
 
-// Hook to access drag controls (for external drag containers)
 export const useLockSliderDrag = () => {
   const { startDrag, isDragging } = useLockSlider();
   return { startDrag, isDragging };

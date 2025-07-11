@@ -1,8 +1,7 @@
-import { animated, useSpring } from "@react-spring/three";
 import { Html, RoundedBoxGeometry } from "@react-three/drei";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { MotionValue } from "motion/react";
-import { ReactNode, useEffect, useMemo } from "react";
+import { ReactNode, useMemo, useRef } from "react";
 import * as THREE from "three";
 
 interface RotationIndicatorProps {
@@ -75,16 +74,23 @@ function ArcMesh({
   );
 }
 
-// Handle component with react-spring animations
+// Handle component using useFrame for direct motion value coordination
 function Handle({
   dragAngle,
+  dragging,
   radius,
   strokeWidth,
 }: {
   dragAngle: MotionValue<number>;
+  dragging: boolean;
   radius: number;
   strokeWidth: number;
 }) {
+  const meshRef = useRef<THREE.Mesh>(null);
+  const groupRef = useRef<THREE.Group>(null);
+  const targetAngle = useRef(dragAngle.get());
+  const currentAngle = useRef(dragAngle.get());
+
   const calculatePosition = (angle: number) => {
     const angleRad = (angle * Math.PI) / 180;
     const theta = angleRad - (3 * Math.PI) / 4;
@@ -104,37 +110,38 @@ function Handle({
     return [0, theta, 0] as [number, number, number];
   };
 
-  const [springs, api] = useSpring(() => ({
-    angle: dragAngle.get(),
-    config: {
-      tension: 300,
-      friction: 30,
-      mass: 1,
-    },
-  }));
+  // Use useFrame to update position and rotation every frame
+  useFrame((state, delta) => {
+    if (!groupRef.current || !meshRef.current) return;
 
-  // Subscribe to motion value changes and animate with spring
-  useEffect(() => {
-    const unsubscribe = dragAngle.on("change", value => {
-      api.start({
-        angle: value,
-      });
-    });
-    return unsubscribe;
-  }, [dragAngle, api]);
+    // Get the current motion value
+    const motionValue = dragAngle.get();
+    targetAngle.current = motionValue;
 
-  // Derive position and rotation from the animated angle
-  const animatedPosition = springs.angle.to(calculatePosition);
+    if (dragging) {
+      // During dragging: immediate updates
+      currentAngle.current = targetAngle.current;
+    } else {
+      // Not dragging: smooth interpolation
+      const lerpFactor = 1 - Math.exp(-8 * delta); // Exponential easing
+      currentAngle.current = THREE.MathUtils.lerp(
+        currentAngle.current,
+        targetAngle.current,
+        lerpFactor
+      );
+    }
 
-  const animatedRotation = springs.angle.to(calculateRotation);
+    // Update position and rotation
+    const position = calculatePosition(currentAngle.current);
+    const rotation = calculateRotation(currentAngle.current);
+
+    groupRef.current.position.set(position[0], position[1], position[2]);
+    meshRef.current.rotation.set(rotation[0], rotation[1], rotation[2]);
+  });
 
   return (
-    <animated.group position={animatedPosition}>
-      <animated.mesh
-        key="handle-mesh"
-        // @ts-expect-error - TODO: fix this
-        rotation={animatedRotation}
-      >
+    <group ref={groupRef}>
+      <mesh key="handle-mesh" ref={meshRef}>
         <RoundedBoxGeometry
           args={[0.5, 0.5, 1]}
           radius={0.2}
@@ -144,7 +151,7 @@ function Handle({
           creaseAngle={0.4}
         />
         <meshPhongMaterial color="#cc6cf4" />
-      </animated.mesh>
+      </mesh>
 
       {/* Cone pointing up */}
       <mesh key="cone-up" position={[0, 0.75, 0]}>
@@ -161,7 +168,6 @@ function Handle({
       <Html
         key="handle-label"
         transform
-        // occlude
         position={[0, 0, 0]}
         style={{
           pointerEvents: "none",
@@ -169,20 +175,10 @@ function Handle({
       >
         {/* <div>Label</div> */}
       </Html>
-    </animated.group>
+    </group>
   );
 }
 
-const CameraChecker = () => {
-  const { camera } = useThree();
-
-  useFrame(() => {
-    // console.log(camera.position.toArray())
-    // console.log(camera.rotation.toArray())
-  });
-
-  return null;
-};
 export const RotationIndicator = ({
   dragAngle,
   dragging,
@@ -209,7 +205,7 @@ export const RotationIndicator = ({
           antialias: true,
         }}
         onCreated={({ gl, scene }) => {
-          gl.setClearColor("transparent", 0); // Green background
+          gl.setClearColor("transparent", 0); // Transparent background
         }}
         camera={{
           position: [-6.167472320583971, 4.991175371870244, 3.477471174671424],
@@ -218,18 +214,6 @@ export const RotationIndicator = ({
           ],
         }}
       >
-        {/* <OrbitControls /> */}
-
-        {/* <CameraChecker /> */}
-        {/* Orthographic Camera positioned to view all geometry */}
-        {/* <OrthographicCamera
-                    makeDefault
-                    position={[0, 0, 10]}
-                    zoom={100}
-                    near={0.1}
-                    far={10}
-                /> */}
-
         {/* Lighting */}
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={0.5} />
@@ -244,6 +228,7 @@ export const RotationIndicator = ({
 
           <Handle
             dragAngle={dragAngle}
+            dragging={dragging}
             radius={scaledRadius}
             strokeWidth={strokeWidth / 10}
           />

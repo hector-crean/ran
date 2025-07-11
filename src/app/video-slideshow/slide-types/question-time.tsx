@@ -1,3 +1,5 @@
+// TODO: refactor inline styles and questionTime.module.css to tailwind
+
 import { useState, createContext, useContext, Fragment } from "react";
 
 import { AnimatePresence } from "motion/react";
@@ -26,8 +28,9 @@ const QuestionTime = ({
       title: {
         background: color ? color : "#ffffff99",
         color: "#324e80",
-        fontSize: "2rem",
+        fontSize: "4.5rem",
         fontWeight: "bold",
+        textTransform: "capitalize",
       },
       question: { background: color ? color : "#8f14dd99", color: "white" },
       option: {
@@ -75,25 +78,36 @@ const QuestionTime = ({
         handleClick={checkSelected}
         isCorrect={option.isCorrect}
       >
-        <div style={{ display: "flex", flexDirection: "row" }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            alignItems: "center",
+            width: "100%",
+          }}
+        >
           <div
             style={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
-              width: "2.5rem",
-              height: "2.5rem",
+              minWidth: "4rem",
+              minHeight: "4rem",
+              width: "4rem",
+              height: "4rem",
               borderRadius: "2rem",
               backgroundColor: "#d3ddedaa",
               textTransform: "uppercase",
               fontWeight: "bold",
-              fontSize: "1.5rem",
+              fontSize: "2.5rem",
             }}
           >
             {index + 1}
           </div>
-          <div>
-            <p>{option.answer}</p>
+          <div style={{ width: "100%", transform: "translateX(-2rem)" }}>
+            <p className="mr-[2rem] ml-[4rem] text-2xl leading-[1.75rem] font-[400]">
+              {option.answer}
+            </p>
           </div>
         </div>
       </Box>
@@ -114,6 +128,9 @@ const QuestionTime = ({
             top: "50%",
             left: "50%",
             transform: "translate(-50%, -50%)",
+            display: "flex",
+            flexDirection: "column",
+            gap: "1rem",
           }}
         >
           <AnimatePresence>
@@ -128,8 +145,10 @@ const QuestionTime = ({
                       width: "100%",
                     }}
                   >
-                    <p>Question {currentQuestion + 1}:</p>
-                    <p style={{ fontStyle: "italic" }}>
+                    <p className="text-4xl font-bold">
+                      Question {currentQuestion + 1}:
+                    </p>
+                    <p className="text-3xl font-medium italic">
                       {questions[currentQuestion].question}
                     </p>
                   </div>

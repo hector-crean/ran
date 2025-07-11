@@ -5,7 +5,7 @@
   min-height: 5rem;
   padding: 0.3rem;
   width: 100%;
-  max-width: 40rem;
+  max-width: 60rem;
   text-align: center;
   border: 1px solid white;
   border-radius: 1rem;
@@ -16,4 +16,10 @@
   align-items: center;
   height: 100%;
   border-radius: 0.7rem;
+  padding: 2rem 1rem;
+}
+.p {
+  font-style: "italic";
+  font-weight: "500";
+  font-size: "2rem";
 }

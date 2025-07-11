@@ -15,6 +15,26 @@ const demos: DemoCardProps[] = [
       poster: "/assets/Scene_4.1.1_poster.png",
     },
   },
+  {
+    title: "X",
+    description: "Interactive sequence",
+    href: "/sequence/x",
+    category: "Sequence",
+    preview: {
+      type: "image",
+      src: "/assets/Scene_2.2.1_00001.png",
+    },
+  },
+  {
+    title: "XY",
+    description: "Interactive sequence",
+    href: "/sequence/xy",
+    category: "Sequence",
+    preview: {
+      type: "image",
+      src: "/assets/Scene_5.3_00001.png",
+    },
+  },
 ];
 
 const categories = [...new Set(demos.map(demo => demo.category))];

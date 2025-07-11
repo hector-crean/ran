@@ -7,6 +7,8 @@ import { useDragControls } from "motion/react";
 
 import { HollowButton } from "@/components/ui/hollow-button";
 
+import { Hotspot } from "../hotspot";
+
 type Vec2 = { x: number; y: number };
 
 interface DragDropGridProps {
@@ -21,7 +23,8 @@ function DragDropGrid({
   positionedElements,
 }: DragDropGridProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const containerRef2 = useRef(null);
+  const dragContainerRef = useRef(null);
+  const dropZoneRef = useRef(null);
   const controls = useDragControls();
 
   return (
@@ -53,10 +56,10 @@ function DragDropGrid({
         <HollowButton>{instructions}</HollowButton>
       </motion.div>
       <div
-        ref={containerRef2}
+        ref={dragContainerRef}
         style={{
-          width: "300px",
-          height: "300px",
+          width: "100%",
+          height: "100%",
           border: "1px solid black",
           overflow: "hidden",
           position: "absolute",
@@ -64,9 +67,25 @@ function DragDropGrid({
           top: 0,
         }}
       >
+        <div
+          ref={dropZoneRef}
+          style={{
+            width: "5%",
+            height: "10%",
+            border: "1px solid #bb67e4",
+            filter:
+              "drop-shadow(0 0 2px #bb67e4) drop-shadow(0 0 4px #bb67e4) drop-shadow(0 0 6px #bb67e4)",
+            overflow: "hidden",
+            position: "absolute",
+            borderRadius: "100%",
+            left: "58%",
+            top: "58%",
+            bottom: 0,
+          }}
+        ></div>
         <motion.div
           drag
-          dragConstraints={containerRef2}
+          dragConstraints={dragContainerRef}
           style={{
             width: "100px",
             height: "100px",
@@ -75,7 +94,22 @@ function DragDropGrid({
           }}
           onPointerDown={e => controls.start(e)}
           dragControls={controls}
-        />
+        >
+          <div
+            style={{
+              pointerEvents: "none",
+              position: "absolute",
+              top: "60%",
+              left: "-30%",
+            }}
+          >
+            <Hotspot
+              color="#bb67e4"
+              icon="/touch_long_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg"
+              size="lg"
+            />
+          </div>
+        </motion.div>
       </div>
     </div>
   );

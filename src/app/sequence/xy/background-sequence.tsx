@@ -5,12 +5,13 @@ import LockSlider, { useLockSlider } from "@/components/ui/lock-slider";
 import { RotationIndicator } from "@/components/ui/rotation-indicator";
 import { Sequence } from "@/components/ui/sequence";
 import { useImageSequence } from "@/hooks/use-image-sequence";
+import { cn } from "@/lib/utils";
 import { useTransform } from "motion/react";
-import { useState, useMemo } from "react";
+import { useState, useMemo, ComponentProps } from "react";
 
 // Background Sequence Component that connects to LockSlider progress
 
-interface BackgroundSequenceProps {
+interface BackgroundSequenceProps extends ComponentProps<"div"> {
   baseUrl: string;
   totalFrames: number;
   format: "png" | "jpg";
@@ -20,6 +21,8 @@ const BackgroundSequence = ({
   baseUrl,
   totalFrames,
   format,
+  className,
+  ...props
 }: BackgroundSequenceProps) => {
   const { progress } = useJoyStick();
 
@@ -36,7 +39,13 @@ const BackgroundSequence = ({
   });
 
   return (
-    <div className="absolute inset-0 flex items-center justify-center">
+    <div
+      className={cn(
+        "absolute inset-0 flex items-center justify-center",
+        className
+      )}
+      {...props}
+    >
       {/* Loading state with first frame */}
       {!loaded && firstImageLoaded && (
         <img
@@ -51,7 +60,7 @@ const BackgroundSequence = ({
         <Sequence
           frames={images}
           value={progress}
-          className="aspect-[1920/1080] h-full w-full object-contain opacity-60"
+          className="aspect-[1920/1080] h-full w-full object-contain"
         />
       )}
     </div>

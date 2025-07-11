@@ -36,16 +36,10 @@ const Page = () => {
         onReset={() => setUnlocked(false)}
       >
         {/* Decoupled drag area that can contain background content */}
-        <LockSlider.DragArea fullScreen className="z-50">
-          <BackgroundSequence
-            baseUrl="/assets/Scene_2.2.1"
-            totalFrames={100}
-            format="png"
-          />
-        </LockSlider.DragArea>
+        <LockSlider.DragArea fullScreen className="z-50" />
 
         {/* Visual slider container - positioned independently */}
-        <LockSlider.Container className="relative z-10">
+        <LockSlider.Container className="relative z-10 opacity-45">
           <LockSlider.Track className="border border-white/20 bg-white/10 backdrop-blur-sm">
             <LockSlider.Progress className="bg-gradient-to-r from-blue-500/30 to-green-500/30" />
             <LockSlider.Text className="text-white/60">
@@ -77,6 +71,13 @@ const Page = () => {
             )}
           </LockSlider.Handle>
         </LockSlider.Container>
+
+        <BackgroundSequence
+          className="fixed inset-0 -z-0"
+          baseUrl="/assets/Scene_2.2.1"
+          totalFrames={100}
+          format="png"
+        />
 
         {/* Status and Instructions - positioned absolutely over everything */}
         <RotationGUI />

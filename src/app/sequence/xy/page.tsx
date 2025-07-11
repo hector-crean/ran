@@ -97,18 +97,14 @@ export default function XYDragPage() {
         className="isolate mx-auto"
         progressDirection={normaliseVector({ x: 2, y: 1 })}
       >
-        <JoyStick.DragArea fullScreen className="z-10">
-          <BackgroundSequence
-            baseUrl="/assets/Scene_5.3"
-            totalFrames={75}
-            format="png"
-          />
-        </JoyStick.DragArea>
+        <JoyStick.DragArea fullScreen className="z-20" />
 
-        <JoyStick.Container className="relative -z-0 flex flex-col items-center justify-center">
+        <JoyStick.Container className="relative z-10 flex flex-col items-center justify-center opacity-45">
           <JoyStick.Track>
             <JoyStick.Progress />
             <ProgressDirectionArrow />
+            <Metrics />
+
             <JoyStick.ProjectedProgress />
             <JoyStick.Text fadeOnDrag>Drag me!</JoyStick.Text>
             <JoyStick.Handle>
@@ -117,9 +113,12 @@ export default function XYDragPage() {
           </JoyStick.Track>
         </JoyStick.Container>
 
-        <div className="absolute top-0 left-0 -z-0">
-          <Metrics />
-        </div>
+        <BackgroundSequence
+          className="fixed inset-0 -z-0"
+          baseUrl="/assets/Scene_5.3"
+          totalFrames={75}
+          format="png"
+        />
 
         {/* Visual Feedback */}
       </JoyStick.Root>

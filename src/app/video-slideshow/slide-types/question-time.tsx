@@ -1,62 +1,21 @@
-import {
-  ReactNode,
-  useState,
-  createContext,
-  useContext,
-  Fragment,
-} from "react";
+import { useState, createContext, useContext, Fragment } from "react";
 
 import { AnimatePresence } from "motion/react";
 
 import styles from "./questionTime.module.css";
 
-type Vec2 = { x: number; y: number };
-
 interface QuestionTimeProps {
   poster: string;
-  positionedElements?: Array<{ screenCoords: Vec2; node: ReactNode }>;
-  children?: React.ReactNode;
+  title: string;
+  questions: object;
 }
 
 const QuestionTime = ({
   poster,
-  children,
-  positionedElements,
+  title,
+  questions: currentQuestions,
 }: QuestionTimeProps) => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const { title, questions: currentQuestions } = {
-    title: "Question Time",
-    questions: {
-      0: {
-        question:
-          "What is the name given to the abnormal antibodies produced by plasma cells in patients with IgA nephropathy?",
-        options: [
-          {
-            answer: "Glucose-deficient IgA1(Gd-IgA1).",
-            isCorrect: false,
-          },
-          {
-            answer: "Fructose-deficient IgA1 (Fd-IgA1).",
-            isCorrect: false,
-          },
-          {
-            answer: "Galactose-deficient IgA1(Gd-IgA1).",
-            isCorrect: true,
-          },
-        ],
-      },
-      1: {
-        question:
-          "The immune complexes are deposited in which part of the kidneys?",
-        options: [
-          { answer: "The medulla.", isCorrect: false },
-          { answer: "The glomeruli.", isCorrect: true },
-          { answer: "Calices.", isCorrect: false },
-        ],
-      },
-    },
-  };
-
   const QuizContext = createContext({
     questions: currentQuestions,
   });
@@ -170,7 +129,9 @@ const QuestionTime = ({
                     }}
                   >
                     <p>Question {currentQuestion + 1}:</p>
-                    <p>{questions[currentQuestion].question}</p>
+                    <p style={{ fontStyle: "italic" }}>
+                      {questions[currentQuestion].question}
+                    </p>
                   </div>
                 </Box>
                 <Answers

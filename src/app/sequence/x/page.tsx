@@ -92,6 +92,7 @@ interface SequenceXProps {
   totalFrames: number;
   format: "png" | "jpg" | "jpeg" | "webp";
   indicators?: IndicatorType[];
+  sliderText?: string;
 }
 
 const SequenceX = ({

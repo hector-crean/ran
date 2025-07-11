@@ -76,6 +76,7 @@ interface SequenceXYProps {
   totalFrames: number;
   format: "png" | "jpg" | "jpeg" | "webp";
   progressDirection: { x: number; y: number };
+  sliderText?: string;
 }
 
 const SequenceXY = ({

@@ -2,13 +2,12 @@ import { ReactNode } from "react";
 
 import { FreezeFrameProps } from "@/app/video-slideshow/slide-types/freeze-frame";
 import { GpuPickingVideoSlideProps } from "@/app/video-slideshow/slide-types/gpu-picking-video-slide";
-import { LinearSequenceSlideProps } from "@/app/video-slideshow/slide-types/linear-sequence-slide";
-import { RotationalSequenceSlideProps } from "@/app/video-slideshow/slide-types/rotational-sequence-slide";
-import { TargetedLinearSequenceSlideProps } from "@/app/video-slideshow/slide-types/targeted-linear-sequence-slide";
 import { VideoSlideProps } from "@/app/video-slideshow/slide-types/video-slide";
 import { ClipPathComparatorProps } from "@/components/ui/clip-path-comparator";
 import { DragDropGridProps } from "@/components/ui/drag-drop";
 import { QuestionTimeProps } from "@/app/video-slideshow/slide-types/question-time";
+import { SequenceXProps } from "@/app/sequence/x/page";
+import { SequenceXYProps } from "@/app/sequence/xy/page";
 
 type SlideLike<T extends string, P> = { type: T; data: P };
 
@@ -39,15 +38,9 @@ type PollSlide = SlideLike<
   }
 >;
 
-type RotationalSequenceSlide = SlideLike<
-  "RotationalSequence",
-  RotationalSequenceSlideProps
->;
+type RotationalSequenceSlide = SlideLike<"RotationalSequence", SequenceXProps>;
 
-type LinearSequenceSlide = SlideLike<
-  "LinearSequence",
-  LinearSequenceSlideProps
->;
+type LinearSequenceSlide = SlideLike<"LinearSequence", SequenceXProps>;
 
 type FreezeFrameSlide = SlideLike<"FreezeFrame", FreezeFrameProps>;
 
@@ -60,7 +53,7 @@ type ClipPathComparatorSlide = SlideLike<
 
 type TargetedLinearSequenceSlide = SlideLike<
   "TargetedLinearSequence",
-  TargetedLinearSequenceSlideProps
+  SequenceXYProps
 >;
 
 type GpuPickingVideoSlide = SlideLike<
@@ -74,7 +67,6 @@ export type SlideType =
   | RegularSlide
   | VideoSlide
   | InteractiveSlide
-  | PollSlide
   | RotationalSequenceSlide
   | LinearSequenceSlide
   | FreezeFrameSlide

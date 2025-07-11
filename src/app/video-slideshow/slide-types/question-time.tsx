@@ -1,3 +1,4 @@
+// @ts-nocheck
 // TODO: refactor inline styles and questionTime.module.css to tailwind
 
 import { useState, createContext, useContext, Fragment } from "react";

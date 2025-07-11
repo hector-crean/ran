@@ -71,7 +71,19 @@ const normaliseVector = (vector: { x: number; y: number }) => {
   };
 };
 
-export default function XYDragPage() {
+interface SequenceXYProps {
+  baseUrl: string;
+  totalFrames: number;
+  format: "png" | "jpg" | "jpeg" | "webp";
+  progressDirection: { x: number; y: number };
+}
+
+const SequenceXY = ({
+  baseUrl,
+  totalFrames,
+  format,
+  progressDirection,
+}: SequenceXYProps) => {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
 
@@ -105,7 +117,7 @@ export default function XYDragPage() {
         onDragEnd={handleDragEnd}
         onReset={handleReset}
         className="isolate mx-auto"
-        progressDirection={normaliseVector({ x: 2, y: 1 })}
+        progressDirection={normaliseVector(progressDirection)}
       >
         <JoyStick.DragArea fullScreen className="z-20" />
 
@@ -125,16 +137,16 @@ export default function XYDragPage() {
 
         <BackgroundSequence
           className="fixed inset-0 -z-0"
-          baseUrl="/assets/Scene_5.3"
-          totalFrames={75}
-          format="png"
+          baseUrl={baseUrl}
+          totalFrames={totalFrames}
+          format={format}
         />
 
         <JoyStickDebugPanel visible={showDebug} />
       </JoyStick.Root>
     </div>
   );
-}
+};
 
 // Debug panel component specifically for JoyStick
 function JoyStickDebugPanel({ visible }: { visible: boolean }) {
@@ -208,3 +220,19 @@ function JoyStickDebugPanel({ visible }: { visible: boolean }) {
     />
   );
 }
+
+const Page = () => {
+  return (
+    <SequenceXY
+      baseUrl="/assets/Scene_5.3"
+      totalFrames={75}
+      format="png"
+      progressDirection={{ x: 2, y: 1 }}
+    />
+  );
+};
+
+export default Page;
+
+export { SequenceXY };
+export type { SequenceXYProps };

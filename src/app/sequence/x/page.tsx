@@ -85,19 +85,29 @@ function LockSliderDebugPanel({ visible }: { visible: boolean }) {
   );
 }
 
-const Page = () => {
+type IndicatorType = "rotation-3d";
+interface SequenceXProps {
+  showDebug?: boolean;
+  baseUrl: string;
+  totalFrames: number;
+  format: "png" | "jpg" | "jpeg" | "webp";
+  indicators?: IndicatorType[];
+}
+
+const SequenceX = ({
+  showDebug = true,
+  baseUrl,
+  totalFrames,
+  format,
+  indicators,
+}: SequenceXProps) => {
   const [unlocked, setUnlocked] = useState(false);
-  const [showDebug, setShowDebug] = useState(true);
+
+  console.log("baseUrl", baseUrl);
 
   return (
     <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-black">
       {/* Toggle debug button */}
-      <button
-        onClick={() => setShowDebug(!showDebug)}
-        className="fixed top-4 left-4 z-50 rounded-md bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
-      >
-        {showDebug ? "Hide Debug" : "Show Debug"}
-      </button>
 
       <LockSlider.Root
         width={300}
@@ -145,18 +155,32 @@ const Page = () => {
 
         <BackgroundSequence
           className="fixed inset-0 -z-0"
-          baseUrl="/assets/Scene_2.2.1"
-          totalFrames={100}
-          format="png"
+          baseUrl={baseUrl}
+          totalFrames={totalFrames}
+          format={format}
         />
 
         {/* Status and Instructions - positioned absolutely over everything */}
-        <RotationGUI />
+        {indicators?.includes("rotation-3d") && <RotationGUI />}
 
         {/* Motion Debug UI */}
         <LockSliderDebugPanel visible={showDebug} />
       </LockSlider.Root>
     </div>
+  );
+};
+
+export { SequenceX };
+
+export type { SequenceXProps };
+const Page = () => {
+  return (
+    <SequenceX
+      baseUrl="/assets/Scene_2.2.1"
+      totalFrames={100}
+      format="png"
+      indicators={["rotation-3d"]}
+    />
   );
 };
 

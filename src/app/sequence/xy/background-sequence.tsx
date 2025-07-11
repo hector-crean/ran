@@ -14,7 +14,7 @@ import { useState, useMemo, ComponentProps } from "react";
 interface BackgroundSequenceProps extends ComponentProps<"div"> {
   baseUrl: string;
   totalFrames: number;
-  format: "png" | "jpg";
+  format: "png" | "jpg" | "jpeg" | "webp";
 }
 
 const BackgroundSequence = ({

@@ -11,9 +11,8 @@ import { SlideDrawer } from "./slide-drawer";
 import { SlideSheet } from "./slide-sheet";
 import { FreezeFrame } from "./slide-types/freeze-frame";
 import { GpuPickingVideoSlide } from "./slide-types/gpu-picking-video-slide";
-import { LinearSequenceSlide } from "./slide-types/linear-sequence-slide";
-import { RotationalSequenceSlide } from "./slide-types/rotational-sequence-slide";
-import { TargetedLinearSequenceSlide } from "./slide-types/targeted-linear-sequence-slide";
+import { SequenceX } from "@/app/sequence/x/page";
+import { SequenceXY } from "@/app/sequence/xy/page";
 import { VideoSlide } from "./slide-types/video-slide";
 
 export const renderNode = (node: RenderableNode) => {
@@ -30,17 +29,17 @@ const renderSlide = (slide: Slide) => {
     ))
 
     .with({ type: "RotationalSequence" }, slideType => (
-      <RotationalSequenceSlide {...slideType.data} />
+      <SequenceX {...slideType.data} indicators={["rotation-3d"]} />
     ))
     .with({ type: "FreezeFrame" }, slideType => (
       <FreezeFrame {...slideType.data} />
     ))
 
     .with({ type: "LinearSequence" }, slideType => (
-      <LinearSequenceSlide {...slideType.data} />
+      <SequenceX {...slideType.data} />
     ))
     .with({ type: "TargetedLinearSequence" }, slideType => (
-      <TargetedLinearSequenceSlide {...slideType.data} />
+      <SequenceXY {...slideType.data} />
     ))
     .with({ type: "ClipPathComparator" }, slideType => (
       <ClipPathComparator {...slideType.data} />

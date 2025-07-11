@@ -13,7 +13,7 @@ import { useState, useMemo, ComponentProps } from "react";
 interface BackgroundSequenceProps extends ComponentProps<"div"> {
   baseUrl: string;
   totalFrames: number;
-  format: "png" | "jpg";
+  format: "png" | "jpg" | "jpeg" | "webp";
 }
 
 const BackgroundSequence = ({
@@ -31,7 +31,7 @@ const BackgroundSequence = ({
       { length: totalFrames },
       (_, i) => `${baseUrl}_${(i + 1).toString().padStart(5, "0")}.png`
     );
-  }, []);
+  }, [baseUrl, totalFrames]);
 
   const { images, loaded, firstImageLoaded } = useImageSequence(paths, {
     enableFallback: true,
@@ -40,7 +40,7 @@ const BackgroundSequence = ({
   return (
     <div
       className={cn(
-        "absolute inset-0 flex items-center justify-center",
+        "flex h-full w-full items-center justify-center",
         className
       )}
       {...props}

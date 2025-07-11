@@ -70,9 +70,10 @@ export const slides: Slide[] = [
     slide_type: {
       type: "RotationalSequence",
       data: {
-        baseUrl: "/assets/Scene_2.2.1_",
-        frameCount: 100,
+        baseUrl: "/assets/Scene_2.2.1",
+        totalFrames: 100,
         format: "png",
+        indicators: ["rotation-3d"],
       },
     },
   },
@@ -107,8 +108,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "LinearSequence",
       data: {
-        baseUrl: "/assets/Scene_2.2.3_",
-        frameCount: 75,
+        baseUrl: "/assets/Scene_2.2.3",
+        totalFrames: 75,
         format: "png",
         sliderText: "Please use the slider to form the immune complex",
       },
@@ -428,11 +429,11 @@ export const slides: Slide[] = [
     slide_type: {
       type: "TargetedLinearSequence",
       data: {
-        baseUrl: "/assets/Scene_5.3_",
-        frameCount: 75,
+        baseUrl: "/assets/Scene_5.3",
+        totalFrames: 75,
         format: "png",
         sliderText: "To continue, please drag APRIL to bind TACI",
-        normalisedDragDirection: { x: 1 / Math.sqrt(2), y: 1 / Math.sqrt(2) },
+        progressDirection: { x: 1 / Math.sqrt(2), y: 1 / Math.sqrt(2) },
       },
     },
   },
@@ -467,10 +468,10 @@ export const slides: Slide[] = [
     slide_type: {
       type: "TargetedLinearSequence",
       data: {
-        baseUrl: "/assets/Scene_5.5_",
-        frameCount: 25,
+        baseUrl: "/assets/Scene_5.5",
+        totalFrames: 25,
         format: "png",
-        normalisedDragDirection: { x: 0, y: 1 },
+        progressDirection: { x: 0, y: 1 },
         sliderText: "To continue, please drag APRIL to bind with BCMA",
       },
     },
@@ -581,8 +582,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "RotationalSequence",
       data: {
-        baseUrl: "/assets/Scene_9.3_",
-        frameCount: 75,
+        baseUrl: "/assets/Scene_9.3",
+        totalFrames: 75,
         format: "png",
       },
     },

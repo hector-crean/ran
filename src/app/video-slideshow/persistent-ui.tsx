@@ -15,68 +15,68 @@ import {
 export function PersistentUI() {
   const { slides, currentPage, setPage } = useSlideshowContext();
 
-  // Register service worker on mount
-  useEffect(() => {
-    registerServiceWorker();
+  // // Register service worker on mount
+  // useEffect(() => {
+  //   registerServiceWorker();
 
-    // Cleanup cache periodically (every 5 minutes)
-    const cleanupInterval = setInterval(cleanupCache, 5 * 60 * 1000);
+  //   // Cleanup cache periodically (every 5 minutes)
+  //   const cleanupInterval = setInterval(cleanupCache, 5 * 60 * 1000);
 
-    return () => clearInterval(cleanupInterval);
-  }, []);
+  //   return () => clearInterval(cleanupInterval);
+  // }, []);
 
-  // Asset preloading effect
-  useEffect(() => {
-    const preloadAssets = async () => {
-      const currentSlide = slides[currentPage];
-      const nextSlide = slides[currentPage + 1];
-      const prevSlide = slides[currentPage - 1];
+  // // Asset preloading effect
+  // useEffect(() => {
+  //   const preloadAssets = async () => {
+  //     const currentSlide = slides[currentPage];
+  //     const nextSlide = slides[currentPage + 1];
+  //     const prevSlide = slides[currentPage - 1];
 
-      // Preload current slide assets with high priority
-      if (currentSlide) {
-        if (currentSlide.slide_type.type === "Video") {
-          preloadAsset(currentSlide.slide_type.data.poster, "image");
-          preloadAsset(currentSlide.slide_type.data.url, "video");
-        } else if (currentSlide.slide_type.type === "RotationalSequence") {
-          // Preload first few frames of sequence immediately
-          const { baseUrl, totalFrames, format } = currentSlide.slide_type.data;
-          preloadSequence(baseUrl, Math.min(totalFrames, 20), format, "high");
-        }
-      }
+  //     // Preload current slide assets with high priority
+  //     if (currentSlide) {
+  //       if (currentSlide.slide_type.type === "Video") {
+  //         preloadAsset(currentSlide.slide_type.data.poster, "image");
+  //         preloadAsset(currentSlide.slide_type.data.url, "video");
+  //       } else if (currentSlide.slide_type.type === "RotationalSequence") {
+  //         // Preload first few frames of sequence immediately
+  //         const { baseUrl, totalFrames, format } = currentSlide.slide_type.data;
+  //         preloadSequence(baseUrl, Math.min(totalFrames, 20), format, "high");
+  //       }
+  //     }
 
-      // Preload next slide assets
-      if (nextSlide) {
-        setTimeout(() => {
-          const nextAssets: string[] = [];
+  //     // Preload next slide assets
+  //     if (nextSlide) {
+  //       setTimeout(() => {
+  //         const nextAssets: string[] = [];
 
-          if (nextSlide.slide_type.type === "Video") {
-            preloadAsset(nextSlide.firstFramePoster, "image");
-            preloadAsset(nextSlide.slide_type.data.url, "video");
-            nextAssets.push(
-              nextSlide.firstFramePoster,
-              nextSlide.slide_type.data.url
-            );
-          } else if (nextSlide.slide_type.type === "RotationalSequence") {
-            const { baseUrl, totalFrames, format } = nextSlide.slide_type.data;
-            preloadSequence(baseUrl, totalFrames, format, "low");
-          }
+  //         if (nextSlide.slide_type.type === "Video") {
+  //           preloadAsset(nextSlide.firstFramePoster, "image");
+  //           preloadAsset(nextSlide.slide_type.data.url, "video");
+  //           nextAssets.push(
+  //             nextSlide.firstFramePoster,
+  //             nextSlide.slide_type.data.url
+  //           );
+  //         } else if (nextSlide.slide_type.type === "RotationalSequence") {
+  //           const { baseUrl, totalFrames, format } = nextSlide.slide_type.data;
+  //           preloadSequence(baseUrl, totalFrames, format, "low");
+  //         }
 
-          // Send to service worker for background caching
-          if (nextAssets.length > 0) {
-            preloadAssetsViaServiceWorker(nextAssets);
-          }
-        }, 1000);
-      }
+  //         // Send to service worker for background caching
+  //         if (nextAssets.length > 0) {
+  //           preloadAssetsViaServiceWorker(nextAssets);
+  //         }
+  //       }, 1000);
+  //     }
 
-      // Preload previous slide poster
-      if (prevSlide) {
-        preloadAsset(prevSlide.lastFramePoster, "image");
-        preloadAssetsViaServiceWorker([prevSlide.lastFramePoster]);
-      }
-    };
+  //     // Preload previous slide poster
+  //     if (prevSlide) {
+  //       preloadAsset(prevSlide.lastFramePoster, "image");
+  //       preloadAssetsViaServiceWorker([prevSlide.lastFramePoster]);
+  //     }
+  //   };
 
-    preloadAssets();
-  }, [currentPage, slides]);
+  //   preloadAssets();
+  // }, [currentPage, slides]);
 
   // Navigation functions
   const paginate = useCallback(
@@ -118,7 +118,7 @@ export function PersistentUI() {
 
   return (
     <>
-      <CriticalAssetPreloader currentSlideIndex={currentPage} />
+      {/* <CriticalAssetPreloader currentSlideIndex={currentPage} /> */}
       <Pagination
         id={"pagination"}
         currentPage={currentPage}

@@ -235,6 +235,18 @@ export const slides: Slide[] = [
         poster: "/assets/Scene_4.1.1_poster.png",
         instructions:
           "Drag and drop the immune complex to deposit it in the glomeruli",
+        draggable: {
+          icon: "/NER109_Immune_complex0000 copy.png",
+          x: "85%",
+          y: "65%",
+          radius: "10%",
+        },
+        dropzone: {
+          x: "58%",
+          y: "65%",
+          radius: "20%",
+        },
+        showIndication: true,
       },
     },
   },

@@ -181,7 +181,7 @@ export const slides: Slide[] = [
     initialSheet: null,
     initialDialog: null,
     slide_type: {
-      type: "FreezeFrame",
+      type: "QuestionTime",
       data: {
         poster: "/assets/Scene_4.1.1_poster.png",
         children: <div className="text-2xl text-white">Question component</div>,

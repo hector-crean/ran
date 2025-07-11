@@ -1,0 +1,19 @@
+.box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 5rem;
+  padding: 0.3rem;
+  width: 100%;
+  max-width: 40rem;
+  text-align: center;
+  border: 1px solid white;
+  border-radius: 1rem;
+}
+.box-inner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  border-radius: 0.7rem;
+}

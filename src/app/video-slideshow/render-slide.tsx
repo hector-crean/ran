@@ -10,6 +10,7 @@ import { SlideDialog } from "./slide-dialog";
 import { SlideDrawer } from "./slide-drawer";
 import { SlideSheet } from "./slide-sheet";
 import { FreezeFrame } from "./slide-types/freeze-frame";
+import { QuestionTime } from "./slide-types/question-time";
 import { GpuPickingVideoSlide } from "./slide-types/gpu-picking-video-slide";
 import { LinearSequenceSlide } from "./slide-types/linear-sequence-slide";
 import { RotationalSequenceSlide } from "./slide-types/rotational-sequence-slide";
@@ -34,6 +35,9 @@ const renderSlide = (slide: Slide) => {
     ))
     .with({ type: "FreezeFrame" }, slideType => (
       <FreezeFrame {...slideType.data} />
+    ))
+    .with({ type: "QuestionTime" }, slideType => (
+      <QuestionTime {...slideType.data} />
     ))
 
     .with({ type: "LinearSequence" }, slideType => (

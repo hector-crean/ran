@@ -11,8 +11,8 @@ const demos: DemoCardProps[] = [
     category: "Video & Media",
     preview: {
       type: "video",
-      src: "/assets/Scene_4.1.1.mp4",
-      poster: "/assets/Scene_4.1.1_poster.png",
+      src: "/assets/optimised/Scene_4.1.1.mp4",
+      poster: "/assets/optimised/Scene_4.1.1_poster.webp",
     },
   },
   {
@@ -22,7 +22,7 @@ const demos: DemoCardProps[] = [
     category: "Sequence",
     preview: {
       type: "image",
-      src: "/assets/Scene_2.2.1_00001.png",
+      src: "/assets/optimised/Scene_2.2.1_00001.webp",
     },
   },
   {
@@ -32,7 +32,7 @@ const demos: DemoCardProps[] = [
     category: "Sequence",
     preview: {
       type: "image",
-      src: "/assets/Scene_5.3_00001.png",
+      src: "/assets/optimised/Scene_5.3_00001.webp",
     },
   },
 ];

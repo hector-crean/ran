@@ -29,7 +29,7 @@ const BackgroundSequence = ({
   const paths = useMemo(() => {
     return Array.from(
       { length: totalFrames },
-      (_, i) => `${baseUrl}_${(i + 1).toString().padStart(5, "0")}.png`
+      (_, i) => `${baseUrl}_${(i + 1).toString().padStart(5, "0")}.${format}`
     );
   }, [baseUrl, totalFrames]);
 

@@ -15,7 +15,7 @@ export interface VideoPlayerHandle {
 }
 
 interface VideoPlayerProps {
-  src?: string;
+  src: string;
   poster?: string;
   onLoadedMetadata?: (videoElement: HTMLVideoElement) => void;
   onTimeUpdate?: (currentTime: number, duration: number) => void;
@@ -147,6 +147,11 @@ export const VideoPlayer = forwardRef<VideoPlayerHandle, VideoPlayerProps>(
         crossOrigin={crossOrigin}
         onEnded={onEnded}
       >
+        {/* WebM source - smaller file size for modern browsers */}
+        <source src={src} type="video/webm" />
+        {/* MP4 fallback - universal compatibility */}
+        {/* <source src={src} type="video/mp4" /> */}
+        {/* Fallback message for very old browsers */}
         Your browser does not support the video tag.
       </video>
     );

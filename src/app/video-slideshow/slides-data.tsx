@@ -6,8 +6,8 @@ export const slides: Slide[] = [
   {
     id: "scene_1_1",
     title: "Scene 1.1",
-    firstFramePoster: "/assets/Scene_1.1_poster.png",
-    lastFramePoster: "/assets/Scene_1.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_1.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_1.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -15,8 +15,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_1.1.mp4",
-        poster: "/assets/Scene_1.1_poster.png",
+        url: "/assets/optimised/Scene_1.1.webm",
+        poster: "/assets/optimised/Scene_1.1_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -25,8 +25,8 @@ export const slides: Slide[] = [
   {
     id: "scene_1_2",
     title: "Scene 1.1",
-    firstFramePoster: "/assets/Scene_2.1_poster.png",
-    lastFramePoster: "/assets/Scene_2.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_2.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_2.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -34,7 +34,7 @@ export const slides: Slide[] = [
     slide_type: {
       type: "FreezeFrame",
       data: {
-        poster: "/assets/Scene_2.1_poster.png",
+        poster: "/assets/optimised/Scene_2.1_poster.webp",
         children: <InfiniteCanvasMap />,
       },
     },
@@ -42,8 +42,8 @@ export const slides: Slide[] = [
   {
     id: "scene_2_1",
     title: "Scene 2.1",
-    firstFramePoster: "/assets/Scene_2.1_poster.png",
-    lastFramePoster: "/assets/Scene_2.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_2.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_2.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -51,8 +51,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_2.1.mp4",
-        poster: "/assets/Scene_2.1_poster.png",
+        url: "/assets/optimised/Scene_2.1.webm",
+        poster: "/assets/optimised/Scene_2.1_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -61,8 +61,8 @@ export const slides: Slide[] = [
   {
     id: "scene_2_2_1",
     title: "Scene 2.2.1 - Interactive Sequence",
-    firstFramePoster: "/assets/Scene_2.2.1_00001.png",
-    lastFramePoster: "/assets/Scene_2.2.1_00100.png",
+    firstFramePoster: "/assets/optimised/Scene_2.2.1_00001.webp",
+    lastFramePoster: "/assets/optimised/Scene_2.2.1_00100.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -70,9 +70,9 @@ export const slides: Slide[] = [
     slide_type: {
       type: "RotationalSequence",
       data: {
-        baseUrl: "/assets/Scene_2.2.1",
+        baseUrl: "/assets/optimised/Scene_2.2.1",
         totalFrames: 100,
-        format: "png",
+        format: "webp",
         indicators: ["rotation-3d"],
       },
     },
@@ -80,8 +80,8 @@ export const slides: Slide[] = [
   {
     id: "scene_2_2_2",
     title: "Scene 2.2.2",
-    firstFramePoster: "/assets/Scene_2.2.2_poster.png",
-    lastFramePoster: "/assets/Scene_2.2.2_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_2.2.2_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_2.2.2_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -89,8 +89,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_2.2.2.mp4",
-        poster: "/assets/Scene_2.2.2_poster.png",
+        url: "/assets/optimised/Scene_2.2.2.webm",
+        poster: "/assets/optimised/Scene_2.2.2_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -99,8 +99,8 @@ export const slides: Slide[] = [
   {
     id: "scene_2_2_3",
     title: "Scene 2.2.3 - Interactive Sequence",
-    firstFramePoster: "/assets/Scene_2.2.3_00001.png",
-    lastFramePoster: "/assets/Scene_2.2.3_00075.png",
+    firstFramePoster: "/assets/optimised/Scene_2.2.3_00001.webp",
+    lastFramePoster: "/assets/optimised/Scene_2.2.3_00075.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -108,9 +108,9 @@ export const slides: Slide[] = [
     slide_type: {
       type: "LinearSequence",
       data: {
-        baseUrl: "/assets/Scene_2.2.3",
+        baseUrl: "/assets/optimised/Scene_2.2.3",
         totalFrames: 75,
-        format: "png",
+        format: "webp",
         sliderText: "Please use the slider to form the immune complex",
       },
     },
@@ -118,8 +118,8 @@ export const slides: Slide[] = [
   {
     id: "scene_2_2_4",
     title: "Scene 2.2.4",
-    firstFramePoster: "/assets/Scene_2.2.4_poster.png",
-    lastFramePoster: "/assets/Scene_2.2.4_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_2.2.4_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_2.2.4_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -127,8 +127,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_2.2.4.mp4",
-        poster: "/assets/Scene_2.2.4_poster.png",
+        url: "/assets/optimised/Scene_2.2.4.webm",
+        poster: "/assets/optimised/Scene_2.2.4_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -137,8 +137,8 @@ export const slides: Slide[] = [
   {
     id: "scene_3_1_1",
     title: "Scene 3.1.1",
-    firstFramePoster: "/assets/Scene_3.1_poster.png",
-    lastFramePoster: "/assets/Scene_3.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_3.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_3.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -146,8 +146,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_3.1.mp4",
-        poster: "/assets/Scene_3.1_poster.png",
+        url: "/assets/optimised/Scene_3.1.webm",
+        poster: "/assets/optimised/Scene_3.1_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -156,8 +156,8 @@ export const slides: Slide[] = [
   {
     id: "scene_3_1_2",
     title: "Scene 3.1.2",
-    firstFramePoster: "/assets/Scene_4.1.1_poster.png",
-    lastFramePoster: "/assets/Scene_4.1.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_4.1.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_4.1.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -165,9 +165,12 @@ export const slides: Slide[] = [
     slide_type: {
       type: "ClipPathComparator",
       data: {
-        beforeContent: <img src="/assets/Scene_4.1.1_poster.png" />,
+        beforeContent: <img src="/assets/optimised/Scene_4.1.1_poster.webp" />,
         afterContent: (
-          <img src="/assets/Scene_4.1.1_poster.png" className="invert filter" />
+          <img
+            src="/assets/optimised/Scene_4.1.1_poster.webp"
+            className="invert filter"
+          />
         ),
       },
     },
@@ -175,8 +178,8 @@ export const slides: Slide[] = [
   {
     id: "scene_3_1_3",
     title: "Scene 3.1.3",
-    firstFramePoster: "/assets/Scene_4.1.1_poster.png",
-    lastFramePoster: "/assets/Scene_4.1.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_4.1.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_4.1.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -184,7 +187,7 @@ export const slides: Slide[] = [
     slide_type: {
       type: "QuestionTime",
       data: {
-        poster: "/assets/Scene_4.1.1_poster.png",
+        poster: "/assets/optimised/Scene_4.1.1_poster.webp",
         title: "question time",
         questions: {
           0: {
@@ -223,8 +226,8 @@ export const slides: Slide[] = [
   {
     id: "scene_3_1_4",
     title: "Scene 3.1.4",
-    firstFramePoster: "/assets/Scene_4.1_poster.png",
-    lastFramePoster: "/assets/Scene_4.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_4.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_4.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -232,7 +235,7 @@ export const slides: Slide[] = [
     slide_type: {
       type: "DragDropGrid",
       data: {
-        poster: "/assets/Scene_4.1.1_poster.png",
+        poster: "/assets/optimised/Scene_4.1.1_poster.webp",
         instructions:
           "Drag and drop the immune complex to deposit it in the glomeruli",
       },
@@ -241,8 +244,8 @@ export const slides: Slide[] = [
   {
     id: "scene_4_1_1",
     title: "Scene 4.1.1",
-    firstFramePoster: "/assets/Scene_4.1.1_poster.png",
-    lastFramePoster: "/assets/Scene_4.1.2_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_4.1.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_4.1.2_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -250,8 +253,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_4.1.1.mp4",
-        poster: "/assets/Scene_4.1.1_poster.png",
+        url: "/assets/optimised/Scene_4.1.1.webm",
+        poster: "/assets/optimised/Scene_4.1.1_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -260,8 +263,8 @@ export const slides: Slide[] = [
   {
     id: "scene_4_1_2",
     title: "Scene 4.1.2",
-    firstFramePoster: "/assets/Scene_4.1.2_poster.png",
-    lastFramePoster: "/assets/Scene_4.1.2_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_4.1.2_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_4.1.2_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -269,8 +272,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "GpuPickingVideo",
       data: {
-        videoSrc: "/assets/Scene_4.1.2-looped.mp4",
-        maskSrc: "/assets/Scene_4.1.2-mask-looped-2.mp4",
+        videoSrc: "/assets/optimised/Scene_4.1.2-looped.webm",
+        maskSrc: "/assets/optimised/Scene_4.1.2-mask-looped-2.webm",
         instructions:
           "Please choose the correct cell to activate in order to produce immunoglobulin",
       },
@@ -279,8 +282,8 @@ export const slides: Slide[] = [
   {
     id: "scene_4_1_3",
     title: "Scene 4.1.3",
-    firstFramePoster: "/assets/Scene_4.1.3_poster.png",
-    lastFramePoster: "/assets/Scene_4.1.3_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_4.1.3_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_4.1.3_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -288,8 +291,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_4.2.mp4",
-        poster: "/assets/Scene_4.2_poster.png",
+        url: "/assets/optimised/Scene_4.2.webm",
+        poster: "/assets/optimised/Scene_4.2_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -298,8 +301,8 @@ export const slides: Slide[] = [
   // {
   //   id: "scene_4_2",
   //   title: "Scene 4.2",
-  //   firstFramePoster: "/assets/Scene_4.2_poster.png",
-  //   lastFramePoster: "/assets/Scene_4.2_poster.png",
+  //   firstFramePoster: "/assets/optimised/Scene_4.2_poster.webp",
+  //   lastFramePoster: "/assets/optimised/Scene_4.2_poster.webp",
   //   onFinishAction: "next_slide",
   //   initialDrawer: null,
   //   initialSheet: null,
@@ -307,8 +310,8 @@ export const slides: Slide[] = [
   //   slide_type: {
   //     type: "Video",
   //     data: {
-  //       url: "/assets/Scene_4.2-looped.mp4",
-  //       poster: "/assets/Scene_4.2_poster.png",
+  //       url: "/assets/optimised/Scene_4.2-looped.webm",
+  //       poster: "/assets/optimised/Scene_4.2_poster.webp",
   //       autoplay: true,
   //     },
   //   },
@@ -316,8 +319,8 @@ export const slides: Slide[] = [
   {
     id: "scene_4_3",
     title: "Scene 4.3",
-    firstFramePoster: "/assets/Scene_4.3_poster.png",
-    lastFramePoster: "/assets/Scene_4.3_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_4.3_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_4.3_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -325,8 +328,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_4.3.mp4",
-        poster: "/assets/Scene_4.3_poster.png",
+        url: "/assets/optimised/Scene_4.3.webm",
+        poster: "/assets/optimised/Scene_4.3_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -335,8 +338,8 @@ export const slides: Slide[] = [
   {
     id: "scene_4_4",
     title: "Scene 4.4",
-    firstFramePoster: "/assets/Scene_4.4_poster.png",
-    lastFramePoster: "/assets/Scene_4.4_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_4.4_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_4.4_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -344,8 +347,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_4.4.mp4",
-        poster: "/assets/Scene_4.4_poster.png",
+        url: "/assets/optimised/Scene_4.4.webm",
+        poster: "/assets/optimised/Scene_4.4_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -354,8 +357,8 @@ export const slides: Slide[] = [
   {
     id: "scene_5_1_1",
     title: "Scene 5.1.1",
-    firstFramePoster: "/assets/Scene_5.1_poster.png",
-    lastFramePoster: "/assets/Scene_5.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_5.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_5.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -363,8 +366,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_5.1.mp4",
-        poster: "/assets/Scene_5.1_poster.png",
+        url: "/assets/optimised/Scene_5.1.webm",
+        poster: "/assets/optimised/Scene_5.1_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -373,8 +376,8 @@ export const slides: Slide[] = [
   {
     id: "scene_5_1_2",
     title: "Scene 5.1.2",
-    firstFramePoster: "/assets/Scene_5.1.1_poster.png",
-    lastFramePoster: "/assets/Scene_5.1.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_5.1.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_5.1.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -382,7 +385,7 @@ export const slides: Slide[] = [
     slide_type: {
       type: "FreezeFrame",
       data: {
-        poster: "/assets/Scene_5.2_poster.png",
+        poster: "/assets/optimised/Scene_5.2_poster.webp",
         // children: <div className="text-white text-2xl">Question component</div>,
         positionedElements: [
           {
@@ -420,8 +423,8 @@ export const slides: Slide[] = [
   {
     id: "scene_5_2",
     title: "Scene 5.2",
-    firstFramePoster: "/assets/Scene_5.2_poster.png",
-    lastFramePoster: "/assets/Scene_5.2_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_5.2_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_5.2_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -429,8 +432,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_5.2.mp4",
-        poster: "/assets/Scene_5.2_poster.png",
+        url: "/assets/optimised/Scene_5.2.webm",
+        poster: "/assets/optimised/Scene_5.2_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -439,8 +442,8 @@ export const slides: Slide[] = [
   {
     id: "scene_5_3",
     title: "Scene 5.3 - Interactive Sequence",
-    firstFramePoster: "/assets/Scene_5.3_00001.png",
-    lastFramePoster: "/assets/Scene_5.3_00075.png",
+    firstFramePoster: "/assets/optimised/Scene_5.3_00001.webp",
+    lastFramePoster: "/assets/optimised/Scene_5.3_00075.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -448,9 +451,9 @@ export const slides: Slide[] = [
     slide_type: {
       type: "TargetedLinearSequence",
       data: {
-        baseUrl: "/assets/Scene_5.3",
+        baseUrl: "/assets/optimised/Scene_5.3",
         totalFrames: 75,
-        format: "png",
+        format: "webp",
         sliderText: "To continue, please drag APRIL to bind TACI",
         progressDirection: { x: 1 / Math.sqrt(2), y: 1 / Math.sqrt(2) },
       },
@@ -459,8 +462,8 @@ export const slides: Slide[] = [
   {
     id: "scene_5_4",
     title: "Scene 5.4",
-    firstFramePoster: "/assets/Scene_5.4_poster.png",
-    lastFramePoster: "/assets/Scene_5.4_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_5.4_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_5.4_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -468,8 +471,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_5.4.mp4",
-        poster: "/assets/Scene_5.4_poster.png",
+        url: "/assets/optimised/Scene_5.4.webm",
+        poster: "/assets/optimised/Scene_5.4_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -478,8 +481,8 @@ export const slides: Slide[] = [
   {
     id: "scene_5_5",
     title: "Scene 5.5 - Interactive Sequence",
-    firstFramePoster: "/assets/Scene_5.5_00001.png",
-    lastFramePoster: "/assets/Scene_5.5_00025.png",
+    firstFramePoster: "/assets/optimised/Scene_5.5_00001.webp",
+    lastFramePoster: "/assets/optimised/Scene_5.5_00025.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -487,9 +490,9 @@ export const slides: Slide[] = [
     slide_type: {
       type: "TargetedLinearSequence",
       data: {
-        baseUrl: "/assets/Scene_5.5",
+        baseUrl: "/assets/optimised/Scene_5.5",
         totalFrames: 25,
-        format: "png",
+        format: "webp",
         progressDirection: { x: 0, y: 1 },
         sliderText: "To continue, please drag APRIL to bind with BCMA",
       },
@@ -498,8 +501,8 @@ export const slides: Slide[] = [
   {
     id: "scene_6_1",
     title: "Scene 6.1",
-    firstFramePoster: "/assets/Scene_6.1_poster.png",
-    lastFramePoster: "/assets/Scene_6.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_6.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_6.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -507,8 +510,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_6.1.mp4",
-        poster: "/assets/Scene_6.1_poster.png",
+        url: "/assets/optimised/Scene_6.1.webm",
+        poster: "/assets/optimised/Scene_6.1_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -517,8 +520,8 @@ export const slides: Slide[] = [
   {
     id: "scene_7_1",
     title: "Scene 7.1",
-    firstFramePoster: "/assets/Scene_7.1_poster.png",
-    lastFramePoster: "/assets/Scene_7.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_7.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_7.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -526,8 +529,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_7.1.mp4",
-        poster: "/assets/Scene_7.1_poster.png",
+        url: "/assets/optimised/Scene_7.1.webm",
+        poster: "/assets/optimised/Scene_7.1_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -536,8 +539,8 @@ export const slides: Slide[] = [
   {
     id: "scene_8_1",
     title: "Scene 8.1",
-    firstFramePoster: "/assets/Scene_8.1_poster.png",
-    lastFramePoster: "/assets/Scene_8.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_8.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_8.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -545,8 +548,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "GpuPickingVideo",
       data: {
-        videoSrc: "/assets/Scene_8.1_cut.mp4",
-        maskSrc: "/assets/Scene_8.1_masked.mp4",
+        videoSrc: "/assets/optimised/Scene_8.1_cut.webm",
+        maskSrc: "/assets/optimised/Scene_8.1_masked.webm",
         instructions: "Please select the correct cell to activate",
       },
     },
@@ -554,8 +557,8 @@ export const slides: Slide[] = [
   {
     id: "scene_8_2",
     title: "Scene 8.2",
-    firstFramePoster: "/assets/Scene_8.1_poster.png",
-    lastFramePoster: "/assets/Scene_8.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_8.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_8.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -563,7 +566,7 @@ export const slides: Slide[] = [
     slide_type: {
       type: "QuestionTime",
       data: {
-        poster: "/assets/Scene_4.1.1_poster.png",
+        poster: "/assets/optimised/Scene_4.1.1_poster.webp",
         title: "question time",
         questions: {
           0: {
@@ -630,8 +633,8 @@ export const slides: Slide[] = [
   {
     id: "scene_9_1",
     title: "Scene 9.1",
-    firstFramePoster: "/assets/Scene_9.1_poster.png",
-    lastFramePoster: "/assets/Scene_9.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_9.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_9.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -639,8 +642,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_9.1.mp4",
-        poster: "/assets/Scene_9.1_poster.png",
+        url: "/assets/optimised/Scene_9.1.webm",
+        poster: "/assets/optimised/Scene_9.1_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -649,8 +652,8 @@ export const slides: Slide[] = [
   {
     id: "scene_9_2",
     title: "Scene 9.2",
-    firstFramePoster: "/assets/Scene_9.2_poster.png",
-    lastFramePoster: "/assets/Scene_9.2_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_9.2_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_9.2_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -658,8 +661,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_9.2.mp4",
-        poster: "/assets/Scene_9.2_poster.png",
+        url: "/assets/optimised/Scene_9.2.webm",
+        poster: "/assets/optimised/Scene_9.2_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -668,8 +671,8 @@ export const slides: Slide[] = [
   {
     id: "scene_9_3",
     title: "Scene 9.3 - Interactive Sequence",
-    firstFramePoster: "/assets/Scene_9.3_00001.png",
-    lastFramePoster: "/assets/Scene_9.3_00075.png",
+    firstFramePoster: "/assets/optimised/Scene_9.3_00001.webp",
+    lastFramePoster: "/assets/optimised/Scene_9.3_00075.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -677,17 +680,17 @@ export const slides: Slide[] = [
     slide_type: {
       type: "RotationalSequence",
       data: {
-        baseUrl: "/assets/Scene_9.3",
+        baseUrl: "/assets/optimised/Scene_9.3",
         totalFrames: 75,
-        format: "png",
+        format: "webp",
       },
     },
   },
   {
     id: "scene_9_4",
     title: "Scene 9.4",
-    firstFramePoster: "/assets/Scene_9.4_poster.png",
-    lastFramePoster: "/assets/Scene_9.4_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_9.4_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_9.4_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -695,8 +698,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_9.4.mp4",
-        poster: "/assets/Scene_9.4_poster.png",
+        url: "/assets/optimised/Scene_9.4.webm",
+        poster: "/assets/optimised/Scene_9.4_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -705,8 +708,8 @@ export const slides: Slide[] = [
   {
     id: "scene_10_1",
     title: "Scene 10.1",
-    firstFramePoster: "/assets/Scene_10.1_poster.png",
-    lastFramePoster: "/assets/Scene_10.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_10.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_10.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -714,8 +717,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_10.1.mp4",
-        poster: "/assets/Scene_10.1_poster.png",
+        url: "/assets/optimised/Scene_10.1.webm",
+        poster: "/assets/optimised/Scene_10.1_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -724,8 +727,8 @@ export const slides: Slide[] = [
   {
     id: "scene_11_1",
     title: "Scene 11.1",
-    firstFramePoster: "/assets/Scene_11.1_poster.png",
-    lastFramePoster: "/assets/Scene_11.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_11.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_11.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -733,8 +736,8 @@ export const slides: Slide[] = [
     slide_type: {
       type: "Video",
       data: {
-        url: "/assets/Scene_11.1.mp4",
-        poster: "/assets/Scene_11.1_poster.png",
+        url: "/assets/optimised/Scene_11.1.webm",
+        poster: "/assets/optimised/Scene_11.1_poster.webp",
         autoplay: true,
         loop: false,
       },
@@ -743,8 +746,8 @@ export const slides: Slide[] = [
   {
     id: "scene_11_2",
     title: "Scene 11.2",
-    firstFramePoster: "/assets/Scene_8.1_poster.png",
-    lastFramePoster: "/assets/Scene_8.1_poster.png",
+    firstFramePoster: "/assets/optimised/Scene_8.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_8.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,
@@ -752,7 +755,7 @@ export const slides: Slide[] = [
     slide_type: {
       type: "QuestionTime",
       data: {
-        poster: "/assets/Scene_4.1.1_poster.png",
+        poster: "/assets/optimised/Scene_4.1.1_poster.webp",
         title: "question time",
         questions: {
           0: {

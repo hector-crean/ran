@@ -376,8 +376,8 @@ export const slides: Slide[] = [
   {
     id: "scene_5_1_2",
     title: "Scene 5.1.2",
-    firstFramePoster: "/assets/optimised/Scene_5.1.1_poster.webp",
-    lastFramePoster: "/assets/optimised/Scene_5.1.1_poster.webp",
+    firstFramePoster: "/assets/optimised/Scene_5.1_poster.webp",
+    lastFramePoster: "/assets/optimised/Scene_5.1_poster.webp",
     onFinishAction: "next_slide",
     initialDrawer: null,
     initialSheet: null,

@@ -194,7 +194,7 @@ const Page = () => {
   return (
     <div className="relative h-full w-full overflow-hidden bg-black">
       {/* Layer 1: Previous slide background (z-10) */}
-      <BackgroundWrapper>
+      {/* <BackgroundWrapper>
         {previousSlide && !supportsViewTransitions && (
           <BackgroundPoster
             key={`prev-${previousSlide.id}`}
@@ -205,10 +205,10 @@ const Page = () => {
             posterType="prev"
           />
         )}
-      </BackgroundWrapper>
+      </BackgroundWrapper> */}
 
       {/* Layer 2: Next slide background (z-10) */}
-      <BackgroundWrapper>
+      {/* <BackgroundWrapper>
         {nextSlide && !supportsViewTransitions && (
           <BackgroundPoster
             key={`next-${nextSlide.id}`}
@@ -219,7 +219,7 @@ const Page = () => {
             posterType="next"
           />
         )}
-      </BackgroundWrapper>
+      </BackgroundWrapper> */}
 
       {/* Layer 3: Main slide content (z-30) */}
       <AnimationWrapper>

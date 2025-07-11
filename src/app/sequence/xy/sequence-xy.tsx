@@ -12,57 +12,6 @@ import MotionDebugUI, {
   defaultFormatters,
 } from "@/components/ui/motion-debug-ui";
 
-// Demo component showing joystick values
-function Metrics() {
-  const { isDragging, progressX, progressY, normalizedDistance, progress } =
-    useJoyStick();
-
-  const [progressValue, setProgressValue] = useState(0);
-  useMotionValueEvent(progress, "change", latestValue => {
-    setProgressValue(latestValue);
-  });
-
-  return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-4 text-sm">
-        <div>Progress: {progressValue.toFixed(3)}</div>
-      </div>
-    </div>
-  );
-}
-
-// Progress direction arrow component
-function ProgressDirectionArrow() {
-  const { progressDirection, normalizedDistance } = useJoyStick();
-
-  // Calculate angle from progress direction
-  const angle =
-    (Math.atan2(progressDirection.y, progressDirection.x) * 180) / Math.PI;
-
-  // Arrow length based on joystick size
-  const arrowLength = 60;
-
-  // Calculate opacity based on normalized distance
-  const arrowOpacity = useTransform(normalizedDistance, [0, 0.1], [0.7, 0.3]);
-
-  return (
-    <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-      {/* Arrow line */}
-      <motion.div
-        className="absolute h-0.5 origin-left bg-gradient-to-r from-green-400 to-transparent transition-opacity duration-300"
-        style={{
-          width: `${arrowLength}px`,
-          transform: `rotate(${angle}deg)`,
-          opacity: arrowOpacity,
-        }}
-      />
-
-      {/* Center dot */}
-      <div className="absolute h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-green-400" />
-    </div>
-  );
-}
-
 const normaliseVector = (vector: { x: number; y: number }) => {
   const length = Math.sqrt(vector.x ** 2 + vector.y ** 2);
   return {
@@ -123,7 +72,11 @@ const SequenceXY = ({
         <JoyStick.DragArea fullScreen className="z-20" />
 
         <JoyStick.Container className="relative z-10 flex flex-col items-center justify-center opacity-45">
-          <JoyStick.Track>
+          <JoyStick.Track
+            style={{
+              opacity: showDebug ? 1 : 0,
+            }}
+          >
             <JoyStick.Progress />
             <ProgressDirectionArrow />
             <Metrics />
@@ -219,6 +172,57 @@ function JoyStickDebugPanel({ visible }: { visible: boolean }) {
       visible={visible}
       position="top-right"
     />
+  );
+}
+
+// Demo component showing joystick values
+function Metrics() {
+  const { isDragging, progressX, progressY, normalizedDistance, progress } =
+    useJoyStick();
+
+  const [progressValue, setProgressValue] = useState(0);
+  useMotionValueEvent(progress, "change", latestValue => {
+    setProgressValue(latestValue);
+  });
+
+  return (
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-4 text-sm">
+        <div>Progress: {progressValue.toFixed(3)}</div>
+      </div>
+    </div>
+  );
+}
+
+// Progress direction arrow component
+function ProgressDirectionArrow() {
+  const { progressDirection, normalizedDistance } = useJoyStick();
+
+  // Calculate angle from progress direction
+  const angle =
+    (Math.atan2(progressDirection.y, progressDirection.x) * 180) / Math.PI;
+
+  // Arrow length based on joystick size
+  const arrowLength = 60;
+
+  // Calculate opacity based on normalized distance
+  const arrowOpacity = useTransform(normalizedDistance, [0, 0.1], [0.7, 0.3]);
+
+  return (
+    <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      {/* Arrow line */}
+      <motion.div
+        className="absolute h-0.5 origin-left bg-gradient-to-r from-green-400 to-transparent transition-opacity duration-300"
+        style={{
+          width: `${arrowLength}px`,
+          transform: `rotate(${angle}deg)`,
+          opacity: arrowOpacity,
+        }}
+      />
+
+      {/* Center dot */}
+      <div className="absolute h-2 w-2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-green-400" />
+    </div>
   );
 }
 

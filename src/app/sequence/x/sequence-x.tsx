@@ -104,24 +104,36 @@ const SequenceX = ({
 }: SequenceXProps) => {
   const [unlocked, setUnlocked] = useState(false);
 
-  console.log("baseUrl", baseUrl);
+  const SLIDER_WIDTH = 300;
+  const SLIDER_HEIGHT = 50;
 
   return (
-    <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-black">
-      {/* Toggle debug button */}
+    <LockSlider.Root
+      width={SLIDER_WIDTH}
+      handleSize={50}
+      threshold={0.7}
+      onUnlock={() => setUnlocked(true)}
+      onReset={() => setUnlocked(false)}
+      className="relative h-full w-full"
+    >
+      {/* Decoupled drag area that can contain background content */}
+      <LockSlider.DragArea fullScreen className="z-50" />
 
-      <LockSlider.Root
-        width={300}
-        handleSize={50}
-        threshold={0.7}
-        onUnlock={() => setUnlocked(true)}
-        onReset={() => setUnlocked(false)}
+      {/* Visual slider container - positioned independently */}
+      <div
+        className="absolute right-0 bottom-4 left-1/2 z-10 flex -translate-x-1/2 items-center justify-center rounded-full border-2 border-white p-2"
+        style={{
+          width: SLIDER_WIDTH,
+          height: SLIDER_HEIGHT,
+          boxSizing: "content-box",
+        }}
       >
-        {/* Decoupled drag area that can contain background content */}
-        <LockSlider.DragArea fullScreen className="z-50" />
-
-        {/* Visual slider container - positioned independently */}
-        <LockSlider.Container className="relative z-10 opacity-45">
+        <LockSlider.Container
+          style={{
+            width: SLIDER_WIDTH,
+            height: SLIDER_HEIGHT,
+          }}
+        >
           <LockSlider.Track className="border border-white/20 bg-white/10 backdrop-blur-sm">
             <LockSlider.Progress className="bg-gradient-to-r from-blue-500/30 to-green-500/30" />
             <LockSlider.Text className="text-white/60">
@@ -153,21 +165,21 @@ const SequenceX = ({
             )}
           </LockSlider.Handle>
         </LockSlider.Container>
+      </div>
 
-        <BackgroundSequence
-          className="fixed inset-0 -z-0"
-          baseUrl={baseUrl}
-          totalFrames={totalFrames}
-          format={format}
-        />
+      <BackgroundSequence
+        className="fixed inset-0 -z-0"
+        baseUrl={baseUrl}
+        totalFrames={totalFrames}
+        format={format}
+      />
 
-        {/* Status and Instructions - positioned absolutely over everything */}
-        {indicators?.includes("rotation-3d") && <RotationGUI />}
+      {/* Status and Instructions - positioned absolutely over everything */}
+      {indicators?.includes("rotation-3d") && <RotationGUI />}
 
-        {/* Motion Debug UI */}
-        <LockSliderDebugPanel visible={showDebug} />
-      </LockSlider.Root>
-    </div>
+      {/* Motion Debug UI */}
+      <LockSliderDebugPanel visible={showDebug} />
+    </LockSlider.Root>
   );
 };
 

@@ -182,10 +182,41 @@ export const slides: Slide[] = [
     initialSheet: null,
     initialDialog: null,
     slide_type: {
-      type: "FreezeFrame",
+      type: "QuestionTime",
       data: {
         poster: "/assets/Scene_4.1.1_poster.png",
-        children: <div className="text-2xl text-white">Question component</div>,
+        title: "question time",
+        questions: {
+          0: {
+            question: "What is the pathophysiology of IgAN?",
+            options: [
+              {
+                answer:
+                  "Overproduction of IgE antibodies that cross-react with glomerular basement membrane antigens, causing a type II hypersensitivity reaction and subsequent glomerular damage and proteinuria.",
+                isCorrect: false,
+              },
+              {
+                answer:
+                  "Systemic vasculitis characterized by inflammation and thickening of small and medium-sized blood vessels throughout the body, including the kidneys, leading to reduced glomerular filtration and hematuria.",
+                isCorrect: false,
+              },
+              {
+                answer:
+                  "Abnormal glycosylation of IgA1 leading to the formation of galactose-deficient lgA1 (Gd-IgA1), which are recognized by autoantibodies (often lgG). These immune complexes of Gd-IgA1 and anti-Gd-IgA1 deposit in the glomerular mesangium, activating the complement system and endothelin system (through Endothelin A receptor; ETAR) and lead to glomerular injury, inflammation, and proliferation.",
+                isCorrect: true,
+              },
+            ],
+          },
+          1: {
+            question:
+              "The immune complexes are deposited in which part of the kidneys?",
+            options: [
+              { answer: "The medulla.", isCorrect: false },
+              { answer: "The glomeruli.", isCorrect: true },
+              { answer: "Calices.", isCorrect: false },
+            ],
+          },
+        },
       },
     },
   },
@@ -202,18 +233,6 @@ export const slides: Slide[] = [
       type: "DragDropGrid",
       data: {
         poster: "/assets/Scene_4.1.1_poster.png",
-        positionedElements: [
-          {
-            screenCoords: { x: 0.71, y: 0.45 },
-            node: (
-              <Hotspot
-                color="#bb67e4"
-                icon="/touch_long_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24.svg"
-                size="lg"
-              />
-            ),
-          },
-        ],
         instructions:
           "Drag and drop the immune complex to deposit it in the glomeruli",
       },
@@ -533,6 +552,82 @@ export const slides: Slide[] = [
     },
   },
   {
+    id: "scene_8_2",
+    title: "Scene 8.2",
+    firstFramePoster: "/assets/Scene_8.1_poster.png",
+    lastFramePoster: "/assets/Scene_8.1_poster.png",
+    onFinishAction: "next_slide",
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
+    slide_type: {
+      type: "QuestionTime",
+      data: {
+        poster: "/assets/Scene_4.1.1_poster.png",
+        title: "question time",
+        questions: {
+          0: {
+            question:
+              "How does expression of TNFSF13 affect the risk of IgA nephropathy (IgAN)?",
+            options: [
+              {
+                answer:
+                  "Increased expression of TNFSF13 is associated with an increased risk and severity of IgAN.",
+                isCorrect: true,
+              },
+              {
+                answer:
+                  "Decreased expression of TNFSF13 increases the risk of IgAN by impairing the clearance of immune complexes.",
+                isCorrect: false,
+              },
+              {
+                answer:
+                  "TNFSF13 expression has no significant impact on the risk of developing or progressing IgAN.",
+                isCorrect: false,
+              },
+            ],
+          },
+          1: {
+            question: "What is the full name of APRIL?",
+            options: [
+              {
+                answer:
+                  "Apoptosis-Related Protein Involved in Lymphocyte signaling.",
+                isCorrect: false,
+              },
+              { answer: "A Proliferation-Inducing Ligand.", isCorrect: true },
+              {
+                answer:
+                  "Activator of Phosphorylation and Regulator of Interleukin Levels.",
+                isCorrect: false,
+              },
+            ],
+          },
+          2: {
+            question: "What is the biological role of APRIL?",
+            options: [
+              {
+                answer:
+                  "APRIL promotes the survival, proliferation, maturation, and differentiation of long-lived plasma cells and induces immunoglobulin class switching in B cells.",
+                isCorrect: true,
+              },
+              {
+                answer:
+                  "APRIL primarily functions in the degradation of bacterial cell walls, contributing to innate immunity.",
+                isCorrect: false,
+              },
+              {
+                answer:
+                  "APRIL's main role is to suppress inflammation by inhibiting the activation of T cells.",
+                isCorrect: false,
+              },
+            ],
+          },
+        },
+      },
+    },
+  },
+  {
     id: "scene_9_1",
     title: "Scene 9.1",
     firstFramePoster: "/assets/Scene_9.1_poster.png",
@@ -642,6 +737,45 @@ export const slides: Slide[] = [
         poster: "/assets/Scene_11.1_poster.png",
         autoplay: true,
         loop: false,
+      },
+    },
+  },
+  {
+    id: "scene_11_2",
+    title: "Scene 11.2",
+    firstFramePoster: "/assets/Scene_8.1_poster.png",
+    lastFramePoster: "/assets/Scene_8.1_poster.png",
+    onFinishAction: "next_slide",
+    initialDrawer: null,
+    initialSheet: null,
+    initialDialog: null,
+    slide_type: {
+      type: "QuestionTime",
+      data: {
+        poster: "/assets/Scene_4.1.1_poster.png",
+        title: "question time",
+        questions: {
+          0: {
+            question: "What is Zigakibart?",
+            options: [
+              {
+                answer:
+                  "Zigakibart is a small molecule inhibitor of the enzyme cyclooxygenase (COX), used to reduce pain and inflammation by preventing the production of prostaglandins.",
+                isCorrect: false,
+              },
+              {
+                answer:
+                  "Zigakibart is a growth factor that stimulates the proliferation of red blood cells and is used in the treatment of anemia associated with chronic kidney disease.",
+                isCorrect: false,
+              },
+              {
+                answer:
+                  "Zigakibart is an investigational monoclonal antibody that blocks the binding of APRIL, to its receptors TACI and BCMA, halting the production of abnormal Gd-IgA1 antibodies. By blocking APRIL, zigakibart is intended to address the initiating event in IgA nephropathy pathogenesis (production of Gd-IgA1).",
+                isCorrect: true,
+              },
+            ],
+          },
+        },
       },
     },
   },

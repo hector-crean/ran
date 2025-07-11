@@ -11,7 +11,7 @@ interface HotspotProps {
   color?: string;
   children?: React.ReactNode;
   icon?: string;
-  size?: "sm" | "md" | "lg";
+  size?: "sm" | "md" | "lg" | "xl";
 }
 
 const Hotspot = ({
@@ -26,6 +26,7 @@ const Hotspot = ({
     sm: "w-8 h-8",
     md: "w-12 h-12",
     lg: "w-16 h-16",
+    xl: "w-24 h-24",
   };
 
   // Animation variants
@@ -208,7 +209,9 @@ const Hotspot = ({
               variants={shimmerVariants}
               animate={isHovered ? "hover" : "idle"}
             />
-            {icon ? <img style={{ zIndex: 10 }} src={icon} /> : null}
+            {icon ? (
+              <img className="z-10 w-full p-[1.5rem]" src={icon} />
+            ) : null}
           </Button>
         </motion.div>
       </PopoverTrigger>

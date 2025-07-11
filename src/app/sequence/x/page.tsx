@@ -7,6 +7,10 @@ import { useImageSequence } from "@/hooks/use-image-sequence";
 import { useTransform } from "motion/react";
 import { useState, useMemo } from "react";
 import { BackgroundSequence } from "./background-sequence";
+import {
+  MotionDebugUI,
+  defaultFormatters,
+} from "@/components/ui/motion-debug-ui";
 
 const RotationGUI = () => {
   const { progress, isDragging } = useLockSlider();
@@ -23,11 +27,78 @@ const RotationGUI = () => {
   );
 };
 
+// Debug panel component specifically for LockSlider
+function LockSliderDebugPanel({ visible }: { visible: boolean }) {
+  const {
+    dragX,
+    progress,
+    completed,
+    isUnlocked,
+    isDragging,
+    sliderWidth,
+    handleSize,
+    threshold,
+  } = useLockSlider();
+
+  const motionValues = [
+    {
+      label: "Progress",
+      value: progress,
+      range: [0, 1] as [number, number],
+      color: "#22c55e",
+      format: defaultFormatters.decimal,
+    },
+    {
+      label: "DragX",
+      value: dragX,
+      range: [0, sliderWidth - handleSize] as [number, number],
+      color: "#3b82f6",
+      unit: "px",
+      format: defaultFormatters.integer,
+    },
+  ];
+
+  const states = [
+    { label: "Dragging", value: isDragging },
+    { label: "Completed", value: completed },
+    { label: "Unlocked", value: isUnlocked },
+  ];
+
+  const thresholds = [
+    {
+      label: "Threshold",
+      value: threshold,
+      range: [0, 1] as [number, number],
+      color: "#fbbf24",
+    },
+  ];
+
+  return (
+    <MotionDebugUI
+      title="LockSlider Debug"
+      motionValues={motionValues}
+      states={states}
+      thresholds={thresholds}
+      visible={visible}
+      position="top-right"
+    />
+  );
+}
+
 const Page = () => {
   const [unlocked, setUnlocked] = useState(false);
+  const [showDebug, setShowDebug] = useState(true);
 
   return (
     <div className="relative flex h-full w-full items-center justify-center overflow-hidden bg-black">
+      {/* Toggle debug button */}
+      <button
+        onClick={() => setShowDebug(!showDebug)}
+        className="fixed top-4 left-4 z-50 rounded-md bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
+      >
+        {showDebug ? "Hide Debug" : "Show Debug"}
+      </button>
+
       <LockSlider.Root
         width={300}
         handleSize={50}
@@ -81,6 +152,9 @@ const Page = () => {
 
         {/* Status and Instructions - positioned absolutely over everything */}
         <RotationGUI />
+
+        {/* Motion Debug UI */}
+        <LockSliderDebugPanel visible={showDebug} />
       </LockSlider.Root>
     </div>
   );

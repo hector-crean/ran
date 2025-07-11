@@ -8,6 +8,9 @@ import JoyStick, {
 } from "@/components/ui/joystick";
 import { motion, useMotionValueEvent, useTransform } from "motion/react";
 import { BackgroundSequence } from "./background-sequence";
+import MotionDebugUI, {
+  defaultFormatters,
+} from "@/components/ui/motion-debug-ui";
 
 // Demo component showing joystick values
 function Metrics() {
@@ -72,6 +75,8 @@ export default function XYDragPage() {
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
 
+  const [showDebug, setShowDebug] = useState(true);
+
   const handleDragStart = useCallback(() => {
     setIsDragging(true);
   }, []);
@@ -86,7 +91,12 @@ export default function XYDragPage() {
 
   return (
     <div className="container mx-auto p-8">
-      {/* Joystick Demo */}
+      <button
+        onClick={() => setShowDebug(!showDebug)}
+        className="fixed top-4 left-4 z-50 rounded-md bg-blue-600 px-3 py-2 text-sm text-white hover:bg-blue-700"
+      >
+        {showDebug ? "Hide Debug" : "Show Debug"}
+      </button>
 
       <JoyStick.Root
         size={600}
@@ -120,8 +130,81 @@ export default function XYDragPage() {
           format="png"
         />
 
-        {/* Visual Feedback */}
+        <JoyStickDebugPanel visible={showDebug} />
       </JoyStick.Root>
     </div>
+  );
+}
+
+// Debug panel component specifically for JoyStick
+function JoyStickDebugPanel({ visible }: { visible: boolean }) {
+  const {
+    dragX,
+    dragY,
+    progressX,
+    progressY,
+    progress,
+    normalizedDistance,
+    isDragging,
+    completed,
+    threshold,
+  } = useJoyStick();
+
+  const motionValues = [
+    {
+      label: "Progress",
+      value: progress,
+      range: [0, 1] as [number, number],
+      color: "#22c55e",
+      format: defaultFormatters.decimal,
+    },
+    {
+      label: "DragX",
+      value: dragX,
+      range: [-280, 280] as [number, number],
+      color: "#3b82f6",
+      unit: "px",
+      format: defaultFormatters.integer,
+    },
+    {
+      label: "DragY",
+      value: dragY,
+      range: [-280, 280] as [number, number],
+      color: "#8b5cf6",
+      unit: "px",
+      format: defaultFormatters.integer,
+    },
+    {
+      label: "Distance",
+      value: normalizedDistance,
+      range: [0, 1] as [number, number],
+      color: "#f59e0b",
+      format: defaultFormatters.decimal,
+    },
+  ];
+
+  const states = [
+    { label: "Dragging", value: isDragging },
+    { label: "Completed", value: completed },
+  ];
+
+  const thresholds = [
+    {
+      label: "Threshold",
+      value: threshold,
+      range: [0, 1] as [number, number],
+      color: "#fbbf24",
+    },
+  ];
+
+  return (
+    <MotionDebugUI
+      title="JoyStick Debug"
+      motionValues={motionValues}
+      states={states}
+      thresholds={thresholds}
+      visible={visible}
+      position="top-right"
+    />
   );
 }

@@ -375,6 +375,8 @@ const JoyStickProgress = forwardRef<HTMLDivElement, JoyStickProgressProps>(
   ({ className, style, ...props }, ref) => {
     const { normalizedDistance, handleSize } = useJoyStick();
 
+    const width = useTransform(normalizedDistance, d => handleSize + d * 60);
+
     return (
       <motion.div
         ref={ref}
@@ -383,8 +385,8 @@ const JoyStickProgress = forwardRef<HTMLDivElement, JoyStickProgressProps>(
           className
         )}
         style={{
-          width: useTransform(normalizedDistance, d => handleSize + d * 60),
-          height: useTransform(normalizedDistance, d => handleSize + d * 60),
+          width: width,
+          height: width,
           ...style,
         }}
         {...props}
@@ -439,9 +441,9 @@ const JoyStickText = forwardRef<HTMLDivElement, JoyStickTextProps>(
   ({ children, className, style, fadeOnDrag = true, ...props }, ref) => {
     const { normalizedDistance } = useJoyStick();
 
-    const textOpacity = fadeOnDrag
-      ? useTransform(normalizedDistance, [0, 0.5], [1, 0])
-      : undefined;
+    const tOpacity = useTransform(normalizedDistance, [0, 0.5], [1, 0]);
+
+    const textOpacity = fadeOnDrag ? tOpacity : undefined;
 
     return (
       <motion.div

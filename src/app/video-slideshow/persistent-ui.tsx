@@ -39,8 +39,8 @@ export function PersistentUI() {
           preloadAsset(currentSlide.slide_type.data.url, "video");
         } else if (currentSlide.slide_type.type === "RotationalSequence") {
           // Preload first few frames of sequence immediately
-          const { baseUrl, frameCount, format } = currentSlide.slide_type.data;
-          preloadSequence(baseUrl, Math.min(frameCount, 20), format, "high");
+          const { baseUrl, totalFrames, format } = currentSlide.slide_type.data;
+          preloadSequence(baseUrl, Math.min(totalFrames, 20), format, "high");
         }
       }
 
@@ -57,8 +57,8 @@ export function PersistentUI() {
               nextSlide.slide_type.data.url
             );
           } else if (nextSlide.slide_type.type === "RotationalSequence") {
-            const { baseUrl, frameCount, format } = nextSlide.slide_type.data;
-            preloadSequence(baseUrl, frameCount, format, "low");
+            const { baseUrl, totalFrames, format } = nextSlide.slide_type.data;
+            preloadSequence(baseUrl, totalFrames, format, "low");
           }
 
           // Send to service worker for background caching

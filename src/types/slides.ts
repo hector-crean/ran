@@ -6,8 +6,8 @@ import { VideoSlideProps } from "@/app/video-slideshow/slide-types/video-slide";
 import { ClipPathComparatorProps } from "@/components/ui/clip-path-comparator";
 import { DragDropGridProps } from "@/components/ui/drag-drop";
 import { QuestionTimeProps } from "@/app/video-slideshow/slide-types/question-time";
-import { SequenceXProps } from "@/app/sequence/x/page";
-import { SequenceXYProps } from "@/app/sequence/xy/page";
+import { SequenceXProps } from "@/app/sequence/x/sequence-x";
+import { SequenceXYProps } from "@/app/sequence/xy/sequence-xy";
 
 type SlideLike<T extends string, P> = { type: T; data: P };
 

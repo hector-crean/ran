@@ -289,6 +289,8 @@ const LockSliderProgress = forwardRef<HTMLDivElement, LockSliderProgressProps>(
   ({ className, style, ...props }, ref) => {
     const { dragX, handleSize } = useLockSlider();
 
+    const width = useTransform(dragX, x => Math.max(0, x + handleSize));
+
     return (
       <motion.div
         ref={ref}
@@ -297,7 +299,7 @@ const LockSliderProgress = forwardRef<HTMLDivElement, LockSliderProgressProps>(
           className
         )}
         style={{
-          width: useTransform(dragX, x => Math.max(0, x + handleSize)),
+          width,
           ...style,
         }}
         {...props}
@@ -311,9 +313,8 @@ const LockSliderText = forwardRef<HTMLDivElement, LockSliderTextProps>(
   ({ children, className, style, fadeOnDrag = true, ...props }, ref) => {
     const { dragX } = useLockSlider();
 
-    const textOpacity = fadeOnDrag
-      ? useTransform(dragX, [0, 100], [1, 0])
-      : undefined;
+    const tOpacity = useTransform(dragX, [0, 100], [1, 0]);
+    const textOpacity = fadeOnDrag ? tOpacity : undefined;
 
     return (
       <motion.div

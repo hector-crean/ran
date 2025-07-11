@@ -12,8 +12,8 @@ import { SlideSheet } from "./slide-sheet";
 import { FreezeFrame } from "./slide-types/freeze-frame";
 import { QuestionTime } from "./slide-types/question-time";
 import { GpuPickingVideoSlide } from "./slide-types/gpu-picking-video-slide";
-import { SequenceX } from "@/app/sequence/x/page";
-import { SequenceXY } from "@/app/sequence/xy/page";
+import { SequenceX } from "@/app/sequence/x/sequence-x";
+import { SequenceXY } from "@/app/sequence/xy/sequence-xy";
 import { VideoSlide } from "./slide-types/video-slide";
 
 export const renderNode = (node: RenderableNode) => {

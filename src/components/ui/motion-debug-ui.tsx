@@ -76,15 +76,24 @@ export const MotionDebugUI: React.FC<MotionDebugUIProps> = ({
     setTrackedValues(initialValues);
   }, [motionValues]);
 
-  // Subscribe to motion value changes (each motion value subscribes separately)
-  motionValues.forEach(mv => {
-    useMotionValueEvent(mv.value, "change", latestValue => {
-      setTrackedValues(prev => ({
-        ...prev,
-        [mv.label]: latestValue,
-      }));
+  // Subscribe to motion value changes
+  useEffect(() => {
+    const unsubscribers: (() => void)[] = [];
+
+    motionValues.forEach(mv => {
+      const unsubscribe = mv.value.on("change", (latestValue: number) => {
+        setTrackedValues(prev => ({
+          ...prev,
+          [mv.label]: latestValue,
+        }));
+      });
+      unsubscribers.push(unsubscribe);
     });
-  });
+
+    return () => {
+      unsubscribers.forEach(unsubscribe => unsubscribe());
+    };
+  }, [motionValues]);
 
   // Calculate normalized value for progress bars
   const getNormalizedValue = (value: number, range: [number, number]) => {
@@ -214,15 +223,24 @@ export const useMotionDebug = (motionValues: MotionValue<number>[]) => {
   }, [motionValues]);
 
   // Subscribe to each motion value separately
-  motionValues.forEach((mv, index) => {
-    useMotionValueEvent(mv, "change", latestValue => {
-      setValues(prev => {
-        const newValues = [...prev];
-        newValues[index] = latestValue;
-        return newValues;
+  useEffect(() => {
+    const unsubscribers: (() => void)[] = [];
+
+    motionValues.forEach((mv, index) => {
+      const unsubscribe = mv.on("change", (latestValue: number) => {
+        setValues(prev => {
+          const newValues = [...prev];
+          newValues[index] = latestValue;
+          return newValues;
+        });
       });
+      unsubscribers.push(unsubscribe);
     });
-  });
+
+    return () => {
+      unsubscribers.forEach(unsubscribe => unsubscribe());
+    };
+  }, [motionValues]);
 
   return values;
 };

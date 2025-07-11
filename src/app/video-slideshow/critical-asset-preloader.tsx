@@ -43,7 +43,7 @@ export const CriticalAssetPreloader = ({
         // Preload first few frames of sequence
         for (
           let i = 1;
-          i <= Math.min(5, currentSlide.slide_type.data.frameCount);
+          i <= Math.min(5, currentSlide.slide_type.data.totalFrames);
           i++
         ) {
           const frameUrl = `${currentSlide.slide_type.data.baseUrl}${i
